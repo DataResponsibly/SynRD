@@ -1,0 +1,4 @@
+Header has 124 fields.
+Row 41014 has 126 fields, not 124
+Row 56090 has 129 fields, not 124
+Row 57076 has 127 fields, not 124
