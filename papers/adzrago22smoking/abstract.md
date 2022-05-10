@@ -1,5 +1,8 @@
-
+Citation:
 Adzrago, David, Kavi, Lucy, Ezeugoh, Rosemary I., Osafo-Darko, Benedicta Temporal patterns of cigarette smoking and its associated covariates: A multilevel longitudinal data analysis. Global Social Welfare.
+
+Dataset:
+https://www.icpsr.umich.edu/web/DAIRL/studies/21600
 
 
 Abstract
