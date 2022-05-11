@@ -1,7 +1,7 @@
 # Manifest
 A collection of relevant information about variables and methods from the paper
 
-## Variables
+# Variables
 
 (Text comes from the paper)
 
@@ -18,14 +18,14 @@ The 4 relevant waves for this paper are in the following folders:
 - DS8 (Wave 3)
 - DS22 (Wave 4)
 
-### Predictors
+## Predictors
 **Time in Years**
 
 We constructed this variable to indicate the time in years that the data were collected from the study participants at each wave or observation (Time = 0 [1995], Time = 1 [1996], Time = 6 [2001], and Time = 13 [2008]). The following predictors were measured at all waves.
 
 (computed implicitly)
 
-**Marijuana Use**
+### **Marijuana Use**
 
 From Paper:
 
@@ -48,7 +48,7 @@ Taken from: National Longitudinal Study of Adolescent to Adult Health (Add Healt
 
 *Type: numeric*
 
-**Alcohol Use Frequency**
+### **Alcohol Use Frequency**
 
 From Paper:
 
@@ -72,7 +72,7 @@ numeric
 *Type: numeric*
 
 
-**Illicit Drug Use**
+### **Illicit Drug Use**
 
 From Paper:
 
@@ -95,7 +95,7 @@ numeric
 
 *Type: numeric*
 
-**Aggressive Behavior**
+### **Aggressive Behavior**
 
 From Paper:
 
@@ -116,7 +116,7 @@ numeric
 - H2DS2 - DS5
 - H1DS2 - DS1
 
-### Covariates
+## Covariates
 
 **School attendance** (If SCHOOL YEAR: Are you presently in school? If SUMMER: Were you in school during this past school year? Yes = 1 and no = 0), 
 
@@ -145,9 +145,9 @@ numeric
 - S6D - DS1 (native american)
 - S6E - DS1 (other)
 
-### Target Variable
+## Target Variable
 
-**Smoking** 
+### **Smoking** 
 
 During the past 30 days, on the days you smoked, how many cigarettes did you smoke each day?
 
