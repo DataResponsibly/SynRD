@@ -30,7 +30,10 @@ Taken from: National Longitudinal Study of Adolescent to Adult Health (Add Healt
 
 numeric
 
-DS8
+H3TO110 - DS8
+H1TO32 - DS1
+H2TO46 - DS5
+H4TO71 - DS22
 
 
 
@@ -47,7 +50,10 @@ Taken from: National Longitudinal Study of Adolescent to Adult Health (Add Healt
 numeric
 DS5
 
-
+H2TO19 - DS5
+H1TO15 - DS1
+H4TO35 - DS22
+H3TO38 - DS8
 
 
 
@@ -63,11 +69,15 @@ numeric
 
 DS1
 
+H4TO65E - DS22
+H1TO40 - DS1
+H3TO117 - DS8
+H2TO58 - DS5
 
 
 Aggressive Behavior This variable was determined by ask- ing, “In the past 12 months, how often did you deliberately damage property that didn’t belong to you?”.
 
-H4DS1
+H4DS1 - DS22
 S21Q1 12 MO,OFT DAMAGE PROP/NOT YOUR-W4
 
 In the past 12 months, how often did you deliberately damage property that didn't belong to you?
@@ -77,7 +87,7 @@ numeric
 DS22
 
 
-H3DS1
+H3DS1 - DS8
 S26Q1 12 MO,OFT DAMAGE PROP/NOT YOUR-W3
 
 In the past 12 months, how often did you deliberately damage property that didn't belong to you?
@@ -86,14 +96,39 @@ Taken from: National Longitudinal Study of Adolescent to Adult Health (Add Healt
 numeric
 DS8
 
-DS?
+H4DS1 - DS22
+H3DS1 - DS8
+H2DS2 - DS5
+H1DS2 - DS1
 
 Covariates:
 
 School attendance (If SCHOOL YEAR: Are you presently in school? If SUMMER: Were you in school during this past school year? Yes = 1 and no = 0), 
 
+H3ED23 - DS8
+H2GI6 - DS5
+H1GI18 - DS1
+H4ED6 - DS22
+
 age
+S1 - DS1
 
 gender (male or female)
+BIO_SEX3 - DS8
 
 race (Hispanic or Latino = 1, non-Hispanic Black or African American = 2, non-Hispanic Asian or Pacific Islander = 3, non-Hispanic American Indian or Native American = 4, non-Hispanic Other = 5, and non- Hispanic White)
+
+S6C - DS1 (asian)
+S6B - DS1 (black)
+S6A - DS1 (white)
+S6D - DS1 (native american)
+S6E - DS1 (other)
+
+TARGET VARIABLE
+
+During the past 30 days, on the days you smoked, how many cigarettes did you smoke each day?
+
+H3TO10 - DS8
+H1TO7 - DS1
+H2TO7 - DS5
+H4TO6 - DS22
