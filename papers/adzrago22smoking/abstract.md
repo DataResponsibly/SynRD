@@ -14,3 +14,10 @@ We merged the National Longitudinal Study of Adolescent Health public-use data w
 
 Results
 The average number of cigarette smoked per day (CPD) among the sample at baseline/wave 1 was 6.92 (SD = 8.18). Time of observation in years (β = 0.455 (p < .001), age (β = 0.355, p < .001), past-year alcohol use frequency (β = −0.329, p < .001), and illicit drug use (β = 1.128, p < .001) were associated with average number of CPD. There were significant variations in the average number of CPD between-person (β = 29.602, p < .001) and within-person (variance = 34.393, p < .001).
+
+How to evaluate
+
+1. linear model - is the coefficient non zero, p value less than 0.05 (dumb),
+2. linear model - is the coefficient non zero (want some sense of ``error'' w.r.t. the value reported), with a p value similar to that which the authors reported
+3. Do (2), run for N iterations with different seeds, as though N different people created synthetic data
+   (report our confidence interval (p value of a p value)) 
