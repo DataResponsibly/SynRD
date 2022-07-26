@@ -26,7 +26,7 @@ class Publication():
         results = {}
         for finding in self.FINDINGS:
             result = finding.run()
-            results[str(finding)] = results
+            results[str(finding)] = result
         return results
 
     def _read_pickle_dataframe(self):
@@ -54,6 +54,8 @@ class Finding():
         self.description = description
 
     def run(self):
+        if self.args is None:
+            return self.finding_lambda()
         return self.finding_lambda(**self.args)
     
     def __str__(self):

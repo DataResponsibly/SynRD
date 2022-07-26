@@ -3,6 +3,8 @@ from meta_classes import Publication, Finding
 import pandas as pd
 import numpy as np
 
+from itertools import chain
+
 class Saw2018Cross(Publication):
     """
     A class wrapper for all publication classes, for shared functionality.
@@ -44,19 +46,100 @@ class Saw2018Cross(Publication):
         1: "higher-SES"
     }
 
+    ASPIRATION_MAP = {
+        0: "No",
+        1: "Yes"
+    }
+
     FILENAME = 'saw2018cross'
+
+    FIGURE_2_REINDEX = [
+                    (      'White', 'higher-SES',  'boys', 'Yes'),
+                    (      'White',  'lower-SES',  'boys', 'Yes'),
+                    (      'White', 'higher-SES', 'girls', 'Yes'),
+                    (      'White',  'lower-SES', 'girls', 'Yes'),
+                    (      'Black', 'higher-SES',  'boys', 'Yes'),
+                    (      'Black',  'lower-SES',  'boys', 'Yes'),
+                    (      'Black', 'higher-SES', 'girls', 'Yes'),
+                    (      'Black',  'lower-SES', 'girls', 'Yes'),
+                    (   'Hispanic', 'higher-SES',  'boys', 'Yes'),
+                    (   'Hispanic',  'lower-SES',  'boys', 'Yes'),
+                    (   'Hispanic', 'higher-SES', 'girls', 'Yes'),
+                    (   'Hispanic',  'lower-SES', 'girls', 'Yes'),
+                    (      'Asian', 'higher-SES',  'boys', 'Yes'),
+                    (      'Asian',  'lower-SES',  'boys', 'Yes'),
+                    (      'Asian', 'higher-SES', 'girls', 'Yes'),
+                    (      'Asian',  'lower-SES', 'girls', 'Yes'),
+                    ('Multiracial', 'higher-SES',  'boys', 'Yes'),
+                    ('Multiracial',  'lower-SES',  'boys', 'Yes'),
+                    ('Multiracial', 'higher-SES', 'girls', 'Yes'),
+                    ('Multiracial',  'lower-SES', 'girls', 'Yes')
+    ]
+
+    TABLE_B2_REINDEX = [
+                    (      'White', 'higher-SES',  'boys', 'n'),
+                    (      'White', 'higher-SES',  'boys', 'Yes'),
+                    (      'White',  'lower-SES',  'boys', 'n'),
+                    (      'White',  'lower-SES',  'boys', 'Yes'),
+                    (      'White', 'higher-SES', 'girls', 'n'),
+                    (      'White', 'higher-SES', 'girls', 'Yes'),
+                    (      'White',  'lower-SES', 'girls', 'n'),
+                    (      'White',  'lower-SES', 'girls', 'Yes'),
+                    (      'Black', 'higher-SES',  'boys', 'n'),
+                    (      'Black', 'higher-SES',  'boys', 'Yes'),
+                    (      'Black',  'lower-SES',  'boys', 'n'),
+                    (      'Black',  'lower-SES',  'boys', 'Yes'),
+                    (      'Black', 'higher-SES', 'girls', 'n'),
+                    (      'Black', 'higher-SES', 'girls', 'Yes'),
+                    (      'Black',  'lower-SES', 'girls', 'n'),
+                    (      'Black',  'lower-SES', 'girls', 'Yes'),
+                    (   'Hispanic', 'higher-SES',  'boys', 'n'),
+                    (   'Hispanic', 'higher-SES',  'boys', 'Yes'),
+                    (   'Hispanic',  'lower-SES',  'boys', 'n'),
+                    (   'Hispanic',  'lower-SES',  'boys', 'Yes'),
+                    (   'Hispanic', 'higher-SES', 'girls', 'n'),
+                    (   'Hispanic', 'higher-SES', 'girls', 'Yes'),
+                    (   'Hispanic',  'lower-SES', 'girls', 'n'),
+                    (   'Hispanic',  'lower-SES', 'girls', 'Yes'),
+                    (      'Asian', 'higher-SES',  'boys', 'n'),
+                    (      'Asian', 'higher-SES',  'boys', 'Yes'),
+                    (      'Asian',  'lower-SES',  'boys', 'n'),
+                    (      'Asian',  'lower-SES',  'boys', 'Yes'),
+                    (      'Asian', 'higher-SES', 'girls', 'n'),
+                    (      'Asian', 'higher-SES', 'girls', 'Yes'),
+                    (      'Asian',  'lower-SES', 'girls', 'n'),
+                    (      'Asian',  'lower-SES', 'girls', 'Yes'),
+                    ('Multiracial', 'higher-SES',  'boys', 'n'),
+                    ('Multiracial', 'higher-SES',  'boys', 'Yes'),
+                    ('Multiracial',  'lower-SES',  'boys', 'n'),
+                    ('Multiracial',  'lower-SES',  'boys', 'Yes'),
+                    ('Multiracial', 'higher-SES', 'girls', 'n'),
+                    ('Multiracial', 'higher-SES', 'girls', 'Yes'),
+                    ('Multiracial',  'lower-SES', 'girls', 'n'),
+                    ('Multiracial',  'lower-SES', 'girls', 'Yes'),
+                    (      'Other', 'higher-SES',  'boys', 'n'),
+                    (      'Other', 'higher-SES',  'boys', 'Yes'),
+                    (      'Other',  'lower-SES',  'boys', 'n'),
+                    (      'Other',  'lower-SES',  'boys', 'Yes'),
+                    (      'Other', 'higher-SES', 'girls', 'n'),
+                    (      'Other', 'higher-SES', 'girls', 'Yes'),
+                    (      'Other',  'lower-SES', 'girls', 'n'),
+                    (      'Other',  'lower-SES', 'girls', 'Yes')
+    ]
 
     def __init__(self, dataframe=None, filename=None):
         if filename is not None:
-            pd.read_pickle(filename)
+            self.dataframe = pd.read_pickle(filename)
         elif dataframe is not None:
             self.dataframe = dataframe
         else:
             self.dataframe = self._recreate_dataframe()
 
-        self.FINDINGS.append(
-            Finding(self.table_b2, description="Replicating TableB2.")
-        )
+        self.FINDINGS = self.FINDINGS + [
+            Finding(self.table_b2, description="table_b2"),
+            Finding(self.figure_2, description="figure_2")
+        ]
+        
 
     def _recreate_dataframe(self, filename='saw2018cross_dataframe.pickle'):
         student_survey = pd.read_csv('saw2018cross/data/36423-0002-Data.tsv',sep='\t')
@@ -170,18 +253,49 @@ class Saw2018Cross(Publication):
         
         results = {}
         for (name, x, bin_var) in x_axis:
+            copy_x = x.copy()
+            copy_x = copy_x.replace({'race': self.RACE_MAP,
+                            'sex': self.SEX_MAP,
+                            'HigherSES' : self.HSES_MAP,
+                            bin_var: self.ASPIRATION_MAP})
+            
+            results[name +'_intersectional_results'] = copy_x.groupby(['race','HigherSES','sex', bin_var])
 
-            results[name + '_sex_n'] = x['sex'].value_counts()
-            results[name + '_sex_yes'] = x.groupby(["sex", bin_var]).size()
+        full_intersectional_table = pd.DataFrame()
+        for (name, x, bin_var) in x_axis:
+            full_intersectional_table[name] = results[name +'_intersectional_results'].count()['SES']
+        
+        inter = full_intersectional_table.copy()
+        for ind, row in inter.groupby(level=[0,1,2]).sum().iterrows():
+            s = row
+            s.name = ind
+            s.name = s.name + tuple('n')
+            full_intersectional_table = full_intersectional_table.append(s)
 
-            results[name + '_race_n'] = x['race'].value_counts()
-            results[name + '_race_yes'] = x.groupby(["race", bin_var]).size()
-
-            results[name + '_SES_n'] = x['SES'].value_counts()
-            results[name + '_SES_yes'] = x.groupby(["SES", bin_var]).size()
-
-            results[name +'_intersectional_results'] = x.group_by(['race','sex','HigherSES', bin_var])
+        full_intersectional_table = full_intersectional_table.reindex(self.TABLE_B2_REINDEX)
+        results['full_intersectional_table'] = full_intersectional_table 
+        
+        # Create the high level aggregated tables from full_intersectional_table
+        for i,name in enumerate(['race','HigherSES','sex']):
+            n = full_intersectional_table.xs('n', level=3, axis=0, drop_level=False).groupby(level=i).sum()
+            og_cols = n.columns.copy()
+            n.columns = [col + '_n' for col in n.columns]
+            yes = full_intersectional_table.xs('Yes', level=3, axis=0, drop_level=False).groupby(level=i).sum()
+            yes.columns = [col + '_yes' for col in yes.columns]
+            results[name + '_table'] = pd.concat([n, yes], axis=1)
+            reorder_cols =[[col + '_n', col + '_yes'] for col in og_cols]
+            reorder_cols = list(chain.from_iterable(reorder_cols))
+            results[name + '_table'] = results[name + '_table'][reorder_cols]
 
         return results
 
+    def figure_2(self):
+        results = self.table_b2()
+        table_b2 = results['full_intersectional_table']
 
+        figure_2 = table_b2 / table_b2.groupby(level=[0,1,2]).sum()
+        figure_2 = figure_2.xs('Yes', level=3, axis=0, drop_level=False)
+        reindex = self.FIGURE_2_REINDEX.copy()
+        reindex.reverse()
+        figure_2 = figure_2.reindex(reindex)
+        return figure_2.loc[reindex] # .plot(kind='barh', stacked=True, xlim=(0,0.5))
