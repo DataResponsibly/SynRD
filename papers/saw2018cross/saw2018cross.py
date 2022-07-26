@@ -153,7 +153,7 @@ class Saw2018Cross(Publication):
         filter1['X1STU30OCC_STEM1'] = filter1['X1STU30OCC_STEM1'].replace({-9 : 7})
         filter1['X2STU30OCC_STEM1'] = filter1['X2STU30OCC_STEM1'].replace({-9 : 7})
         filter1['X2STU30OCC_STEM1'] = filter1['X2STU30OCC_STEM1'].replace({-8 : 8})
-
+        
         filter1['sex'] = filter1['X1SEX']
         filter1.loc[filter1["sex"] == 1, "sex"] = 0
         filter1.loc[filter1["sex"] == 2, "sex"] = 1
