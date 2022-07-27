@@ -1,4 +1,4 @@
-from meta_classes import Publication, Finding
+from meta_classes import Publication, Finding, VisualFinding, FigureFinding
 
 import pandas as pd
 import numpy as np
@@ -136,9 +136,16 @@ class Saw2018Cross(Publication):
             self.dataframe = self._recreate_dataframe()
 
         self.FINDINGS = self.FINDINGS + [
-            Finding(self.table_b2, description="table_b2"),
-            Finding(self.figure_2, description="figure_2")
+            VisualFinding(self.table_b2, description="table_b2"),
+            FigureFinding(self.figure_2, description="figure_2"),
+            Finding(self.finding_526_1, description="finding_526_1",
+                    text="""Among first-time 9th graders in fall 2009, only about 11.4% of 
+                            students were interested in pursuing a STEM career upon entering 
+                            high school (see Figure 1). The percentage declined slightly to 
+                            10.0% for the same cohort of students after they spent their first 
+                            three years in high school.""")
         ]
+        
         
 
     def _recreate_dataframe(self, filename='saw2018cross_dataframe.pickle'):
@@ -301,20 +308,14 @@ class Saw2018Cross(Publication):
         return figure_2.loc[reindex] # .plot(kind='barh', stacked=True, xlim=(0,0.5))
 
     def finding_526_1(self):
-        """
-        Among first-time 9th graders in fall 2009, only about 11.4% of 
-        students were interested in pursuing a STEM career upon entering 
-        high school (see Figure 1). The percentage declined slightly to 
-        10.0% for the same cohort of students after they spent their first 
-        three years in high school.
-        """
         results = self.table_b2()
-        ng_yes = sum(results['table_b2']['sex_table']['ninth_grade_yes']) 
-        ng_total = sum(results['table_b2']['sex_table']['ninth_grade_n'])
+        ng_yes = sum(results['sex_table']['ninth_grade_yes']) 
+        ng_total = sum(results['sex_table']['ninth_grade_n'])
         interest_stem_ninth = ng_yes / ng_total
-        eg_yes = sum(results['table_b2']['sex_table']['eleventh_grade_yes']) 
-        eg_total = sum(results['table_b2']['sex_table']['eleventh_grade_n'])
+        eg_yes = sum(results['sex_table']['eleventh_grade_yes']) 
+        eg_total = sum(results['sex_table']['eleventh_grade_n'])
         interest_stem_eleventh = eg_yes / eg_total
         # Check assertion from paper
-        replicated = interest_stem_ninth > interest_stem_eleventh
-        return ([interest_stem_ninth,interest_stem_eleventh], replicated)
+        soft_finding = interest_stem_ninth > interest_stem_eleventh
+        # hard_finding
+        return ([interest_stem_ninth,interest_stem_eleventh], soft_finding)

@@ -48,10 +48,15 @@ class Finding():
     """
     A class wrapper for all findings, for shared functionality.
     """
-    def __init__(self, finding_lambda, args=None, description=None):
+    def __init__(self, 
+                 finding_lambda, 
+                 args=None, 
+                 description=None, 
+                 text=None):
         self.finding_lambda = finding_lambda
         self.args = args
         self.description = description
+        self.text = text
 
     def run(self):
         if self.args is None:
@@ -60,3 +65,15 @@ class Finding():
     
     def __str__(self):
         return self.description
+
+class VisualFinding(Finding):
+    """
+    A class wrapper for all findings, for shared functionality.
+    """
+    pass
+
+class FigureFinding(Finding):
+    """
+    A class wrapper for all findings, for shared functionality.
+    """
+    pass
