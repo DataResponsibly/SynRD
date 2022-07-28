@@ -315,7 +315,8 @@ class Saw2018Cross(Publication):
         eg_yes = sum(results['sex_table']['eleventh_grade_yes']) 
         eg_total = sum(results['sex_table']['eleventh_grade_n'])
         interest_stem_eleventh = eg_yes / eg_total
-        # Check assertion from paper
+        # Check soft assertion from paper
         soft_finding = interest_stem_ninth > interest_stem_eleventh
-        # hard_finding
-        return ([interest_stem_ninth,interest_stem_eleventh], soft_finding)
+        # Check relative difference magnitude
+        hard_finding = interest_stem_ninth - interest_stem_eleventh
+        return ([interest_stem_ninth,interest_stem_eleventh], soft_finding, [hard_finding])
