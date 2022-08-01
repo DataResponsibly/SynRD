@@ -10,6 +10,7 @@ class Saw2018Cross(Publication):
     A class wrapper for all publication classes, for shared functionality.
     """
     DEFAULT_PAPER_ATTRIBUTES = {
+        'id': 'saw2018cross',
         'length_pages': 8,
         'authors': ['Guan Saw', 'Chi-Ning Chang', 'Hsun-Yu Chan'],
         'journal': 'Educational Researcher',
@@ -143,8 +144,21 @@ class Saw2018Cross(Publication):
                             students were interested in pursuing a STEM career upon entering 
                             high school (see Figure 1). The percentage declined slightly to 
                             10.0% for the same cohort of students after they spent their first 
-                            three years in high school.""")
+                            three years in high school."""),
+            Finding(self.finding_526_2, description="finding_526_2",
+                    text="""First, the rates of interest in STEM professions dropped slightly 
+                            for all racial/ethnic groups (ranging from 0.9% for Hispanics to 3.7% 
+                            for multiracial students), except for Blacks."""),   
+            Finding(self.finding_526_3, description="finding_526_3",
+                    text="""Second, Black and Hispanic students consistently had significantly 
+                            lower rates of interest (both in early 9th grade and late 11th grade) 
+                            and persistence in STEM professions. At the end of 11th grade, for example, 
+                            while 10.8% of Whites, 9.5% of Asians, and 11.6% of multiracial students 
+                            aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did."""),              
         ]
+        
+
+        self.table_b2_dataframe = None
         
         
 
@@ -294,10 +308,21 @@ class Saw2018Cross(Publication):
             reorder_cols = list(chain.from_iterable(reorder_cols))
             results[name + '_table'] = results[name + '_table'][reorder_cols]
 
+        self.table_b2_dataframe = results
+
+        return results
+
+    def table_b2_check(self):
+        if self.table_b2_dataframe is None:
+            results = self.table_b2()
+            self.table_b2_dataframe = results
+        else: 
+            results = self.table_b2_dataframe
         return results
 
     def figure_2(self):
-        results = self.table_b2()
+        results = self.table_b2_check()
+
         table_b2 = results['full_intersectional_table']
 
         figure_2 = table_b2 / table_b2.groupby(level=[0,1,2]).sum()
@@ -308,7 +333,15 @@ class Saw2018Cross(Publication):
         return figure_2.loc[reindex] # .plot(kind='barh', stacked=True, xlim=(0,0.5))
 
     def finding_526_1(self):
-        results = self.table_b2()
+        """
+        Among first-time 9th graders in fall 2009, only about 11.4% of 
+        students were interested in pursuing a STEM career upon entering 
+        high school (see Figure 1). The percentage declined slightly to 
+        10.0% for the same cohort of students after they spent their first 
+        three years in high school.
+        """
+        results = self.table_b2_check()
+
         ng_yes = sum(results['sex_table']['ninth_grade_yes']) 
         ng_total = sum(results['sex_table']['ninth_grade_n'])
         interest_stem_ninth = ng_yes / ng_total
@@ -320,3 +353,58 @@ class Saw2018Cross(Publication):
         # Check relative difference magnitude
         hard_finding = interest_stem_ninth - interest_stem_eleventh
         return ([interest_stem_ninth,interest_stem_eleventh], soft_finding, [hard_finding])
+
+    def finding_526_2(self):
+        """
+        First, the rates of interest in STEM professions dropped slightly 
+        for all racial/ethnic groups (ranging from 0.9% for Hispanics to 3.7% 
+        for multiracial students), except for Blacks.
+        """
+        results = self.table_b2_check()
+
+        soft_finding = True
+        hard_findings = []
+        all_findings = []
+        for race in list(results['race_table'].index):
+            race_vals = results['race_table'].loc[race]
+            percent_ninth = race_vals['ninth_grade_yes'] / race_vals['ninth_grade_n']
+            percent_eleventh = race_vals['eleventh_grade_yes'] / race_vals['eleventh_grade_n']
+            if percent_ninth < percent_eleventh:
+                soft_finding = False
+            hard_findings.append(percent_eleventh - percent_ninth)
+            all_findings.append([percent_ninth,percent_eleventh])
+        
+        return (all_findings, soft_finding, hard_findings)
+
+    def finding_526_3(self):
+        """
+        Second, Black and Hispanic students consistently had significantly 
+        lower rates of interest (both in early 9th grade and late 11th grade) 
+        and persistence in STEM professions. At the end of 11th grade, for example, 
+        while 10.8% of Whites, 9.5% of Asians, and 11.6% of multiracial students 
+        aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did.
+        """
+        results = self.table_b2_check()
+
+        soft_finding = True
+        # Higher interest set
+        white_interest = results['race_table'].loc['White']
+        white_interest = white_interest['eleventh_grade_yes'] / white_interest['eleventh_grade_n']
+        asian_interest = results['race_table'].loc['Asian']
+        asian_interest = asian_interest['eleventh_grade_yes'] / asian_interest['eleventh_grade_n']
+        multiracial_interest = results['race_table'].loc['Multiracial']
+        multiracial_interest = multiracial_interest['eleventh_grade_yes'] / multiracial_interest['eleventh_grade_n']
+        set_1 = [white_interest,asian_interest,multiracial_interest]
+        # Lower interest set
+        black_interest = results['race_table'].loc['Black']
+        black_interest = black_interest['eleventh_grade_yes'] / black_interest['eleventh_grade_n']
+        hispanic_interest = results['race_table'].loc['Hispanic']
+        hispanic_interest = hispanic_interest['eleventh_grade_yes'] / hispanic_interest['eleventh_grade_n']
+        set_2 = [black_interest,hispanic_interest]
+        # To softly validate the claim, min(set_1) should be greater than max(set_2)
+        soft_finding = min(set_1) > max(set_2)
+        # For hard finding validation, we need the difference to be at least as much as
+        # reported in the paper
+        hard_finding_value = abs(min(set_1) - max(set_2))
+        hard_finding_bool = hard_finding_value >= 0.013
+        return ([set_1, set_2], soft_finding, [hard_finding_value, hard_finding_bool])
