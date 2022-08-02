@@ -15,7 +15,8 @@ class Saw2018Cross(Publication):
         'authors': ['Guan Saw', 'Chi-Ning Chang', 'Hsun-Yu Chan'],
         'journal': 'Educational Researcher',
         'year': 2018,
-        'current_citations': 67
+        'current_citations': 67,
+        'base_dataframe_pickle': 'saw2018cross_dataframe.pickle'
     }
 
     DATAFRAME_COLUMNS = ['sex',

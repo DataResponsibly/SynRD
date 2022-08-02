@@ -11,7 +11,8 @@ class Publication():
         'authors': [],
         'journal': None,
         'year': 0,
-        'current_citations': 0
+        'current_citations': 0,
+        'base_dataframe_pickle': None
     }
 
     FINDINGS = []
@@ -20,7 +21,7 @@ class Publication():
 
     FILENAME = None
 
-    def __init__(self, dataframe):
+    def __init__(self, dataframe=None, filename=None):
         self.dataframe = dataframe
 
     def run_all_findings(self):
@@ -28,6 +29,14 @@ class Publication():
         for finding in self.FINDINGS:
             result = finding.run()
             results[str(finding)] = result
+        return results
+    
+    def run_all_non_visual_findings(self):
+        results = {}
+        for finding in self.FINDINGS:
+            if (not isinstance(finding,VisualFinding)) and (not isinstance(finding,FigureFinding)):
+                result = finding.run()
+                results[str(finding)] = result
         return results
 
     def _read_pickle_dataframe(self):

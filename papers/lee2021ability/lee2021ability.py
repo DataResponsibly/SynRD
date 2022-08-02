@@ -8,11 +8,13 @@ class Lee2021Ability(Publication):
     A class wrapper for all publication classes, for shared functionality.
     """
     DEFAULT_PAPER_ATTRIBUTES = {
+        'id': None,
         'length_pages': 0,
         'authors': [],
-        'journal': '',
+        'journal': None,
         'year': 0,
-        'current_citations': 0
+        'current_citations': 0,
+        'base_dataframe_pickle': None
     }
 
     def __init__(self, dataframe=None, filename=None):
