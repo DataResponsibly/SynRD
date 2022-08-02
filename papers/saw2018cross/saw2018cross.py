@@ -155,7 +155,12 @@ class Saw2018Cross(Publication):
                             lower rates of interest (both in early 9th grade and late 11th grade) 
                             and persistence in STEM professions. At the end of 11th grade, for example, 
                             while 10.8% of Whites, 9.5% of Asians, and 11.6% of multiracial students 
-                            aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did."""),              
+                            aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did."""),
+            Finding(self.finding_526_4, description="finding_526_4",
+                    text="""Third, interestingly, among those who previously were not interested 
+                            in STEM fields, students from all racial/ethnic backgrounds, except 
+                            Blacks (5.1%), gained interest in STEM jobs at a similar rate 
+                            (about 7%) after spending three years in high school."""),              
         ]
         
 
@@ -410,4 +415,37 @@ class Saw2018Cross(Publication):
         hard_finding_bool = hard_finding_value >= 0.013
         return ([set_1, set_2], soft_finding, [hard_finding_value, hard_finding_bool])
     
-    
+    def finding_526_4(self):
+        """
+        Third, interestingly, among those who previously were not interested 
+        in STEM fields, students from all racial/ethnic backgrounds, except 
+        Blacks (5.1%), gained interest in STEM jobs at a similar rate 
+        (about 7%) after spending three years in high school.
+        """
+        results = self.table_b2_check()
+
+        soft_finding = True
+        # Similar interest set (seemingly defined as within .6% of each other)
+        white_interest = results['race_table'].loc['White']
+        white_interest = white_interest['emergers_grade_yes'] / white_interest['emergers_grade_n']
+        asian_interest = results['race_table'].loc['Asian']
+        asian_interest = asian_interest['emergers_grade_yes'] / asian_interest['emergers_grade_n']
+        multiracial_interest = results['race_table'].loc['Multiracial']
+        multiracial_interest = multiracial_interest['emergers_grade_yes'] / multiracial_interest['emergers_grade_n']
+        hispanic_interest = results['race_table'].loc['Hispanic']
+        hispanic_interest = hispanic_interest['emergers_grade_yes'] / hispanic_interest['emergers_grade_n']
+        similar_set = [[white_interest, 
+                        asian_interest,
+                        multiracial_interest,
+                        hispanic_interest]]
+        # Dissimilar interest set (seemingly defined as 1.5% from nearest other group)
+        black_interest = results['race_table'].loc['Black']
+        black_interest = black_interest['emergers_grade_yes'] / black_interest['emergers_grade_n']
+        # Essentially, this finding is saying that levels of emergers were
+        # "similar" (within .4% of approximate mean) for all but black 
+        # individuals in the sample, which was lower by 1.5%
+        similar_set_mean = np.mean(similar_set)
+        similar_bool = all([abs(similar_set_mean - interest) < 0.005 for interest in similar_set])
+        dissimilar_bool = (similar_set_mean - black_interest) >= 0.015
+        hard_findings_values = [similar_set_mean - interest for interest in similar_set] + [similar_set_mean - black_interest]
+        return ([similar_set, black_interest], (similar_bool & dissimilar_bool), hard_findings_values)
