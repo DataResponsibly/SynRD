@@ -409,3 +409,5 @@ class Saw2018Cross(Publication):
         hard_finding_value = abs(min(set_1) - max(set_2))
         hard_finding_bool = hard_finding_value >= 0.013
         return ([set_1, set_2], soft_finding, [hard_finding_value, hard_finding_bool])
+    
+    
