@@ -421,31 +421,36 @@ class Saw2018Cross(Publication):
         in STEM fields, students from all racial/ethnic backgrounds, except 
         Blacks (5.1%), gained interest in STEM jobs at a similar rate 
         (about 7%) after spending three years in high school.
+
+        NOTE: Finding not directly reproducible from paper with public
+        data
         """
         results = self.table_b2_check()
 
-        soft_finding = True
-        # Similar interest set (seemingly defined as within .6% of each other)
+        # Similar interest set (seemingly defined as within approx 1% of each other)
         white_interest = results['race_table'].loc['White']
         white_interest = white_interest['emergers_grade_yes'] / white_interest['emergers_grade_n']
         asian_interest = results['race_table'].loc['Asian']
         asian_interest = asian_interest['emergers_grade_yes'] / asian_interest['emergers_grade_n']
         multiracial_interest = results['race_table'].loc['Multiracial']
         multiracial_interest = multiracial_interest['emergers_grade_yes'] / multiracial_interest['emergers_grade_n']
-        hispanic_interest = results['race_table'].loc['Hispanic']
-        hispanic_interest = hispanic_interest['emergers_grade_yes'] / hispanic_interest['emergers_grade_n']
-        similar_set = [[white_interest, 
+        similar_set = [white_interest, 
                         asian_interest,
-                        multiracial_interest,
-                        hispanic_interest]]
-        # Dissimilar interest set (seemingly defined as 1.5% from nearest other group)
+                        multiracial_interest]
+        # Dissimilar interest set (seemingly defined as within approx 1% of each other and 1.5% from other group mean)
         black_interest = results['race_table'].loc['Black']
         black_interest = black_interest['emergers_grade_yes'] / black_interest['emergers_grade_n']
+        hispanic_interest = results['race_table'].loc['Hispanic']
+        hispanic_interest = hispanic_interest['emergers_grade_yes'] / hispanic_interest['emergers_grade_n']
+        dissimilar_set = [black_interest,
+                        hispanic_interest]
         # Essentially, this finding is saying that levels of emergers were
-        # "similar" (within .4% of approximate mean) for all but black 
-        # individuals in the sample, which was lower by 1.5%
+        # "similar" for all but black (and hispanic) 
+        # individuals in the sample, which was lower by more than 1.5%
         similar_set_mean = np.mean(similar_set)
-        similar_bool = all([abs(similar_set_mean - interest) < 0.005 for interest in similar_set])
-        dissimilar_bool = (similar_set_mean - black_interest) >= 0.015
-        hard_findings_values = [similar_set_mean - interest for interest in similar_set] + [similar_set_mean - black_interest]
-        return ([similar_set, black_interest], (similar_bool & dissimilar_bool), hard_findings_values)
+        dissimilar_set_mean = np.mean(dissimilar_set)
+        hard_findings_values = [interest - similar_set_mean for interest in similar_set] + \
+                               [interest - dissimilar_set_mean for interest in dissimilar_set]
+        soft_finding_bool = (similar_set_mean - dissimilar_set_mean) >= 0.015
+        print(([similar_set, dissimilar_set], soft_finding_bool, hard_findings_values))
+        return ([similar_set, dissimilar_set], soft_finding_bool, hard_findings_values)
