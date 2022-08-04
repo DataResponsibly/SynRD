@@ -10,11 +10,13 @@ class Saw2018Cross(Publication):
     A class wrapper for all publication classes, for shared functionality.
     """
     DEFAULT_PAPER_ATTRIBUTES = {
+        'id': 'saw2018cross',
         'length_pages': 8,
         'authors': ['Guan Saw', 'Chi-Ning Chang', 'Hsun-Yu Chan'],
         'journal': 'Educational Researcher',
         'year': 2018,
-        'current_citations': 67
+        'current_citations': 67,
+        'base_dataframe_pickle': 'saw2018cross_dataframe.pickle'
     }
 
     DATAFRAME_COLUMNS = ['sex',
@@ -44,6 +46,13 @@ class Saw2018Cross(Publication):
     HSES_MAP = {
         0: "lower-SES",
         1: "higher-SES"
+    }
+
+    SES_MAP = {
+        1: "low-SES",
+        2: "low-middle-SES",
+        3: "high-middle-SES",
+        4: "high-SES",
     }
 
     ASPIRATION_MAP = {
@@ -143,8 +152,43 @@ class Saw2018Cross(Publication):
                             students were interested in pursuing a STEM career upon entering 
                             high school (see Figure 1). The percentage declined slightly to 
                             10.0% for the same cohort of students after they spent their first 
-                            three years in high school.""")
+                            three years in high school."""),
+            Finding(self.finding_526_2, description="finding_526_2",
+                    text="""First, the rates of interest in STEM professions dropped slightly 
+                            for all racial/ethnic groups (ranging from 0.9% for Hispanics to 3.7% 
+                            for multiracial students), except for Blacks."""),   
+            Finding(self.finding_526_3, description="finding_526_3",
+                    text="""Second, Black and Hispanic students consistently had significantly 
+                            lower rates of interest (both in early 9th grade and late 11th grade) 
+                            and persistence in STEM professions. At the end of 11th grade, for example, 
+                            while 10.8% of Whites, 9.5% of Asians, and 11.6% of multiracial students 
+                            aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did."""),
+            Finding(self.finding_526_4, description="finding_526_4",
+                    text="""Third, interestingly, among those who previously were not interested 
+                            in STEM fields, students from all racial/ethnic backgrounds, except 
+                            Blacks (5.1%), gained interest in STEM jobs at a similar rate 
+                            (about 7%) after spending three years in high school."""),
+            Finding(self.finding_526_5, description="finding_526_5",
+                    text="""Of those who aspired to a career in STEM in early 9th grade, 
+                            only about 34.3% maintained their interest until late 11th 
+                            grade (or persisters). Interestingly, about 6.9% students 
+                            (or emergers) who initially did not aspire to STEM careers 
+                            developed an interest three years after enrolling in high 
+                            school."""),    
+            Finding(self.finding_526_6, description="finding_526_6",
+                    text="""The patterns of SES disparities were clear and quite 
+                            consistent across multiple indicators of cross-sectional 
+                            and longitudinal STEM career aspirations. Students with 
+                            lower SES were less likely to aspire to a STEM career at 
+                            the start and toward the end of high school. In late 11th 
+                            grade, for instance, while about 14.4% of high SES students 
+                            aspired to pursue a career in STEM, only 10.6% of 
+                            high-middle SES, 9.0% of low-middle SES, and 7.1% of low SES 
+                            students did."""),                  
         ]
+        
+
+        self.table_b2_dataframe = None
         
         
 
@@ -294,10 +338,44 @@ class Saw2018Cross(Publication):
             reorder_cols = list(chain.from_iterable(reorder_cols))
             results[name + '_table'] = results[name + '_table'][reorder_cols]
 
+        self.table_b2_dataframe = results
+
         return results
 
+    def table_b2_check(self):
+        if self.table_b2_dataframe is None:
+            results = self.table_b2()
+            self.table_b2_dataframe = results
+        else: 
+            results = self.table_b2_dataframe
+        return results
+
+    def _granular_SES_dataframe(self):
+        ninth_grade_set, _, _ = self._find_ninth_grade()
+        eleventh_grade_set, _, _ = self._find_eleventh_grade()
+        persisters_set, _, _ = self._find_persisters()
+        emergers_set, _, _ = self._find_emergers()
+
+        x_axis = [('ninth_grade',ninth_grade_set, 'ninth_grade_aspirations'), 
+                    ('eleventh_grade',eleventh_grade_set, 'eleventh_grade_aspirations'), 
+                    ('persisters_grade',persisters_set, 'eleventh_grade_aspirations'), 
+                    ('emergers_grade', emergers_set, 'eleventh_grade_aspirations')]
+
+        results = {}
+        for (name, x, bin_var) in x_axis:
+            copy_x = x.copy()
+            copy_x = copy_x.replace({'SES': self.SES_MAP})
+            
+            results[name +'_ses_results'] = copy_x.groupby(['SES', bin_var])
+
+        ses_df = pd.DataFrame()
+        for (name, x, bin_var) in x_axis:
+            ses_df[name] = results[name +'_ses_results'].count()['sex']
+        return ses_df
+
     def figure_2(self):
-        results = self.table_b2()
+        results = self.table_b2_check()
+
         table_b2 = results['full_intersectional_table']
 
         figure_2 = table_b2 / table_b2.groupby(level=[0,1,2]).sum()
@@ -308,7 +386,15 @@ class Saw2018Cross(Publication):
         return figure_2.loc[reindex] # .plot(kind='barh', stacked=True, xlim=(0,0.5))
 
     def finding_526_1(self):
-        results = self.table_b2()
+        """
+        Among first-time 9th graders in fall 2009, only about 11.4% of 
+        students were interested in pursuing a STEM career upon entering 
+        high school (see Figure 1). The percentage declined slightly to 
+        10.0% for the same cohort of students after they spent their first 
+        three years in high school.
+        """
+        results = self.table_b2_check()
+
         ng_yes = sum(results['sex_table']['ninth_grade_yes']) 
         ng_total = sum(results['sex_table']['ninth_grade_n'])
         interest_stem_ninth = ng_yes / ng_total
@@ -320,3 +406,305 @@ class Saw2018Cross(Publication):
         # Check relative difference magnitude
         hard_finding = interest_stem_ninth - interest_stem_eleventh
         return ([interest_stem_ninth,interest_stem_eleventh], soft_finding, [hard_finding])
+
+    def finding_526_2(self):
+        """
+        First, the rates of interest in STEM professions dropped slightly 
+        for all racial/ethnic groups (ranging from 0.9% for Hispanics to 3.7% 
+        for multiracial students), except for Blacks.
+        """
+        results = self.table_b2_check()
+
+        soft_finding = True
+        hard_findings = []
+        all_findings = []
+        for race in list(results['race_table'].index):
+            race_vals = results['race_table'].loc[race]
+            percent_ninth = race_vals['ninth_grade_yes'] / race_vals['ninth_grade_n']
+            percent_eleventh = race_vals['eleventh_grade_yes'] / race_vals['eleventh_grade_n']
+            if percent_ninth < percent_eleventh:
+                soft_finding = False
+            hard_findings.append(percent_eleventh - percent_ninth)
+            all_findings.append([percent_ninth,percent_eleventh])
+        
+        return (all_findings, soft_finding, hard_findings)
+
+    def finding_526_3(self):
+        """
+        Second, Black and Hispanic students consistently had significantly 
+        lower rates of interest (both in early 9th grade and late 11th grade) 
+        and persistence in STEM professions. At the end of 11th grade, for example, 
+        while 10.8% of Whites, 9.5% of Asians, and 11.6% of multiracial students 
+        aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did.
+        """
+        results = self.table_b2_check()
+
+        soft_finding = True
+        # Higher interest set
+        white_interest = results['race_table'].loc['White']
+        white_interest = white_interest['eleventh_grade_yes'] / white_interest['eleventh_grade_n']
+        asian_interest = results['race_table'].loc['Asian']
+        asian_interest = asian_interest['eleventh_grade_yes'] / asian_interest['eleventh_grade_n']
+        multiracial_interest = results['race_table'].loc['Multiracial']
+        multiracial_interest = multiracial_interest['eleventh_grade_yes'] / multiracial_interest['eleventh_grade_n']
+        set_1 = [white_interest,asian_interest,multiracial_interest]
+        # Lower interest set
+        black_interest = results['race_table'].loc['Black']
+        black_interest = black_interest['eleventh_grade_yes'] / black_interest['eleventh_grade_n']
+        hispanic_interest = results['race_table'].loc['Hispanic']
+        hispanic_interest = hispanic_interest['eleventh_grade_yes'] / hispanic_interest['eleventh_grade_n']
+        set_2 = [black_interest,hispanic_interest]
+        # To softly validate the claim, min(set_1) should be greater than max(set_2)
+        soft_finding = min(set_1) > max(set_2)
+        # For hard finding validation, we need the difference to be at least as much as
+        # reported in the paper
+        hard_finding_value = abs(min(set_1) - max(set_2))
+        hard_finding_bool = hard_finding_value >= 0.013
+        return ([set_1, set_2], soft_finding, [hard_finding_value, hard_finding_bool])
+    
+    def finding_526_4(self):
+        """
+        Third, interestingly, among those who previously were not interested 
+        in STEM fields, students from all racial/ethnic backgrounds, except 
+        Blacks (5.1%), gained interest in STEM jobs at a similar rate 
+        (about 7%) after spending three years in high school.
+
+        NOTE: Finding not directly reproducible from paper with public
+        data
+        """
+        results = self.table_b2_check()
+
+        # Similar interest set (seemingly defined as within approx 1% of each other)
+        white_interest = results['race_table'].loc['White']
+        white_interest = white_interest['emergers_grade_yes'] / white_interest['emergers_grade_n']
+        asian_interest = results['race_table'].loc['Asian']
+        asian_interest = asian_interest['emergers_grade_yes'] / asian_interest['emergers_grade_n']
+        multiracial_interest = results['race_table'].loc['Multiracial']
+        multiracial_interest = multiracial_interest['emergers_grade_yes'] / multiracial_interest['emergers_grade_n']
+        similar_set = [white_interest, 
+                        asian_interest,
+                        multiracial_interest]
+        # Dissimilar interest set (seemingly defined as within approx 1% of each other and 1.5% from other group mean)
+        black_interest = results['race_table'].loc['Black']
+        black_interest = black_interest['emergers_grade_yes'] / black_interest['emergers_grade_n']
+        hispanic_interest = results['race_table'].loc['Hispanic']
+        hispanic_interest = hispanic_interest['emergers_grade_yes'] / hispanic_interest['emergers_grade_n']
+        dissimilar_set = [black_interest,
+                        hispanic_interest]
+        # Essentially, this finding is saying that levels of emergers were
+        # "similar" for all but black (and hispanic) 
+        # individuals in the sample, which was lower by more than 1.5%
+        similar_set_mean = np.mean(similar_set)
+        dissimilar_set_mean = np.mean(dissimilar_set)
+        hard_findings_values = [interest - similar_set_mean for interest in similar_set] + \
+                               [interest - dissimilar_set_mean for interest in dissimilar_set]
+        soft_finding_bool = (similar_set_mean - dissimilar_set_mean) >= 0.015
+        print(([similar_set, dissimilar_set], soft_finding_bool, hard_findings_values))
+        return ([similar_set, dissimilar_set], soft_finding_bool, hard_findings_values)
+    
+    def finding_526_5(self):
+        """
+        Of those who aspired to a career in STEM in early 9th grade, 
+        only about 34.3% maintained their interest until late 11th 
+        grade (or persisters). Interestingly, about 6.9% students 
+        (or emergers) who initially did not aspire to STEM careers 
+        developed an interest three years after enrolling in high 
+        school.
+        """
+        results = self.table_b2_check()
+        
+        # Here we are saying that roughly 34% of individuals with interest
+        # in 9th grade "persisted" with interest
+        p = sum(results['sex_table']['persisters_grade_yes']) /\
+            sum(results['sex_table']['persisters_grade_n']) 
+        
+        # While only roughly 6% of individuals without interest
+        # in 9th grade "emerged"with interest
+        e = sum(results['sex_table']['emergers_grade_yes']) /\
+            sum(results['sex_table']['emergers_grade_n'])
+        
+        # Here soft check is are each of these values within ~2% of reported
+        # values
+        soft_check = (abs(p - 0.34) < 0.02) and (abs(e - 0.06) < 0.02)
+
+        return ([], soft_check, [p,e])
+
+    def finding_526_6(self):
+        """
+        The patterns of SES disparities were clear and quite 
+        consistent across multiple indicators of cross-sectional 
+        and longitudinal STEM career aspirations. Students with 
+        lower SES were less likely to aspire to a STEM career at 
+        the start and toward the end of high school. In late 11th 
+        grade, for instance, while about 14.4% of high SES students 
+        aspired to pursue a career in STEM, only 10.6% of 
+        high-middle SES, 9.0% of low-middle SES, and 7.1% of low SES 
+        students did.
+        """
+        ses_df = self._granular_SES_dataframe()
+        
+        df_ses_percentages = pd.DataFrame()
+        for ses_type in list(self.SES_MAP.values()):
+            row = ses_df.xs((ses_type, 1), level=[0,1], axis=0, drop_level=False).groupby(level=0).sum()/\
+                ses_df.xs((ses_type, 0), level=[0,1], axis=0, drop_level=False).groupby(level=0).sum()
+            df_ses_percentages = df_ses_percentages.append(row)
+        
+        checks_per_column = []
+        percentages = []
+        for col in df_ses_percentages.columns:
+            p = list(df_ses_percentages[col])
+            # Allow there to be a single flipped expected ordering
+            checks_per_column.append([(p[k+1] - p[k])>0\
+                                       for k in range(len(p) - 1)].count(True)\
+                                       == len(p)-2)
+            percentages = percentages + p
+
+        soft_finding = all(checks_per_column)
+        return ([], soft_finding, percentages)
+
+    def finding_526_7(self):
+        """
+        Although the persistence and emergence rates are fairly 
+        low, the absolute numbers of nonpersisters (unweighted 
+        1,272 out of 1,988) and emergers (unweighted 1,132 out of 
+        14,941) are more or less identical, which explains the 
+        quite stable rates of STEM career aspirations among high 
+        school students over time.
+        """
+        results = self.table_b2_check()
+
+        absolute_nonpersisters = sum(results['table_b2']['sex_table']['persisters_grade_n'])\
+                                 - sum(results['table_b2']['sex_table']['persisters_grade_yes'])
+        
+        emergers = sum(results['table_b2']['sex_table']['emergers_grade_yes']) 
+
+        # Difference in reported absolute numbers is 140 (approx 150)
+        # in reported so here we do 150 
+        soft_finding = abs(absolute_nonpersisters - emergers) <= 150
+        return ([], soft_finding, [absolute_nonpersisters, emergers])
+
+    def finding_526_8(self):
+        """
+        As shown in Figure 1 (for regression estimates, see 
+        Appendix Table B1), considerable cross-sectional and 
+        longitudinal disparities in STEM career aspirations 
+        existed among gender, racial/ethnic, and SES groups. 
+        Gender and SES gaps in STEM career aspirations appear 
+        to be widening over time, whereas the racial/ethnic gaps 
+        seem to be closing. At the beginning of 9th grade, 
+        about 14.5% of boys and 8.4% of girls were interested 
+        in a STEM career (a 6.1% gap). At the end of 11th grade, 
+        the corresponding percentages were 14.7% and 5.3%, 
+        suggesting that the gender gap grew to 9.4 percentage points.
+        """
+        pass
+
+    def finding_526_9(self):
+        """
+        From a longitudinal perspective, students from the two 
+        lower SES groups—low-middle and low SES groups—had 
+        significantly fewer persisters (31.9% and 29.9%) and 
+        emergers (6.1% and 5.4%) than their high SES peers 
+        (45.1% and 9.0%, respectively).
+        """
+        pass
+
+    def finding_526_10(self):
+        """
+        The growing gender gap resulted from the lower percentage 
+        of persisters (24.6%) as well as the lower percentage of 
+        emergers (3.7%) among girls throughout the first three 
+        years of high school. For boys, the corresponding percentages 
+        were 40.0% and 10.5%.
+        """
+        pass
+
+    def finding_527_1(self):
+        """
+        For Whites, the patterns of cross-sectional and longitudinal 
+        disparities in STEM career aspirations across gender and SES 
+        groups were prominent and consistent. In particular, higher 
+        SES boys reported the highest rates of all four indicators 
+        of STEM career aspirations, followed by lower SES boys, 
+        higher SES girls, and lower SES girls.
+        """
+        pass
+
+    def finding_527_2(self):
+        """
+        No clear-cut patterns emerged when analyzing the differences 
+        in STEM career aspirations across gender and SES groups for 
+        Black, Hispanic, Asian, and multiracial students.
+        """
+        pass
+
+    def finding_527_3(self):
+        """
+        The gaps in STEM career aspirations between White, higher 
+        SES boys (reference group for this second set of analyses) 
+        and some of their counterparts from other intersectional 
+        groups were strikingly large and widening over time (see 
+        Figure 2; Appendix Table B3 reports regression estimates).
+        """
+        pass
+
+    def finding_527_4(self):
+        """
+        First, compared with their White counterparts (interracial 
+        but intragender and intra-SES comparisons), higher SES boys 
+        from Black, Asian, and multiracial groups showed similar 
+        levels of STEM career aspirations in nearly all indicators, 
+        except that higher SES boys from the Hispanic group reported 
+        lower levels of career aspirations in STEM in those indicators.
+        """
+        pass
+
+    def finding_527_5(self):
+        """
+        For example, while 17.9% of White boys from higher SES 
+        families aspired to a career in STEM upon entering high 
+        school, only 1.8% of Black girls from lower SES families 
+        did (a 16.1% gap).
+        """
+        pass
+
+    def finding_527_6(self):
+        """
+        From high school freshman to junior year, the gaps in 
+        STEM career aspirations between White boys from higher 
+        SES households and girls from all racial/ethnic groups, 
+        regardless of their SES, on average grew by 6.6 percentage 
+        points.
+        """
+        pass
+
+    def finding_527_7(self):
+        """
+        Second, compared with their White high SES peers 
+        (intragender but interracial and inter-SES comparisons), 
+        Asian boys, though raised in lower SES households, had 
+        comparable rates of STEM career aspirations, unlike Black, 
+        Hispanic, and multiracial boys from lower SES families who 
+        consistently had significantly lower rates of all four 
+        indicators.
+        """
+        pass
+
+    def finding_527_8(self):
+        """
+        In terms of persisters, whereas nearly half of White boys 
+        from higher SES families (46.6%) who initially had a career 
+        interest in STEM maintained their interest, only about 14.0% 
+        of Black boys from lower SES group, Hispanic girls from 
+        higher SES group, and Asian girls from lower SES group did.
+        """
+        pass
+
+    def finding_527_9(self):
+        """
+        Third, compared with White higher SES boys, girls from Black, 
+        Hispanic, Asian, and multiracial groups, regardless of their 
+        SES, had significantly lower rates of almost all four 
+        indicators of STEM career aspirations in high school.
+        """
+        pass
