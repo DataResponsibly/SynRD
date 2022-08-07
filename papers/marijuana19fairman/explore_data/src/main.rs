@@ -1,88 +1,72 @@
-mod col_type;
+mod logic;
+use crate::logic::{get_tsv_paths, process_file};
 use anyhow::Result;
-use col_type::ColType;
-use glob::glob;
 use indicatif::{MultiProgress, ProgressBar, ProgressIterator, ProgressStyle};
-use itertools::Itertools;
-use std::collections::HashMap;
-use std::fs::{self, File};
-use std::io::{BufRead, BufReader, BufWriter, Write};
-use std::path::Path;
-use std::thread;
+use rayon::iter::{
+    IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
+};
+use serde_json::{from_reader, to_writer};
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::path::PathBuf;
 
 const PATTERNS: [&str; 2] = [
     "../data/NSDUH_Versions/*/*/*Tab.tsv",
     "../data/NSDUH_Versions/*/*/*/*Tab.tsv",
 ];
 
-fn open_default_split_file(year: &str, parent_dir: &Path, header: &[String]) -> BufWriter<File> {
-    let path = parent_dir.join(&format!("{year}.tsv"));
-    let mut f = BufWriter::new(File::create(path).unwrap());
-    writeln!(f, "{}", header.join("\t")).unwrap();
-    f
+fn get_lengths(tsv_paths: Vec<PathBuf>) -> Vec<usize> {
+    let m = MultiProgress::new();
+    let pbs: Vec<_> = tsv_paths
+        .iter()
+        .map(|path| {
+            let filename = path.file_name().unwrap().to_str().unwrap();
+            let msg = format!("Counting lines in {}", filename);
+            m.add(ProgressBar::new_spinner().with_message(msg))
+        })
+        .collect();
+
+    let lengths = tsv_paths
+        .par_iter()
+        .zip(pbs)
+        .map(|(path, pb)| {
+            BufReader::new(File::open(path.clone()).unwrap())
+                .lines()
+                .progress_with(pb)
+                .count()
+        })
+        .collect();
+    m.clear().unwrap();
+    lengths
 }
 
 fn main() -> Result<()> {
-    let tsv_paths: Vec<_> = PATTERNS
-        .iter()
-        .flat_map(|pattern| glob(pattern).unwrap())
-        .map(|path| path.unwrap())
-        .collect();
+    let tsv_paths: Vec<_> = get_tsv_paths(&PATTERNS)?;
     assert_eq!(tsv_paths.len(), 5);
+
+    let lengths = match File::open("lengths.json") {
+        Ok(rdr) => from_reader(rdr)?,
+        Err(_) => {
+            let lengths = get_lengths(tsv_paths.clone());
+            to_writer(File::create("lengths.json")?, &lengths)?;
+            lengths
+        }
+    };
 
     let m = MultiProgress::new();
     let sty = ProgressStyle::default_bar()
-        .template("[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}")
+        .template("[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}")?
         .progress_chars("##-");
-
-    let ns = tsv_paths
+    let pbs: Vec<_> = lengths
         .iter()
-        .map(|path| Ok(BufReader::new(File::open(path.clone())?).lines().count()))
-        .collect::<Result<Vec<_>>>()?;
+        .map(|&n| m.add(ProgressBar::new(n as u64).with_style(sty.clone())))
+        .collect();
 
-    for (path, n) in tsv_paths.into_iter().zip(ns.into_iter()) {
-        let pb = m.add(ProgressBar::new(n as u64).with_style(sty.clone()));
+    (tsv_paths, pbs)
+        .into_par_iter()
+        .map(process_file)
+        .collect::<Result<_>>()?;
 
-        let _ = thread::spawn(move || -> Result<()> {
-            let parent_dir = path.parent().unwrap();
-            let buf = BufReader::new(File::open(path.clone())?);
-            let mut lines = buf.lines();
-            let header: Vec<String> = lines.next().unwrap()?.split('\t').map_into().collect();
-
-            let mut datasets_per_year = HashMap::new();
-
-            let year_ind = header.iter().position(|name| name == "YEAR").unwrap();
-
-            let dtypes: Vec<ColType> = lines
-                .progress_with(pb)
-                .map(|line| line.unwrap())
-                .map(|line| {
-                    let token = line.split('\t').collect::<Vec<_>>();
-                    let year = token[year_ind];
-                    let token: Vec<_> = token.into_iter().map_into().collect();
-
-                    let f = datasets_per_year
-                        .entry(year.to_string())
-                        .or_insert_with(|| open_default_split_file(year, parent_dir, &header));
-                    writeln!(f, "{}", line).unwrap();
-                    token
-                })
-                .fold(vec![ColType::Int; n], |mut v, token| {
-                    v.iter_mut().zip(token).for_each(|(a, b)| *a = a.combine(b));
-                    v
-                });
-
-            let dtypes_path = parent_dir.join("schema.txt");
-            let dtypes_dict = dtypes
-                .iter()
-                .zip(header.iter())
-                .map(|(v, h)| format!("\"{h}\": {v},\n"))
-                .collect::<String>();
-            fs::write(dtypes_path, format!("{{\n{dtypes_dict}}}\n"))?;
-            Ok(())
-        });
-    }
-
-    m.join_and_clear()?;
+    m.clear()?;
     Ok(())
 }

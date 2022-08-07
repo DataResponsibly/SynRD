@@ -8,5 +8,7 @@ edition = "2021"
 [dependencies]
 glob = "0.3.0"
 anyhow = "1.0.58"
-indicatif = "0.16.2"
+indicatif = "0.17.0"
 itertools = "0.10.3"
+rayon = "1.5.3"
+serde_json = "1.0"

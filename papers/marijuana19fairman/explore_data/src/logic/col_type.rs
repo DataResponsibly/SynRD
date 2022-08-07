@@ -8,7 +8,7 @@ pub enum ColType {
 }
 
 impl ColType {
-    pub fn combine(self, other: Self) -> Self {
+    pub fn combine(&self, other: &Self) -> Self {
         match (self, other) {
             (_, Self::String) | (Self::String, _) => Self::String,
             (_, Self::Float) | (Self::Float, _) => Self::Float,
@@ -39,9 +39,18 @@ impl Display for ColType {
 
 impl From<&str> for ColType {
     fn from(s: &str) -> Self {
-        s.chars()
-            .map(|c| c.into())
-            .reduce(|a: ColType, b| a.combine(b))
-            .unwrap_or(ColType::Int)
+        s.chars().fold(ColType::Int, |a, b| a.combine(&b.into()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn conversion() {
+        assert_eq!(ColType::from("123"), ColType::Int);
+        assert_eq!(ColType::from("0.9"), ColType::Float);
+        assert_eq!(ColType::from("03/19/2019"), ColType::String);
     }
 }
