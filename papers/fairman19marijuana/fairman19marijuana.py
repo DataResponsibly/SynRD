@@ -85,19 +85,6 @@ class Fairman19Marijuana(Publication):
             Finding(self.finding_5_10),
             Finding(self.finding_6_1),
             Finding(self.finding_6_2),
-            Finding(self.finding_6_3),
-            Finding(self.finding_6_4),
-            Finding(self.finding_6_5),
-            Finding(self.finding_6_6),
-            Finding(self.finding_6_7),
-            Finding(self.finding_6_8),
-            Finding(self.finding_6_9),
-            Finding(self.finding_6_10),
-            Finding(self.finding_6_11),
-            Finding(self.finding_6_12),
-            Finding(self.finding_6_13),
-            Finding(self.finding_6_14),
-            Finding(self.finding_7_1),
         ]
 
     def _merge_input_files(self):
@@ -166,7 +153,6 @@ class Fairman19Marijuana(Publication):
         """
         For each substance, the mean age of reported first use increased over the study period.
         The mean age of first marijuana use increased ( 0.5 years)  from 14.7 years in 2004 to 15.2 years in 2014;.
-        :return:
         """
         mean_first_marijuana_use_2004 = self.dataframe[
             (self.dataframe.CLASS == 'MARIJUANA') & (self.dataframe.YEAR == 2004)]['MINAGE'].mean()
@@ -181,7 +167,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_2(self):
         """
         these numbers were comparable to those for age of first use of cigarettes (13.6 vs. 15.0; 1.4 years)
-        :return:
         """
         mean_age_first_use_2004 = self.dataframe[
             (self.dataframe.CLASS == 'CIGARETTES') & (self.dataframe.YEAR == 2004)]['MINAGE'].mean()
@@ -196,7 +181,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_3(self):
         """
         alcohol (14.4 vs. 15.2;  0.8 years)
-        :return:
         """
         mean_age_first_use_2004 = self.dataframe[
             (self.dataframe.CLASS == 'ALCOHOL') & (self.dataframe.YEAR == 2004)]['MINAGE'].mean()
@@ -211,7 +195,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_4(self):
         """
         other tobacco (14.8 vs. 15.7;  0.9 years)
-        :return:
         """
         mean_age_first_use_2004 = self.dataframe[
             (self.dataframe.CLASS == 'OTHER_TABACCO') & (self.dataframe.YEAR == 2004)]['MINAGE'].mean()
@@ -226,7 +209,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_5(self):
         """
         and other drug use (14.4 vs. 15.0;  0.6 years)
-        :return:
         """
         mean_age_first_use_2004 = self.dataframe[
             (self.dataframe.CLASS == 'OTHER_DRUGS') & (self.dataframe.YEAR == 2004)]['MINAGE'].mean()
@@ -243,7 +225,6 @@ class Fairman19Marijuana(Publication):
         Aggregated across survey years, 5.8% of respondents reported that they initiated marijuana before other substances,
         compared to 29.8% for alcohol, 14.2% for cigarettes, 3.6% for other tobacco products, and 5.9% other drugs
         (these data are provided in online supplemental Table S1)
-        :return:
         """
         table = self.dataframe.CLASS.value_counts()/self.dataframe.shape[0]
         marijuana_ratio = table['MARIJUANA'] * 100
@@ -262,7 +243,6 @@ class Fairman19Marijuana(Publication):
         From 2004 to 2014, the proportion who had initiated marijuana before other substances increased
         from 4.4% to 8.0% (Figure 1), declined for those having initiated cigarettes first (21.4% to 8.9%)
         and increased in youth having abstained from substance use (35.5% to 46.3%)
-        :return:
         """
         marijuana_prop_2004 = self.dataframe[(self.dataframe.CLASS == 'MARIJUANA') & (self.dataframe.YEAR == 2004)
                                              ].shape[0] * 100 / self.dataframe[ (self.dataframe.YEAR == 2004)].shape[0]
@@ -291,7 +271,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_8(self):
         """
         Males were more likely than females to have initiated marijuana first (7.1%) or other tobacco products first (5.7%),
-        :return:
         """
         table = self.table_s1(feature='SEX')
         male_marijuana_ratio = table['Male', 'MARIJUANA'] * 100
@@ -307,7 +286,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_9(self):
         """
         whereas females were more likely than males to have initiated cigarettes (15.2%) or alcohol first (32.0%)
-        :return:
         """
         table = self.table_s1(feature='SEX')
         male_cigarettes_ratio = table['Male', 'CIGARETTES'] * 100
@@ -323,7 +301,6 @@ class Fairman19Marijuana(Publication):
     def finding_5_10(self):
         """
         Considering age, a small proportion of 12–13-year-olds (0.6%) reported initiating marijuana before other substances,
-        :return:
         """
         table = self.table_s1(feature='AGE_GROUP')
         youngest_marijuana_ratio = table['12-13', 'MARIJUANA'] * 100
@@ -333,7 +310,6 @@ class Fairman19Marijuana(Publication):
     def finding_6_1(self):
         """
         but by ages 18–19 and 20–21-years this proportion increased to 9.1% and 9.4%, respectively.
-        :return:
         """
         table = self.table_s1(feature='AGE_GROUP')
         youngest_marijuana_ratio = table['12-13', 'MARIJUANA'] * 100
@@ -349,16 +325,12 @@ class Fairman19Marijuana(Publication):
         """
         American Indian/Alaskan Native (AI/AN) (11.8%) and Black youth (9.4%) had the highest proportion of initiating
         marijuana first; White (4.6%) and Asian youth (2.5% had the lowest).
-        :return:
         """
         table = self.table_s1(feature='RACE')
         aian_marijuana_ratio = table['AI/AN', 'MARIJUANA'] * 100
         black_marijuana_ratio = table['Black', 'MARIJUANA'] * 100
         white_marijuana_ratio = table['White', 'MARIJUANA'] * 100
         asian_marijuana_ratio = table['Asian', 'MARIJUANA'] * 100
-        # hispanic_marijuana_ratio = table['Hispanic', 'MARIJUANA'] * 100
-        # nhopi_marijuana_ratio = table['NHOPI', 'MARIJUANA'] * 100
-        # mulyi_marijuana_ratio = table['Multi-racial', 'MARIJUANA'] * 100
         all_marijuana_sorted = sorted([table[race, 'MARIJUANA'] * 100 for race in self.dataframe.RACE.unique()])
         soft_findings = [sorted(all_marijuana_sorted[-2:]) == sorted([aian_marijuana_ratio, black_marijuana_ratio]),
                          sorted(all_marijuana_sorted[:2]) == sorted([white_marijuana_ratio, asian_marijuana_ratio])]
@@ -374,72 +346,63 @@ class Fairman19Marijuana(Publication):
         As shown in Table 1, males were more likely than females to have initiated marijuana first in comparison to
         those not using drugs (aRRR = 1.69), those initiating cigarettes first (aRRR = 1.79), or
         those initiating alcohol first (aRRR = 1.83)
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_4(self):
         """
         Likewise, the likelihood of initiating marijuana first relative to no drug use (aRRR = 1.69) or alcohol first
         (aRRR = 1.06) increased with age, but not relative to initiating cigarettes first.
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_5(self):
         """
         Compared to Whites, AI/AN youth were 3.7 times more likely to have initiated marijuana first relative to no drug
         use, and were 5.0 times more likely to have initiated marijuana first relative to alcohol
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_6(self):
         """
         Notably, Black youth were the most likely to have initiated marijuana first compared to cigarettes (aRRR = 2.74).
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_7(self):
         """
         To a lesser extent, Hispanic, Native Hawaiian/Other Pacific Islander (NHOPI), and multiracial youth also had a
         higher likelihood of initiating marijuana before other substances compared to Whites.
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_8(self):
         """
         By contrast, Asian youth were less likely to have initiated marijuana first relative to no drug use (aRRR = 0.30)
         or alcohol first (aRRR = 0.59).
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_9(self):
         """
         Thus, White and Asian youth were more likely to have initiated cigarettes or alcohol first before other
         substances compared to other racial/ethnic groups.
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_10(self):
         """
         However, there was less variation by race/ethnicity among older age groups. For example, 20–21-yearold Black
         youth had a similar likelihood of initiating marijuana first relative to Whites, but 15–16-year-old Black youth
         had almost twice the likelihood (aRRR = 1.9).
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_11(self):
         """
         We found no subgroup interactions by sex (i.e., age x sex or race/ethnicity x sex)
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_12(self):
         """
@@ -447,34 +410,30 @@ class Fairman19Marijuana(Publication):
         of that substance. For example, those who initiated marijuana before other substances were more likely currently
         smoke marijuana heavily and have CUD. Those who initiated alcohol before other substances were the most likely to
         experience prevalent AUD, and those who initiated cigarettes first were the most likely to experience prevalent ND.
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_13(self):
         """
         However, it is worth noting that those who initiated marijuana first were no less likely, statistically, to
         have prevalent ND as compared to those who initiated cigarettes first.
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_6_14(self):
         """
         Finally, youth who initiated cigarettes or other tobacco products before other substances were less likely than
         those starting with alcohol or marijuana to have used other drugs, such as cocaine, heroin, inhalants, and
         non-medical prescription drugs.
-        :return:
         """
-        pass
+        return NotImplemented
 
     def finding_7_1(self):
         """
         We found that, in 2014, 8% of US youths aged 12–21-years reported that marijuana was the first drug they used;
         this percentage has almost doubled since 2004.
-        :return:
         """
-        pass
+        return NotImplemented
 
 
 if __name__ == '__main__':
