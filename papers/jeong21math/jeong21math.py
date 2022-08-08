@@ -70,8 +70,8 @@ class Jeong2021Math(Publication):
         return processed_data
 
     def _recreate_dataframe(self, filename='jeong2021math_dataframe.pickle'):
-        # school_survey = pd.read_csv('../data/36423-0001-Data.tsv', sep='\t')
-        student_survey = pd.read_csv('../data/math/36423-0002-Data.tsv', sep='\t')
+        # school_survey = pd.read_csv('data/36423-0001-Data.tsv', sep='\t')
+        student_survey = pd.read_csv('data/36423-0002-Data.tsv', sep='\t')
         data = student_survey[self.DATAFRAME_COLUMNS]
         data['RACE_GROUP'] = data['X1RACE'].map(self.RACE_GROUP_MAP)
         data = data[data['RACE_GROUP'].isin(self.RACE_CLASSES)]
@@ -143,7 +143,110 @@ class Jeong2021Math(Publication):
         print(result.groupby('class_name').mean())
         print(result.groupby('class_name').std())
 
+    def finding_2_1(self):
+        """
+        With the HSLS dataset, we observe that prediction accuracy is 68.2 ± 0.1 % if we predict students’ math
+        performance in the 9th grade based only on their past performance. Accuracy improves to 75.0 ± 0.1 %,
+        by utilizing more features such as students’ and parents’ survey responses.
+        :return:
+        """
+        data = self.dataframe
+        X = data['S1M8GRADE']
+        y = data['target']
+        scores = []
+        for random_state in range(30):
+            X_train, X_test, y_train, y_test = train_test_split( X, y, random_state=random_state )
+            model = self.train_classifier(X_train, y_train, random_state)
+            scores.append(model.score(X_test, y_test))
+        pass
+
+    def finding_3_1(self):
+        """
+        First, notice that the difference in accuracy between WA and BHN is negligible.
+        :return:
+        """
+        pass
+
+    def finding_3_2(self):
+        """
+        However, FNR was considerably smaller for WA students compared to BHN. The relative difference in FNR was up
+        to 78%. This implies that WA students are less prone to get an underestimated prediction by the ML model.
+        :return:
+        """
+        pass
+
+    def finding_3_3(self):
+        """
+        At the same time, FPR is 42% higher for WA than BHN students. In other words, WA students more frequently
+        receive the benefit of the doubt from the trained ML model.
+        :return:
+        """
+        pass
+
+    def finding_3_4(self):
+        """
+        We also observe that PBR is higher in WA students than in BHN students. This may reflect the difference in the
+        ground truth data. The observed base rate was 0.57 for WA and 0.38 for BHN students. (difference = 0.19).
+        :return:
+        """
+        pass
+
+    def finding_3_5(self):
+        """
+        However, the PBR difference from the trained random forest models was about 0.23, indicating that the existing
+        racial performance gap is exaggerated in the ML model’s predictions.
+        :return:
+        """
+        pass
+
+    def finding_3_6(self):
+        """
+        By examining FPR and FNR, we discover that WA students are consistently given more benefit of the doubt, while
+        BHN students are consistently underestimated in predicting their future math performance despite similar
+        accuracy numbers for both groups. This shows that narrowly focusing on accuracy can give an illusion of fairness
+        when there is significant discriminatory impact on students from historically underrepresented groups.
+        :return:
+        """
+        pass
+
+    def finding_3_7(self):
+        """
+        The FPR of 0.30 for WA students (see Table 1) means that 30% of the students who would not perform well in the
+        9th grade will be placed in the advanced class. They are given the benefit of the doubt and the opportunity to
+        learn more advanced math. On the other hand, only 18% of the BHN students get the same benefit of the doubt (FPR=0.18).
+        :return:
+        """
+        pass
+
+    def finding_3_8(self):
+        """
+        The FNR of 0.21 in WA students indicates that 21% ofWA students who would in fact perform well in the future
+        will be placed in the basic class by the ML algorithm. For BHN students, a startlingly high 37% will be
+        incorrectly placed in the basic class, their academic potential ignored by the algorithm.
+        :return:
+        """
+        pass
+
+    def finding_4_1(self):
+        """
+        Focusing solely on accuracy may lead to the incorrect conclusion that the effect of different racial compositions
+        of a training set is minute: the accuracy for each group does not vary more than 0.05 as we change p from 0 to 1
+        (i.e., 0% to 100% BHN).
+        :return:
+        """
+        pass
+
+    def finding_4_2(self):
+        """
+        However, FPR and FNR metrics change drastically with different racial compositions of the training set. FPR
+        monotonically decreases and FNR monotonically increases for both BHN and WA students as we increase p from 0%
+        BHN to 100% BHN. The range of FPR difference is from ∼0.4 to 0.1 and FNR moves from 0.2 to 0.5. The gaps in FPR
+        and FNR remain throughout different values of p, but they reduce slightly around p = 0.
+        :return:
+        """
+        pass
+
 
 if __name__ == '__main__':
     paper = Jeong2021Math(filename = 'jeong2021math_dataframe.pickle')
-    paper.finding_rf()
+    paper.finding_2_1()
