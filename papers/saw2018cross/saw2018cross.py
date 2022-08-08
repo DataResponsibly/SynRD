@@ -184,7 +184,83 @@ class Saw2018Cross(Publication):
                             grade, for instance, while about 14.4% of high SES students 
                             aspired to pursue a career in STEM, only 10.6% of 
                             high-middle SES, 9.0% of low-middle SES, and 7.1% of low SES 
-                            students did."""),                  
+                            students did."""),     
+            Finding(self.finding_526_7, description="finding_526_7",
+                    text="""Although the persistence and emergence rates are fairly 
+                            low, the absolute numbers of nonpersisters (unweighted 
+                            1,272 out of 1,988) and emergers (unweighted 1,132 out of 
+                            14,941) are more or less identical, which explains the 
+                            quite stable rates of STEM career aspirations among high 
+                            school students over time."""), 
+            Finding(self.finding_526_8, description="finding_526_8",
+                    text="""As shown in Figure 1 (for regression estimates, see 
+                            Appendix Table B1), considerable cross-sectional and 
+                            longitudinal disparities in STEM career aspirations 
+                            existed among gender, racial/ethnic, and SES groups. 
+                            Gender and SES gaps in STEM career aspirations appear 
+                            to be widening over time, whereas the racial/ethnic gaps 
+                            seem to be closing. At the beginning of 9th grade, 
+                            about 14.5% of boys and 8.4% of girls were interested 
+                            in a STEM career (a 6.1% gap). At the end of 11th grade, 
+                            the corresponding percentages were 14.7% and 5.3%, 
+                            suggesting that the gender gap grew to 9.4 percentage points."""),
+            Finding(self.finding_526_9, description="finding_526_9",
+                    text="""From a longitudinal perspective, students from the two 
+                            lower SES groups—low-middle and low SES groups—had 
+                            significantly fewer persisters (31.9% and 29.9%) and 
+                            emergers (6.1% and 5.4%) than their high SES peers 
+                            (45.1% and 9.0%, respectively)."""),  
+            Finding(self.finding_526_10, description="finding_526_10",
+                    text="""The growing gender gap resulted from the lower percentage 
+                            of persisters (24.6%) as well as the lower percentage of 
+                            emergers (3.7%) among girls throughout the first three 
+                            years of high school. For boys, the corresponding percentages 
+                            were 40.0% and 10.5%."""),  
+            Finding(self.finding_527_1, description="finding_527_1",
+                    text="""For Whites, the patterns of cross-sectional and longitudinal 
+                            disparities in STEM career aspirations across gender and SES 
+                            groups were prominent and consistent. In particular, higher 
+                            SES boys reported the highest rates of all four indicators 
+                            of STEM career aspirations, followed by lower SES boys, 
+                            higher SES girls, and lower SES girls."""),  
+            Finding(self.finding_527_4, description="finding_527_4",
+                    text="""First, compared with their White counterparts (interracial 
+                            but intragender and intra-SES comparisons), higher SES boys 
+                            from Black, Asian, and multiracial groups showed similar 
+                            levels of STEM career aspirations in nearly all indicators, 
+                            except that higher SES boys from the Hispanic group reported 
+                            lower levels of career aspirations in STEM in those indicators."""),  
+            Finding(self.finding_527_5, description="finding_527_5",
+                    text="""For example, while 17.9% of White boys from higher SES 
+                            families aspired to a career in STEM upon entering high 
+                            school, only 1.8% of Black girls from lower SES families 
+                            did (a 16.1% gap)."""),  
+            Finding(self.finding_527_6, description="finding_527_6",
+                    text="""From high school freshman to junior year, the gaps in 
+                            STEM career aspirations between White boys from higher 
+                            SES households and girls from all racial/ethnic groups, 
+                            regardless of their SES, on average grew by 6.6 percentage 
+                            points."""),
+            Finding(self.finding_527_7, description="finding_527_7",
+                    text="""Second, compared with their White high SES peers 
+                            (intragender but interracial and inter-SES comparisons), 
+                            Asian boys, though raised in lower SES households, had 
+                            comparable rates of STEM career aspirations, unlike Black, 
+                            Hispanic, and multiracial boys from lower SES families who 
+                            consistently had significantly lower rates of all four 
+                            indicators."""),
+            Finding(self.finding_527_8, description="finding_527_8",
+                    text="""In terms of persisters, whereas nearly half of White boys 
+                            from higher SES families (46.6%) who initially had a career 
+                            interest in STEM maintained their interest, only about 14.0% 
+                            of Black boys from lower SES group, Hispanic girls from 
+                            higher SES group, and Asian girls from lower SES group did."""),
+            Finding(self.finding_527_9, description="finding_527_9",
+                    text="""Third, compared with White higher SES boys, girls from Black, 
+                            Hispanic, Asian, and multiracial groups, regardless of their 
+                            SES, had significantly lower rates of almost all four 
+                            indicators of STEM career aspirations in high school.""")
+                                   
         ]
         
 
@@ -573,10 +649,10 @@ class Saw2018Cross(Publication):
         """
         results = self.table_b2_check()
 
-        absolute_nonpersisters = sum(results['table_b2']['sex_table']['persisters_grade_n'])\
-                                 - sum(results['table_b2']['sex_table']['persisters_grade_yes'])
+        absolute_nonpersisters = sum(results['sex_table']['persisters_grade_n'])\
+                                 - sum(results['sex_table']['persisters_grade_yes'])
         
-        emergers = sum(results['table_b2']['sex_table']['emergers_grade_yes']) 
+        emergers = sum(results['sex_table']['emergers_grade_yes']) 
 
         # Difference in reported absolute numbers is 140 (approx 150)
         # in reported so here we do 150 
@@ -597,7 +673,16 @@ class Saw2018Cross(Publication):
         the corresponding percentages were 14.7% and 5.3%, 
         suggesting that the gender gap grew to 9.4 percentage points.
         """
-        pass
+        results = self.table_b2_check()
+
+        p_9 = results['sex_table']['ninth_grade_yes'] /\
+              results['sex_table']['ninth_grade_n']
+        p_11 = results['sex_table']['eleventh_grade_yes'] /\
+               results['sex_table']['eleventh_grade_n']
+        difs = p_11 - p_9
+        # Did the gap grow?
+        soft_finding = difs['boys'] > difs['girls']
+        return ([], soft_finding, [difs['boys'], difs['girls']])
 
     def finding_526_9(self):
         """
@@ -607,7 +692,30 @@ class Saw2018Cross(Publication):
         emergers (6.1% and 5.4%) than their high SES peers 
         (45.1% and 9.0%, respectively).
         """
-        pass
+        ses_df = self._granular_SES_dataframe()
+
+        df_ses_percentages = pd.DataFrame()
+        for ses_type in list(self.SES_MAP.values()):
+            row = ses_df.xs((ses_type, 1), level=[0,1], axis=0, drop_level=False).groupby(level=0).sum()/\
+                ses_df.xs((ses_type, 0), level=[0,1], axis=0, drop_level=False).groupby(level=0).sum()
+            df_ses_percentages = df_ses_percentages.append(row)
+        
+        # Significant here is 5% and 2% (proportional to scale)
+        diff = 0.05
+        low_ses_p = df_ses_percentages['persisters_grade'].loc['low-SES']
+        low_middle_ses_p = df_ses_percentages['persisters_grade'].loc['low-middle-SES']
+        high_ses_p = df_ses_percentages['persisters_grade'].loc['high-SES']
+        soft_check_1 = (high_ses_p > low_middle_ses_p + diff) and (high_ses_p > low_ses_p + diff)
+
+        diff = 0.02
+        low_ses_e = df_ses_percentages['emergers_grade'].loc['low-SES']
+        low_middle_ses_e = df_ses_percentages['emergers_grade'].loc['low-middle-SES']
+        high_ses_e = df_ses_percentages['emergers_grade'].loc['high-SES']
+        soft_check_2 = (high_ses_e > low_middle_ses_e + diff) and (high_ses_e > low_ses_e + diff)
+
+        soft_check = soft_check_1 and soft_check_2
+        return ([], soft_check, [low_ses_p,low_middle_ses_p,high_ses_p,low_ses_e,low_middle_ses_e,high_ses_e])
+
 
     def finding_526_10(self):
         """
@@ -617,7 +725,26 @@ class Saw2018Cross(Publication):
         years of high school. For boys, the corresponding percentages 
         were 40.0% and 10.5%.
         """
-        pass
+        results = self.table_b2_check()
+
+        # Boys
+        p_b = results['sex_table']['persisters_grade_yes'].loc['boys'] /\
+            results['sex_table']['persisters_grade_n'].loc['boys'] 
+
+        e_b = results['sex_table']['emergers_grade_yes'].loc['boys'] /\
+            results['sex_table']['emergers_grade_n'].loc['boys']
+
+        # Girls 
+        p_g = results['sex_table']['persisters_grade_yes'].loc['girls'] /\
+            results['sex_table']['persisters_grade_n'].loc['girls'] 
+
+        e_g = results['sex_table']['emergers_grade_yes'].loc['girls'] /\
+            results['sex_table']['emergers_grade_n'].loc['girls']
+        
+        soft_check = (p_b > p_g) and (e_b > e_g)
+
+        return ([], soft_check, [p_b, e_b, p_g, e_g])
+        
 
     def finding_527_1(self):
         """
@@ -628,7 +755,21 @@ class Saw2018Cross(Publication):
         of STEM career aspirations, followed by lower SES boys, 
         higher SES girls, and lower SES girls.
         """
-        pass
+        results = self.table_b2_check()
+
+        w_hses_b = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')] /\
+                    results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]
+        w_lses_b = results['full_intersectional_table'].loc[('White','lower-SES','boys','Yes')] /\
+                    results['full_intersectional_table'].loc[('White','lower-SES','boys','n')]
+        w_hses_g = results['full_intersectional_table'].loc[('White','higher-SES','girls','Yes')] /\
+                    results['full_intersectional_table'].loc[('White','higher-SES','girls','n')]
+        w_lses_g = results['full_intersectional_table'].loc[('White','lower-SES','girls','Yes')] /\
+                    results['full_intersectional_table'].loc[('White','lower-SES','girls','n')]
+        
+        # Here we want the pattern to be true for 10/12 of the results for "consistent"
+        soft_check = sum(list(w_hses_b > w_lses_b) + list(w_lses_b > w_hses_g) + list(w_hses_g > w_lses_g)) >= 10
+
+        return ([], soft_check, [w_hses_b.array, w_lses_b.array, w_hses_g.array, w_lses_g.array])
 
     def finding_527_2(self):
         """
@@ -636,6 +777,7 @@ class Saw2018Cross(Publication):
         in STEM career aspirations across gender and SES groups for 
         Black, Hispanic, Asian, and multiracial students.
         """
+        # TODO: determine if this "finding" is replicable - conclusion?
         pass
 
     def finding_527_3(self):
@@ -646,6 +788,7 @@ class Saw2018Cross(Publication):
         groups were strikingly large and widening over time (see 
         Figure 2; Appendix Table B3 reports regression estimates).
         """
+        # TODO: determine if this "finding" is replicable - conclusion?
         pass
 
     def finding_527_4(self):
@@ -657,7 +800,39 @@ class Saw2018Cross(Publication):
         except that higher SES boys from the Hispanic group reported 
         lower levels of career aspirations in STEM in those indicators.
         """
-        pass
+        # Indicators here are 9th/11th grade stem aspirations
+        # NOTE: the finding for hispanic groups was not clear, and
+        # so is not accounted for here. This finding is simply that
+        # higher SES boys have similar STEM aspirations (within ~5-6%)
+        results = self.table_b2_check()
+        
+        grades = ['ninth_grade','eleventh_grade']
+        diff = 0.06
+        w_hses_b = results['full_intersectional_table'][grades].loc[('White','higher-SES','boys','Yes')] /\
+                    results['full_intersectional_table'][grades].loc[('White','higher-SES','boys','n')]
+
+        b_hses_b = results['full_intersectional_table'][grades].loc[('Black','higher-SES','boys','Yes')] /\
+                    results['full_intersectional_table'][grades].loc[('Black','higher-SES','boys','n')]
+
+        h_hses_b = results['full_intersectional_table'][grades].loc[('Hispanic','higher-SES','boys','Yes')] /\
+                    results['full_intersectional_table'][grades].loc[('Hispanic','higher-SES','boys','n')]
+
+        a_hses_b = results['full_intersectional_table'][grades].loc[('Asian','higher-SES','boys','Yes')] /\
+                    results['full_intersectional_table'][grades].loc[('Asian','higher-SES','boys','n')]
+
+        m_hses_b = results['full_intersectional_table'][grades].loc[('Multiracial','higher-SES','boys','Yes')] /\
+                    results['full_intersectional_table'][grades].loc[('Multiracial','higher-SES','boys','n')]
+        
+        soft_check = sum(list(abs(w_hses_b - b_hses_b) < diff) +
+                     list(abs(w_hses_b - h_hses_b) < diff) + 
+                     list(abs(w_hses_b - a_hses_b) < diff) +
+                     list(abs(w_hses_b - m_hses_b) < diff)) == 8
+        
+        return ([], soft_check, [w_hses_b.array, 
+                                b_hses_b.array, 
+                                h_hses_b.array, 
+                                a_hses_b.array,
+                                m_hses_b.array])
 
     def finding_527_5(self):
         """
@@ -666,7 +841,20 @@ class Saw2018Cross(Publication):
         school, only 1.8% of Black girls from lower SES families 
         did (a 16.1% gap).
         """
-        pass
+        results = self.table_b2_check()
+
+        w_hses_b = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')]['ninth_grade'] /\
+                    results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]['ninth_grade']
+
+        b_lses_g = results['full_intersectional_table'].loc[('Black','lower-SES','girls','Yes')]['ninth_grade'] /\
+                    results['full_intersectional_table'].loc[('Black','lower-SES','girls','n')]['ninth_grade']
+
+        gap = w_hses_b - b_lses_g
+        # Significant difference here is considered to be at least
+        # 10% (replicated difference was 11.6)
+        soft_finding = gap > 0.10
+
+        return ([], soft_finding, [w_hses_b, b_lses_g, gap])
 
     def finding_527_6(self):
         """
@@ -676,7 +864,30 @@ class Saw2018Cross(Publication):
         regardless of their SES, on average grew by 6.6 percentage 
         points.
         """
-        pass
+        results = self.table_b2_check()
+
+        w_hses_b_9 = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')]['ninth_grade'] /\
+            results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]['ninth_grade']
+        w_hses_b_11 = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')]['eleventh_grade'] /\
+                    results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]['eleventh_grade']
+
+        gap_growths = []
+        for r in self.RACE_MAP.values():
+            for ses in self.HSES_MAP.values():
+                g_9 = results['full_intersectional_table'].loc[(r,ses,'girls','Yes')]['ninth_grade'] /\
+                    results['full_intersectional_table'].loc[(r,ses,'girls','n')]['ninth_grade']
+                gap_9 = w_hses_b_9 - g_9
+                
+                g_11 = results['full_intersectional_table'].loc[(r,ses,'girls','Yes')]['eleventh_grade'] /\
+                    results['full_intersectional_table'].loc[(r,ses,'girls','n')]['eleventh_grade']
+                gap_11 = w_hses_b_11 - g_11
+                growth = gap_11 - gap_9
+                gap_growths.append(growth)
+
+        # The soft finding here is just that, on average the gaps grew
+        # by a reasonable margin
+        soft_finding = np.mean(gap_growths) > 0.01
+        return ([], soft_finding, gap_growths)
 
     def finding_527_7(self):
         """
@@ -688,7 +899,37 @@ class Saw2018Cross(Publication):
         consistently had significantly lower rates of all four 
         indicators.
         """
-        pass
+        results = self.table_b2_check()
+
+        w_hses_b = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')] /\
+            results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]
+
+        a_lses_b = results['full_intersectional_table'].loc[('Asian','lower-SES','boys','Yes')] /\
+                    results['full_intersectional_table'].loc[('Asian','lower-SES','boys','n')]
+
+        b_lses_b = results['full_intersectional_table'].loc[('Black','lower-SES','boys','Yes')] /\
+                    results['full_intersectional_table'].loc[('Black','lower-SES','boys','n')]
+
+        h_lses_b = results['full_intersectional_table'].loc[('Hispanic','lower-SES','boys','Yes')] /\
+                    results['full_intersectional_table'].loc[('Hispanic','lower-SES','boys','n')]
+
+        m_lses_b = results['full_intersectional_table'].loc[('Multiracial','lower-SES','boys','Yes')] /\
+                    results['full_intersectional_table'].loc[('Multiracial','lower-SES','boys','n')]
+
+        check_white_asian_similar = sum(list(abs(w_hses_b - a_lses_b) < 0.046)) >= 3
+
+        check_other_disimilar = sum(list(abs(w_hses_b - b_lses_b) > 0.046) +\
+            list(abs(w_hses_b - h_lses_b) > 0.046) + \
+            list(abs(w_hses_b - m_lses_b) > 0.046)) >= 10
+        
+        soft_finding = check_white_asian_similar and check_other_disimilar
+
+        return ([], soft_finding, [w_hses_b.array, 
+                                a_lses_b.array, 
+                                b_lses_b.array, 
+                                h_lses_b.array,
+                                m_lses_b.array])
+
 
     def finding_527_8(self):
         """
@@ -698,7 +939,27 @@ class Saw2018Cross(Publication):
         of Black boys from lower SES group, Hispanic girls from 
         higher SES group, and Asian girls from lower SES group did.
         """
-        pass
+        results = self.table_b2_check()
+
+        w_hses_b = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')]['persisters_grade'] /\
+                    results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]['persisters_grade']
+
+        b_lses_b = results['full_intersectional_table'].loc[('Black','lower-SES','boys','Yes')]['persisters_grade'] /\
+                    results['full_intersectional_table'].loc[('Black','lower-SES','boys','n')]['persisters_grade']
+
+        h_lses_g = results['full_intersectional_table'].loc[('Hispanic','higher-SES','girls','Yes')]['persisters_grade'] /\
+                    results['full_intersectional_table'].loc[('Hispanic','higher-SES','girls','n')]['persisters_grade']
+
+        a_lses_g = results['full_intersectional_table'].loc[('Asian','lower-SES','girls','Yes')]['persisters_grade'] /\
+                    results['full_intersectional_table'].loc[('Asian','lower-SES','girls','n')]['persisters_grade']
+
+        near_half_check = w_hses_b + 0.10 > 0.5
+
+        less_than_a_quarter_check = (b_lses_b < 0.25) and (h_lses_g < 0.25) and (a_lses_g < 0.25)
+
+        soft_finding = near_half_check and less_than_a_quarter_check
+
+        return ([], soft_finding, [w_hses_b, b_lses_b, h_lses_g, a_lses_g])
 
     def finding_527_9(self):
         """
@@ -707,4 +968,18 @@ class Saw2018Cross(Publication):
         SES, had significantly lower rates of almost all four 
         indicators of STEM career aspirations in high school.
         """
-        pass
+        results = self.table_b2_check()
+
+        w_hses_b = results['full_intersectional_table'].loc[('White','higher-SES','boys','Yes')] /\
+            results['full_intersectional_table'].loc[('White','higher-SES','boys','n')]
+
+        comparisons = []
+        for r in ['Black','Hispanic','Asian','Multiracial']:
+            for ses in ['lower-SES','higher-SES']:
+                group = results['full_intersectional_table'].loc[(r,ses,'girls','Yes')] /\
+                    results['full_intersectional_table'].loc[(r,ses,'girls','n')]
+                comparisons.append(list(w_hses_b > group))
+        comparisons = [i for l in comparisons for i in l]
+        soft_finding = sum(comparisons) >= (len(comparisons) - 2)
+
+        return ([], soft_finding, comparisons)
