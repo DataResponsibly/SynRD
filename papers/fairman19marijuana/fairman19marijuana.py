@@ -1,4 +1,5 @@
 from meta_classes import Publication, Finding
+from meta_classes import NonReproducibleFindingException
 from file_utils import PathSearcher
 import pandas as pd
 import numpy as np
@@ -347,48 +348,48 @@ class Fairman19Marijuana(Publication):
         those not using drugs (aRRR = 1.69), those initiating cigarettes first (aRRR = 1.79), or
         those initiating alcohol first (aRRR = 1.83)
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_4(self):
         """
         Likewise, the likelihood of initiating marijuana first relative to no drug use (aRRR = 1.69) or alcohol first
         (aRRR = 1.06) increased with age, but not relative to initiating cigarettes first.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_5(self):
         """
         Compared to Whites, AI/AN youth were 3.7 times more likely to have initiated marijuana first relative to no drug
         use, and were 5.0 times more likely to have initiated marijuana first relative to alcohol
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_6(self):
         """
         Notably, Black youth were the most likely to have initiated marijuana first compared to cigarettes (aRRR = 2.74).
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_7(self):
         """
         To a lesser extent, Hispanic, Native Hawaiian/Other Pacific Islander (NHOPI), and multiracial youth also had a
         higher likelihood of initiating marijuana before other substances compared to Whites.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_8(self):
         """
         By contrast, Asian youth were less likely to have initiated marijuana first relative to no drug use (aRRR = 0.30)
         or alcohol first (aRRR = 0.59).
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_9(self):
         """
         Thus, White and Asian youth were more likely to have initiated cigarettes or alcohol first before other
         substances compared to other racial/ethnic groups.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_10(self):
         """
@@ -396,13 +397,13 @@ class Fairman19Marijuana(Publication):
         youth had a similar likelihood of initiating marijuana first relative to Whites, but 15–16-year-old Black youth
         had almost twice the likelihood (aRRR = 1.9).
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_11(self):
         """
         We found no subgroup interactions by sex (i.e., age x sex or race/ethnicity x sex)
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_12(self):
         """
@@ -411,14 +412,14 @@ class Fairman19Marijuana(Publication):
         smoke marijuana heavily and have CUD. Those who initiated alcohol before other substances were the most likely to
         experience prevalent AUD, and those who initiated cigarettes first were the most likely to experience prevalent ND.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_13(self):
         """
         However, it is worth noting that those who initiated marijuana first were no less likely, statistically, to
         have prevalent ND as compared to those who initiated cigarettes first.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_6_14(self):
         """
@@ -426,14 +427,14 @@ class Fairman19Marijuana(Publication):
         those starting with alcohol or marijuana to have used other drugs, such as cocaine, heroin, inhalants, and
         non-medical prescription drugs.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
     def finding_7_1(self):
         """
         We found that, in 2014, 8% of US youths aged 12–21-years reported that marijuana was the first drug they used;
         this percentage has almost doubled since 2004.
         """
-        return NotImplemented
+        raise NonReproducibleFindingException
 
 
 if __name__ == '__main__':

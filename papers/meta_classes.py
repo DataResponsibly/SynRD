@@ -87,3 +87,6 @@ class FigureFinding(Finding):
     A class wrapper for all findings, for shared functionality.
     """
     pass
+
+class NonReproducibleFindingException(Exception):
+    pass
