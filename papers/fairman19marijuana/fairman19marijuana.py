@@ -1,6 +1,6 @@
-from meta_classes import Publication, Finding
-from meta_classes import NonReproducibleFindingException
-from file_utils import PathSearcher
+from papers.meta_classes import Publication, Finding
+from papers.meta_classes import NonReproducibleFindingException
+from papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 import os

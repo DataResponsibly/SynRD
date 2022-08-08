@@ -1,4 +1,5 @@
 from papers.meta_classes import Publication, Finding
+from papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 
@@ -17,7 +18,7 @@ class Jeong2021Math(Publication):
         'journal': None,
         'year': 2021,
         'current_citations': None,
-        'base_dataframe_pickle': None
+        'base_dataframe_pickle': 'jeong2021math_dataframe.pickle'
     }
     DATAFRAME_COLUMNS = [
         "X1TXMSCR", "X1RACE", "X1MTHID", "X1MTHEFF", "X1MTHINT", "X1FAMINCOME", "X1HHNUMBER", "X1P1RELATION",
@@ -42,16 +43,35 @@ class Jeong2021Math(Publication):
     }
     RACE_CLASSES = ['WHITE_ASIAN', 'BLACK_HISPANIC_NATIVE']
     FILENAME = 'jeong2021math'
+    RANDOM_STATE_MAX = 30
 
-    def __init__(self, dataframe=None, filename=None):
-        if filename is not None:
-            dataframe = pd.read_pickle(filename)
-        elif dataframe is not None:
-            dataframe = dataframe
-        else:
-            dataframe = self._recreate_dataframe()
+    def __init__(self, dataframe=None, filename=None, path=None):
+        if dataframe is None:
+            if path is None:
+                path = self.DEFAULT_PAPER_ATTRIBUTES['id']
+            self.path_searcher = PathSearcher(path)
+            if filename is None:
+                filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
+            try:
+                dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
+            except FileNotFoundError:
+                dataframe = self._recreate_dataframe()
         super().__init__(dataframe)
-        self.FINDINGS = self.FINDINGS + []
+        self.train_results, self.test_results = self.score_by_class(self.dataframe)
+        self.table_1 = self.get_results_by_class(self.test_results)
+        self.FINDINGS = self.FINDINGS + [
+            Finding(self.finding_2_1),
+            Finding(self.finding_3_1),
+            Finding(self.finding_3_2),
+            Finding(self.finding_3_3),
+            Finding(self.finding_3_4),
+            Finding(self.finding_3_5),
+            # Finding(self.finding_3_6),
+            Finding(self.finding_3_7),
+            Finding(self.finding_3_8),
+            Finding(self.finding_4_1),
+            Finding(self.finding_4_2)
+        ]
 
     @classmethod
     def preprocess(cls, data, n_neighbors=1):
@@ -95,23 +115,43 @@ class Jeong2021Math(Publication):
         model.fit(X_train, y_train)
         return model
 
-    def evaluate_classifier(self, model, X_test, X_test_race_group, y_test):
+    def evaluate_classifier(self, model, X_train, X_train_race_group, y_train, X_test, X_test_race_group, y_test):
+        train_df = pd.concat([X_train, X_train_race_group], axis=1)
+        train_df['target'] = y_train
+        train_df['y_prediction'] = model.predict(X_train)
         evaluation_df = pd.concat([X_test, X_test_race_group], axis=1)
         evaluation_df['target'] = y_test
         evaluation_df['y_prediction'] = model.predict(X_test)
-        return evaluation_df
+        return train_df, evaluation_df
 
-    def evaluate(self, data):
+    def score(self, data, model_type=None):
+        if model_type is not None and model_type == 'dummy':
+            X = data[['S1M8GRADE']]
+        else:
+            X = data.drop(columns=['target', 'RACE_GROUP'])
+        y = data['target']
+        scores = []
+        for random_state in range(self.RANDOM_STATE_MAX):
+            X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=random_state)
+            model = self.train_classifier(X_train, y_train, random_state)
+            scores.append(model.score(X_test, y_test))
+        return np.mean(scores), np.std(scores)
+
+    def score_by_class(self, data):
+        train_scores_dataframes = []
         scores_dataframes = []
-        for random_state in range(30):
+        for random_state in range(self.RANDOM_STATE_MAX):
             X_train, X_train_race_group, y_train, X_test, X_test_race_group, y_test = \
                 self.train_test_split(data, random_state)
             model = self.train_classifier(X_train, y_train, random_state)
-            evaluation_df = self.evaluate_classifier(model, X_test, X_test_race_group, y_test)
+            train_df, evaluation_df = self.evaluate_classifier(model, X_train, X_train_race_group, y_train,
+                                                     X_test, X_test_race_group, y_test)
             for class_name in self.RACE_CLASSES:
+                train_seed_scores = self.calculate_scores(train_df, class_name)
+                train_scores_dataframes.append(train_seed_scores)
                 seed_scores = self.calculate_scores(evaluation_df, class_name)
                 scores_dataframes.append(seed_scores)
-        return pd.DataFrame(scores_dataframes)
+        return pd.DataFrame(train_scores_dataframes), pd.DataFrame(scores_dataframes)
 
     def calculate_scores(self, df, class_name):
         y_true, y_pred = df[df.RACE_GROUP == class_name][['target', 'y_prediction']].T.to_numpy()
@@ -137,67 +177,81 @@ class Jeong2021Math(Publication):
         X_test = X_test.drop(columns=['RACE_GROUP'])
         return X_train, X_train_race_group, y_train, X_test, X_test_race_group, y_test
 
-    def finding_rf(self):
-        data = self.dataframe
-        result = self.evaluate(data)
-        print(result.groupby('class_name').mean())
-        print(result.groupby('class_name').std())
+    def get_results_by_class(self, result):
+        return result.groupby('class_name').mean(), result.groupby('class_name').std()
 
     def finding_2_1(self):
         """
         With the HSLS dataset, we observe that prediction accuracy is 68.2 ± 0.1 % if we predict students’ math
         performance in the 9th grade based only on their past performance. Accuracy improves to 75.0 ± 0.1 %,
         by utilizing more features such as students’ and parents’ survey responses.
-        :return:
         """
         data = self.dataframe
-        X = data['S1M8GRADE']
-        y = data['target']
-        scores = []
-        for random_state in range(30):
-            X_train, X_test, y_train, y_test = train_test_split( X, y, random_state=random_state )
-            model = self.train_classifier(X_train, y_train, random_state)
-            scores.append(model.score(X_test, y_test))
-        pass
+        single_feature_model_acc, single_feature_model_std = self.score(data, 'dummy')
+        all_feature_model_acc, all_feature_model_std = self.score(data)
+        return [single_feature_model_acc, single_feature_model_std, all_feature_model_acc, all_feature_model_std], [], [
+            np.allclose(single_feature_model_std * 100, 68.2, atol=10e-2),
+            np.allclose(single_feature_model_std * 100, 0.1, atol=10e-2),
+            np.allclose(all_feature_model_acc * 100, 75.0, atol=10e-2),
+            np.allclose(all_feature_model_std * 100, 0.1, atol=10e-2)]
 
     def finding_3_1(self):
         """
         First, notice that the difference in accuracy between WA and BHN is negligible.
-        :return:
         """
-        pass
+
+        table_1_mean, table_1_std = self.table_1
+        wa_acc = table_1_mean.loc['WHITE_ASIAN', 'ACC'] * 100
+        bhn_acc = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'ACC'] * 100
+        return [wa_acc, bhn_acc], [], np.allclose(wa_acc, bhn_acc, atol=10e-1)
 
     def finding_3_2(self):
         """
         However, FNR was considerably smaller for WA students compared to BHN. The relative difference in FNR was up
         to 78%. This implies that WA students are less prone to get an underestimated prediction by the ML model.
-        :return:
         """
-        pass
+        table_1_mean, table_1_std = self.table_1
+        wa_fnr = table_1_mean.loc['WHITE_ASIAN', 'FNR'] * 100
+        bhn_fnr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'FNR'] * 100
+        return [wa_fnr, bhn_fnr], [wa_fnr < bhn_fnr], []
 
     def finding_3_3(self):
         """
         At the same time, FPR is 42% higher for WA than BHN students. In other words, WA students more frequently
         receive the benefit of the doubt from the trained ML model.
-        :return:
         """
-        pass
+        table_1_mean, table_1_std = self.table_1
+        wa_fpr = table_1_mean.loc['WHITE_ASIAN', 'FPR'] * 100
+        bhn_fpr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'FPR'] * 100
+        return [wa_fpr, bhn_fpr], [wa_fpr > bhn_fpr], []
 
     def finding_3_4(self):
         """
         We also observe that PBR is higher in WA students than in BHN students. This may reflect the difference in the
         ground truth data. The observed base rate was 0.57 for WA and 0.38 for BHN students. (difference = 0.19).
-        :return:
         """
-        pass
+        table_1_mean, table_1_std = self.table_1
+        wa_pbr = table_1_mean.loc['WHITE_ASIAN', 'PBR'] * 100
+        bhn_pbr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'PBR'] * 100
+        pbr_difference = wa_pbr - bhn_pbr
+        soft_findings =[ wa_pbr > bhn_pbr]
+        hard_findings = [np.allclose(wa_pbr, 57,  atol=10e-2),
+                         np.allclose(bhn_pbr, 38,  atol=10e-2),
+                         np.allclose(pbr_difference, 19,  atol=10e-2)]
+        return [wa_pbr, bhn_pbr, pbr_difference], soft_findings, hard_findings
 
     def finding_3_5(self):
         """
         However, the PBR difference from the trained random forest models was about 0.23, indicating that the existing
         racial performance gap is exaggerated in the ML model’s predictions.
-        :return:
         """
-        pass
+        train_mean, train_1_std = self.get_results_by_class(self.train_results)
+        wa_pbr = train_mean.loc['WHITE_ASIAN', 'PBR'] * 100
+        bhn_pbr = train_1_std.loc['BLACK_HISPANIC_NATIVE', 'PBR'] * 100
+        pbr_difference = wa_pbr - bhn_pbr
+        soft_findings = [wa_pbr > bhn_pbr]
+        hard_findings = [np.allclose(pbr_difference, 23,  atol=10e-2)]
+        return [wa_pbr, bhn_pbr, pbr_difference], soft_findings, hard_findings
 
     def finding_3_6(self):
         """
@@ -205,36 +259,41 @@ class Jeong2021Math(Publication):
         BHN students are consistently underestimated in predicting their future math performance despite similar
         accuracy numbers for both groups. This shows that narrowly focusing on accuracy can give an illusion of fairness
         when there is significant discriminatory impact on students from historically underrepresented groups.
-        :return:
+        Note: Conclusion from previous findings - skip.
         """
-        pass
+        return NotImplemented
 
     def finding_3_7(self):
         """
         The FPR of 0.30 for WA students (see Table 1) means that 30% of the students who would not perform well in the
         9th grade will be placed in the advanced class. They are given the benefit of the doubt and the opportunity to
         learn more advanced math. On the other hand, only 18% of the BHN students get the same benefit of the doubt (FPR=0.18).
-        :return:
         """
-        pass
+        table_1_mean, table_1_std = self.table_1
+        wa_fpr = table_1_mean.loc['WHITE_ASIAN', 'FPR'] * 100
+        bhn_fpr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'FPR'] * 100
+        hard_findings = [np.allclose(wa_fpr, 30, atol=10e-1), np.allclose(bhn_fpr, 18, atol=10e-1)]
+        return [wa_fpr, bhn_fpr], [], hard_findings
 
     def finding_3_8(self):
         """
         The FNR of 0.21 in WA students indicates that 21% ofWA students who would in fact perform well in the future
         will be placed in the basic class by the ML algorithm. For BHN students, a startlingly high 37% will be
         incorrectly placed in the basic class, their academic potential ignored by the algorithm.
-        :return:
         """
-        pass
+        table_1_mean, table_1_std = self.table_1
+        wa_fnr = table_1_mean.loc['WHITE_ASIAN', 'FNR'] * 100
+        bhn_fnr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'FNR'] * 100
+        hard_findings = [np.allclose(wa_fnr, 21, atol=10e-1), np.allclose(bhn_fnr, 37, atol=10e-1)]
+        return [wa_fnr, bhn_fnr], [], hard_findings
 
     def finding_4_1(self):
         """
         Focusing solely on accuracy may lead to the incorrect conclusion that the effect of different racial compositions
         of a training set is minute: the accuracy for each group does not vary more than 0.05 as we change p from 0 to 1
         (i.e., 0% to 100% BHN).
-        :return:
         """
-        pass
+        raise NotImplemented
 
     def finding_4_2(self):
         """
@@ -242,11 +301,11 @@ class Jeong2021Math(Publication):
         monotonically decreases and FNR monotonically increases for both BHN and WA students as we increase p from 0%
         BHN to 100% BHN. The range of FPR difference is from ∼0.4 to 0.1 and FNR moves from 0.2 to 0.5. The gaps in FPR
         and FNR remain throughout different values of p, but they reduce slightly around p = 0.
-        :return:
         """
-        pass
+        raise NotImplemented
 
 
 if __name__ == '__main__':
-    paper = Jeong2021Math(filename = 'jeong2021math_dataframe.pickle')
-    paper.finding_2_1()
+    paper = Jeong2021Math()
+    for find in paper.FINDINGS:
+        print(find.run())
