@@ -5,3 +5,4 @@ git+https://github.com/ryan112358/private-pgm.git
 smartnoise-synth
 diffprivlib
 rpy2
+pathlib

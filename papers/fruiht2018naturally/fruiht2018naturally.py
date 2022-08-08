@@ -39,7 +39,7 @@ class Fruiht2018Naturally(Publication):
         self.path_searcher = PathSearcher(path)
 
         if filename is not None:
-            self.dataframe = pd.read_pickle(self.path_searcher(filename))
+            self.dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
         elif dataframe is not None:
             self.dataframe = dataframe
         else:

@@ -3,6 +3,19 @@ This file will serve as a development guide, providing instructions both for run
 
 Please make sure to run `pip install -r requirements` in this directory from your conda environment, shell, or whatever development console you use, before trying to run our notebooks.
 
+# Running R Analysis rpy2
+
+To run analysis for papers using R, you must ensure that R is downloaded and your R_HOME environment variable is set to the path of the R executable.
+
+For installing with Anaconda, you may use `conda install r-base r-essentials`.
+
+For confirming rpy2 is working as expected, try the following in Python:
+```python
+import rpy2
+
+rpy2.robjects.r['pi']  # Returns R object with the number pi
+```
+
 # Existing files
 Broadly, this folder is structured like this: 
 ```
