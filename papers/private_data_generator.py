@@ -55,7 +55,9 @@ class PrivateDataGenerator():
                     
                     if not os.path.isfile(folder_name + 'mst_' + str(it) + '.pickle'):
                         # The MST Synthesis
-                        mst = MSTSynthesizer(domain=pub_name, domains_dict=self.DOMAINS)
+                        mst = MSTSynthesizer(epsilon=eps,
+                                             domain=pub_name, 
+                                             domains_dict=self.DOMAINS)
                         mst.fit(df)
                         sample_size = len(df)
                         mst_synth_data = mst.sample(sample_size)
