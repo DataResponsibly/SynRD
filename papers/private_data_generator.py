@@ -11,7 +11,6 @@ from snsynth.pytorch.nn import PATECTGAN
 from DataSynthesizer.DataDescriber import DataDescriber
 from DataSynthesizer.DataGenerator import DataGenerator
 
-from meta_classes import Publication
 
 class PrivateDataGenerator():
     """
@@ -115,3 +114,17 @@ class PrivateDataGenerator():
                         privbayes_synth_data = pd.read_csv("synth.csv")
                         privbayes_synth_data.to_pickle(folder_name + 'privbayes_' + str(it) + '.pickle') 
 
+
+if __name__ == '__main__':
+    from papers import Fairman19Marijuana, Jeong2021Math
+
+    for p in [Fairman19Marijuana, Jeong2021Math]:
+        # epsilon -> percent_soft_findings
+        pub_id = p.DEFAULT_PAPER_ATTRIBUTES['id']
+        pub_file_base_df = p.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
+
+        p_base_instantiated = p(filename=pub_file_base_df)
+        data_generator = PrivateDataGenerator(p_base_instantiated)
+
+        # In case data has not already been generated
+        data_generator.generate()

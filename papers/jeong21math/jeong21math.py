@@ -31,18 +31,8 @@ class Jeong2021Math(Publication):
         "P1SCIHWEFF", "P1ENGHWEFF", "P1MTHCOMP", "P1SCICOMP", "P1ENGCOMP", "P1MUSEUM", "P1COMPUTER",
         "P1FIXED", "P1SCIFAIR", "P1SCIPROJ", "P1STEMDISC", "P1NOACT", "P1CAMPMS", "P1CAMPOTH", "P1NOOUTSCH"
     ]
-    RACE_GROUP_MAP = {
-        8: 'WHITE_ASIAN',
-        3: 'BLACK_HISPANIC_NATIVE',
-        4: 'BLACK_HISPANIC_NATIVE',
-        5: 'BLACK_HISPANIC_NATIVE',
-        2: 'WHITE_ASIAN',
-        6: 'MULTIRACIAL_OTHER',
-        7: 'MULTIRACIAL_OTHER',
-        1: 'BLACK_HISPANIC_NATIVE',
-        -9: 'UNKNOWN',
-    }
-    RACE_CLASSES = ['WHITE_ASIAN', 'BLACK_HISPANIC_NATIVE']
+    RACE_GROUP_MAP = {8: 0, 3: 1, 4: 1, 5: 1, 2: 0, 6: 2, 7: 2, 1: 1, -9: 3}
+    RACE_CLASSES = {'WHITE_ASIAN': 0, 'BLACK_HISPANIC_NATIVE': 1}
     FILENAME = 'jeong2021math'
     RANDOM_STATE_MAX = 30
 
@@ -99,10 +89,10 @@ class Jeong2021Math(Publication):
 
     def _recreate_dataframe(self, filename='jeong2021math_dataframe.pickle'):
         # school_survey = pd.read_csv('data/36423-0001-Data.tsv', sep='\t')
-        student_survey = pd.read_csv('../data/math/36423-0002-Data.tsv', sep='\t')
+        student_survey = pd.read_csv('data/36423-0002-Data.tsv', sep='\t')
         data = student_survey[self.DATAFRAME_COLUMNS]
         data['RACE_GROUP'] = data['X1RACE'].map(self.RACE_GROUP_MAP)
-        data = data[data['RACE_GROUP'].isin(self.RACE_CLASSES)]
+        data = data[data['RACE_GROUP'].isin(self.RACE_CLASSES.values())]
         data = data.dropna(subset=['X1TXMSCR'])  # target shouldnt be na
         for column_name in self.DATAFRAME_COLUMNS:
             data[column_name] = np.where(data[column_name] < -6, None, data[column_name])
@@ -110,8 +100,8 @@ class Jeong2021Math(Publication):
         data = data[data.isna().sum(axis=1) < len(data.columns) / 2]  # drop with more than half na features
         target = data['X1TXMSCR']
         data = data.drop(columns=['X1TXMSCR'])
-        data = data.astype('category')
         data = self.preprocess(data, target)
+        data = data.astype(np.int32).astype('category')
         print(data.shape)
         data.to_pickle(filename)  # 10156 training set
         return data
@@ -121,10 +111,7 @@ class Jeong2021Math(Publication):
         features = data.drop(columns=['RACE_GROUP'])
         race_group = data['RACE_GROUP']
         _features = features.apply(
-            lambda col: pd.Series(
-                LabelEncoder().fit_transform(
-                    col[col.notnull()]
-                ), index=col[col.notnull()].index)
+            lambda col: pd.Series(LabelEncoder().fit_transform(col[col.notnull()]), index=col[col.notnull()].index)
         )
         _features = KNNImputer(n_neighbors=n_neighbors).fit_transform(_features)
         processed_data = pd.DataFrame(_features, columns=features.columns)
@@ -169,8 +156,8 @@ class Jeong2021Math(Publication):
             train_df = self.evaluate_classifier(model, X_train, X_train_race_group, y_train)
             evaluation_df = self.evaluate_classifier(model, X_test, X_test_race_group, y_test)
             for class_name in self.RACE_CLASSES:
-                train_scores_dataframes.append(self.calculate_scores(train_df, class_name))
-                scores_dataframes.append(self.calculate_scores(evaluation_df, class_name))
+                train_scores_dataframes.append(self.calculate_scores(train_df, self.RACE_CLASSES[class_name]))
+                scores_dataframes.append(self.calculate_scores(evaluation_df, self.RACE_CLASSES[class_name]))
         return pd.DataFrame(train_scores_dataframes), pd.DataFrame(scores_dataframes)
 
     @staticmethod
@@ -235,8 +222,8 @@ class Jeong2021Math(Publication):
         First, notice that the difference in accuracy between WA and BHN is negligible.
         """
         table_1_mean, table_1_std = self.table_1
-        wa_acc = table_1_mean.loc['WHITE_ASIAN', 'ACC'] * 100
-        bhn_acc = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'ACC'] * 100
+        wa_acc = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'ACC'] * 100
+        bhn_acc = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'ACC'] * 100
         all_findings = [wa_acc, bhn_acc]
         soft_findings = [np.allclose(wa_acc, bhn_acc, atol=10e-1)]
         hard_findings = [np.allclose(wa_acc, bhn_acc, atol=10e-2)]
@@ -247,8 +234,8 @@ class Jeong2021Math(Publication):
         However, FNR was considerably smaller for WA students compared to BHN. The relative difference in FNR was up
         to 78%. This implies that WA students are less prone to get an underestimated prediction by the ML model.
         """
-        wa_fnr = self.test_results[self.test_results['CLASS'] == 'WHITE_ASIAN']['FNR'].values * 100
-        bhn_fnr = self.test_results[self.test_results['CLASS'] == 'BLACK_HISPANIC_NATIVE']['FNR'].values * 100
+        wa_fnr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['WHITE_ASIAN']]['FNR'].values * 100
+        bhn_fnr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['BLACK_HISPANIC_NATIVE']]['FNR'].values * 100
         diff_fnr = np.abs(wa_fnr - bhn_fnr)
         soft_findings = [np.alltrue(wa_fnr < bhn_fnr)]
         hard_findings = [np.allclose(np.max(diff_fnr), 78, atol=10e-1)]
@@ -259,8 +246,8 @@ class Jeong2021Math(Publication):
         At the same time, FPR is 42% higher for WA than BHN students. In other words, WA students more frequently
         receive the benefit of the doubt from the trained ML model.
         """
-        wa_fpr = self.test_results[self.test_results['CLASS'] == 'WHITE_ASIAN']['FPR'].values * 100
-        bhn_fpr = self.test_results[self.test_results['CLASS'] == 'BLACK_HISPANIC_NATIVE']['FPR'].values * 100
+        wa_fpr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['WHITE_ASIAN']]['FPR'].values * 100
+        bhn_fpr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['BLACK_HISPANIC_NATIVE']]['FPR'].values * 100
         diff_fpr = np.abs(wa_fpr - bhn_fpr)
         soft_findings = [np.alltrue(wa_fpr > bhn_fpr)]
         hard_findings = [np.allclose(np.max(diff_fpr), 42, atol=10e-1)]
@@ -272,8 +259,8 @@ class Jeong2021Math(Publication):
         ground truth data. The observed base rate was 0.57 for WA and 0.38 for BHN students. (difference = 0.19).
         """
         table_1_mean, table_1_std = self.table_1
-        wa_pbr = table_1_mean.loc['WHITE_ASIAN', 'PBR'] * 100
-        bhn_pbr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'PBR'] * 100
+        wa_pbr = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'PBR'] * 100
+        bhn_pbr = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'PBR'] * 100
         diff_pbr = np.abs(wa_pbr - bhn_pbr)
         all_findings = [wa_pbr, bhn_pbr, diff_pbr]
         soft_findings = [wa_pbr > bhn_pbr]
@@ -287,8 +274,8 @@ class Jeong2021Math(Publication):
         racial performance gap is exaggerated in the ML model’s predictions.
         """
         train_mean, train_1_std = self.get_results_by_class(self.train_results)
-        wa_pbr = train_mean.loc['WHITE_ASIAN', 'PBR'] * 100
-        bhn_pbr = train_mean.loc['BLACK_HISPANIC_NATIVE', 'PBR'] * 100
+        wa_pbr = train_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'PBR'] * 100
+        bhn_pbr = train_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'PBR'] * 100
         diff_pbr = np.abs(wa_pbr - bhn_pbr)
         all_findings = [wa_pbr, bhn_pbr, diff_pbr]
         soft_findings = [wa_pbr > bhn_pbr]
@@ -302,8 +289,8 @@ class Jeong2021Math(Publication):
         learn more advanced math. On the other hand, only 18% of the BHN students get the same benefit of the doubt (FPR=0.18).
         """
         table_1_mean, table_1_std = self.table_1
-        wa_fpr = table_1_mean.loc['WHITE_ASIAN', 'FPR'] * 100
-        bhn_fpr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'FPR'] * 100
+        wa_fpr = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'FPR'] * 100
+        bhn_fpr = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'FPR'] * 100
         all_findings = [wa_fpr, bhn_fpr]
         soft_findings = [wa_fpr > bhn_fpr]
         hard_findings = [np.allclose(wa_fpr, 30, atol=10e-1), np.allclose(bhn_fpr, 18, atol=10e-1)]
@@ -316,8 +303,8 @@ class Jeong2021Math(Publication):
         incorrectly placed in the basic class, their academic potential ignored by the algorithm.
         """
         table_1_mean, table_1_std = self.table_1
-        wa_fnr = table_1_mean.loc['WHITE_ASIAN', 'FNR'] * 100
-        bhn_fnr = table_1_mean.loc['BLACK_HISPANIC_NATIVE', 'FNR'] * 100
+        wa_fnr = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'FNR'] * 100
+        bhn_fnr = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'FNR'] * 100
         all_findings= [wa_fnr, bhn_fnr]
         soft_findings = [wa_fnr < bhn_fnr]
         hard_findings = [np.allclose(wa_fnr, 21, atol=10e-1), np.allclose(bhn_fnr, 37, atol=10e-1)]
@@ -328,7 +315,7 @@ class Jeong2021Math(Publication):
         Focusing solely on accuracy may lead to the incorrect conclusion that the effect of different racial compositions
         of a training set is minute: the accuracy for each group does not vary more than 0.05 as we change p from 0 to 1
         (i.e., 0% to 100% BHN).
-        Note: Authors state conflicting statement about the train test split for this result
+        (!) Note: Authors state conflicting statement about the train test split for this finding
         """
         raise NonReproducibleFindingException
 
@@ -338,7 +325,7 @@ class Jeong2021Math(Publication):
         monotonically decreases and FNR monotonically increases for both BHN and WA students as we increase p from 0%
         BHN to 100% BHN. The range of FPR difference is from ∼0.4 to 0.1 and FNR moves from 0.2 to 0.5. The gaps in FPR
         and FNR remain throughout different values of p, but they reduce slightly around p = 0.
-        Note: Authors state conflicting statement about the train test split for this result
+        (!) Note: Authors state conflicting statement about the train test split for this finding
         """
         raise NonReproducibleFindingException
 
