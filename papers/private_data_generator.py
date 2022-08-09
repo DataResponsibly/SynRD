@@ -27,7 +27,9 @@ class PrivateDataGenerator():
 
     # Add a json domain file for each paper here, MST requirement.
     DOMAINS = {
-        "saw2018cross": "domains/saw2018cross-domain.json"
+        "saw2018cross": "domains/saw2018cross-domain.json",
+        "jeong2021math": "domains/jeong2021math-domain.json",
+        "fairman19marijuana": "domains/fairman19marijuana-domain.json",
     }
 
     def __init__(self, publication):
