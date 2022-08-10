@@ -11,7 +11,8 @@ class PathSearcher:
         candidate_paths = [
             Path(path),
             Path(self.prefix, path),
-            Path("papers", self.prefix, path)
+            Path("papers", self.prefix, path),
+            Path("papers", path)
         ]
 
         for candidate in candidate_paths:
@@ -19,4 +20,4 @@ class PathSearcher:
                 return str(candidate.resolve())
         
         raise FileNotFoundError(f"""File doesn't exist in any of the following:
-        {Path(path)}, {Path(self.prefix, path)}, {Path("papers", self.prefix, path)}.""")
+        {Path(path)}, {Path(self.prefix, path)}, {Path("papers", self.prefix, path)}, {Path("papers", path)}.""")

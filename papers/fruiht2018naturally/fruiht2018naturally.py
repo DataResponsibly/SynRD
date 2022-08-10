@@ -282,7 +282,7 @@ class Fruiht2018Naturally(Publication):
         return merged_wave_all_clean
 
     def _recreate_dataframe(self,
-                            filename="fruiht2018naturally.pickle",
+                            filename="fruiht2018naturally_dataframe.pickle",
                             print_debug=False):
         wave1 = pd.read_csv(self.path_searcher.get_path("wave1.csv"))
         wave3 = pd.read_csv(self.path_searcher.get_path("wave3.csv"))
