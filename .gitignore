@@ -181,3 +181,5 @@ cython_debug/
 # eda
 .idea
 .vscode
+
+papers/temp*
