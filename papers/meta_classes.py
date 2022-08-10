@@ -5,6 +5,7 @@ class Publication():
     """
     A class wrapper for all publication classes, for shared functionality.
     """
+    cont_features = None
     DEFAULT_PAPER_ATTRIBUTES = {
         'id': None,
         'length_pages': 0,

@@ -34,6 +34,7 @@ class PrivateDataGenerator():
 
     def __init__(self, publication):
         self.publication = publication
+        self.cont_features = publication.cont_features
 
     def prepare_dataframe(self):
         df = self.publication.dataframe
@@ -115,6 +116,11 @@ class PrivateDataGenerator():
                         with open(domain_name) as json_file:
                             dict_domain = json.load(json_file)
 
+                        # temp for PrivBayes to show there are cont values
+                        if self.cont_features:
+                            for cont_feature in self.cont_features:
+                                dict_domain[cont_feature] = threshold_value + 1
+
                         # specify categorical attributes
                         categorical_attributes = {k: True for k, v in dict_domain.items() if v < threshold_value}
                         
@@ -143,7 +149,7 @@ class PrivateDataGenerator():
 if __name__ == '__main__':
     from papers import Fairman2019Marijuana, Jeong2021Math
 
-    for p in [Fairman2019Marijuana, Jeong2021Math]:
+    for p in [Jeong2021Math]:
         # epsilon -> percent_soft_findings
         pub_id = p.DEFAULT_PAPER_ATTRIBUTES['id']
         pub_file_base_df = p.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
