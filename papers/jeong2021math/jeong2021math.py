@@ -12,6 +12,7 @@ from sklearn.metrics import confusion_matrix
 
 
 class Jeong2021Math(Publication):
+    cont_features = ["X1MTHID", "X1MTHEFF", "X1MTHINT", "X1SCHOOLBEL"]
     DEFAULT_PAPER_ATTRIBUTES = {
         'id': 'jeong2021math',
         'length_pages': 12,
@@ -95,27 +96,34 @@ class Jeong2021Math(Publication):
         data = data[data['RACE_GROUP'].isin(self.RACE_CLASSES.values())]
         data = data.dropna(subset=['X1TXMSCR'])  # target shouldnt be na
         for column_name in self.DATAFRAME_COLUMNS:
-            data[column_name] = np.where(data[column_name] < -6, None, data[column_name])
-        data = data.drop(columns=['X1RACE']+["X1MTHID", "X1MTHEFF", "X1MTHINT", "X1SCHOOLBEL"])
+            data[column_name] = np.where(data[column_name] < -6, None, data[column_name])  # remove nas
+        data = data.drop(columns=['X1RACE'])
         data = data[data.isna().sum(axis=1) < len(data.columns) / 2]  # drop with more than half na features
         target = data['X1TXMSCR']
         data = data.drop(columns=['X1TXMSCR'])
-        data = self.preprocess(data, target)
-        data = data.astype(np.int32)  # all features categorical but numerically encoded
+        cont_features = self.cont_features
+        cat_features = list(data.columns[~data.columns.isin(cont_features)])
+        data = self.preprocess(data, target, cont_features=cont_features, cat_features=cat_features)
+        data[cont_features] = data[cont_features] - data[cont_features].min()  # non-negative numbers cont features
+        data[cat_features] = data[cat_features].astype(np.int32)  # categorical but numerically encoded
         print(data.shape)
-        print(data.head())
+        print(data.columns)
+        print(data.dtypes)
         data.to_pickle(filename)  # 10156 training set
         return data
 
     @staticmethod
-    def preprocess(data, target, n_neighbors=1):
+    def preprocess(data, target, cont_features=None, cat_features=None, n_neighbors=1):
         features = data.drop(columns=['RACE_GROUP'])
+        cat_features.remove('RACE_GROUP')
         race_group = data['RACE_GROUP']
-        _features = features.apply(
-            lambda col: pd.Series(LabelEncoder().fit_transform(col[col.notnull()]), index=col[col.notnull()].index)
-        )
-        _features = KNNImputer(n_neighbors=n_neighbors).fit_transform(_features)
-        processed_data = pd.DataFrame(_features, columns=features.columns)
+        _cat_features = features[cat_features].apply(
+            lambda col: pd.Series(LabelEncoder().fit_transform(col[col.notnull()]), index=col[col.notnull()].index))
+        _cont_features = features[cont_features]
+        trans_features = pd.concat([_cont_features, _cat_features], axis=1)
+        trans_features.columns = np.concatenate((cont_features, cat_features), axis=None)
+        _features = KNNImputer(n_neighbors=n_neighbors).fit_transform(trans_features)
+        processed_data = pd.DataFrame(_features, columns=trans_features.columns)
         processed_data['TARGET'] = np.where(target > target.median(), 1, 0)
         processed_data['RACE_GROUP'] = race_group.values
         return processed_data
@@ -212,11 +220,12 @@ class Jeong2021Math(Publication):
         all_feature_model_acc *= 100
         all_feature_model_std *= 100
         all_findings = [single_feature_model_acc, single_feature_model_std, all_feature_model_acc, all_feature_model_std]
+        soft_finding = all_feature_model_acc > single_feature_model_acc
         hard_findings = [np.allclose(single_feature_model_acc, 68.2, atol=10e-2),
                          np.allclose(single_feature_model_std, 0.1, atol=10e-2),
                          np.allclose(all_feature_model_acc, 75.0, atol=10e-2),
                          np.allclose(all_feature_model_std, 0.1, atol=10e-2)]
-        return all_findings, [], hard_findings
+        return all_findings, soft_finding, hard_findings
 
     def finding_3_1(self):
         """
@@ -226,9 +235,9 @@ class Jeong2021Math(Publication):
         wa_acc = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'ACC'] * 100
         bhn_acc = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'ACC'] * 100
         all_findings = [wa_acc, bhn_acc]
-        soft_findings = [np.allclose(wa_acc, bhn_acc, atol=10e-1)]
+        soft_finding = np.allclose(wa_acc, bhn_acc, atol=10e-1)
         hard_findings = [np.allclose(wa_acc, bhn_acc, atol=10e-2)]
-        return all_findings, soft_findings, hard_findings
+        return all_findings, soft_finding, hard_findings
 
     def finding_3_2(self):
         """
@@ -237,10 +246,10 @@ class Jeong2021Math(Publication):
         """
         wa_fnr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['WHITE_ASIAN']]['FNR'].values * 100
         bhn_fnr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['BLACK_HISPANIC_NATIVE']]['FNR'].values * 100
-        diff_fnr = np.abs(wa_fnr - bhn_fnr)
-        soft_findings = [np.alltrue(wa_fnr < bhn_fnr)]
+        diff_fnr = np.max(np.abs(wa_fnr - bhn_fnr))
+        soft_finding = np.alltrue(wa_fnr < bhn_fnr)
         hard_findings = [np.allclose(np.max(diff_fnr), 78, atol=10e-1)]
-        return diff_fnr, soft_findings, hard_findings
+        return [diff_fnr], soft_finding, hard_findings
 
     def finding_3_3(self):
         """
@@ -249,10 +258,10 @@ class Jeong2021Math(Publication):
         """
         wa_fpr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['WHITE_ASIAN']]['FPR'].values * 100
         bhn_fpr = self.test_results[self.test_results['CLASS'] == self.RACE_CLASSES['BLACK_HISPANIC_NATIVE']]['FPR'].values * 100
-        diff_fpr = np.abs(wa_fpr - bhn_fpr)
-        soft_findings = [np.alltrue(wa_fpr > bhn_fpr)]
+        diff_fpr = np.max(np.abs(wa_fpr - bhn_fpr))
+        soft_finding = np.alltrue(wa_fpr > bhn_fpr)
         hard_findings = [np.allclose(np.max(diff_fpr), 42, atol=10e-1)]
-        return diff_fpr, soft_findings, hard_findings
+        return [diff_fpr], soft_finding, hard_findings
 
     def finding_3_4(self):
         """
@@ -264,10 +273,10 @@ class Jeong2021Math(Publication):
         bhn_pbr = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'PBR'] * 100
         diff_pbr = np.abs(wa_pbr - bhn_pbr)
         all_findings = [wa_pbr, bhn_pbr, diff_pbr]
-        soft_findings = [wa_pbr > bhn_pbr]
+        soft_finding = wa_pbr > bhn_pbr
         hard_findings = [np.allclose(wa_pbr, 57,  atol=10e-1), np.allclose(bhn_pbr, 38,  atol=10e-1),
                          np.allclose(diff_pbr, 19,  atol=10e-1)]
-        return all_findings, soft_findings, hard_findings
+        return all_findings, soft_finding, hard_findings
 
     def finding_3_5(self):
         """
@@ -279,9 +288,9 @@ class Jeong2021Math(Publication):
         bhn_pbr = train_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'PBR'] * 100
         diff_pbr = np.abs(wa_pbr - bhn_pbr)
         all_findings = [wa_pbr, bhn_pbr, diff_pbr]
-        soft_findings = [wa_pbr > bhn_pbr]
+        soft_finding = wa_pbr > bhn_pbr
         hard_findings = [np.allclose(diff_pbr, 23,  atol=10e-1)]
-        return all_findings, soft_findings, hard_findings
+        return all_findings, soft_finding, hard_findings
 
     def finding_3_6(self):
         """
@@ -293,9 +302,9 @@ class Jeong2021Math(Publication):
         wa_fpr = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'FPR'] * 100
         bhn_fpr = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'FPR'] * 100
         all_findings = [wa_fpr, bhn_fpr]
-        soft_findings = [wa_fpr > bhn_fpr]
+        soft_finding = wa_fpr > bhn_fpr
         hard_findings = [np.allclose(wa_fpr, 30, atol=10e-1), np.allclose(bhn_fpr, 18, atol=10e-1)]
-        return all_findings, soft_findings, hard_findings
+        return all_findings, soft_finding, hard_findings
 
     def finding_3_7(self):
         """
@@ -307,9 +316,9 @@ class Jeong2021Math(Publication):
         wa_fnr = table_1_mean.loc[self.RACE_CLASSES['WHITE_ASIAN'], 'FNR'] * 100
         bhn_fnr = table_1_mean.loc[self.RACE_CLASSES['BLACK_HISPANIC_NATIVE'], 'FNR'] * 100
         all_findings= [wa_fnr, bhn_fnr]
-        soft_findings = [wa_fnr < bhn_fnr]
+        soft_finding = wa_fnr < bhn_fnr
         hard_findings = [np.allclose(wa_fnr, 21, atol=10e-1), np.allclose(bhn_fnr, 37, atol=10e-1)]
-        return all_findings, soft_findings, hard_findings
+        return all_findings, soft_finding, hard_findings
 
     def finding_4_1(self):
         """
@@ -334,4 +343,4 @@ class Jeong2021Math(Publication):
 if __name__ == '__main__':
     paper = Jeong2021Math()
     for find in paper.FINDINGS:
-        print(find.run())
+        print(find.description, find.run())

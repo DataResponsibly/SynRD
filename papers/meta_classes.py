@@ -21,8 +21,9 @@ class Publication():
 
     FILENAME = None
 
-    def __init__(self, dataframe=None, filename=None):
+    def __init__(self, dataframe=None, filename=None, description=None):
         self.dataframe = dataframe
+        self._description = description
 
     def run_all_findings(self):
         results = {}
@@ -53,6 +54,17 @@ class Publication():
 
     def __str__(self):
         return json.dumps(self.DEFAULT_PAPER_ATTRIBUTES, sort_keys=True, indent=4)
+
+    @property
+    def description(self):
+        if self._description:
+            return self.description
+        paper_info = self.DEFAULT_PAPER_ATTRIBUTES
+        text = f'{paper_info["id"]}, authors: {", ".join(paper_info["authors"])}, year: {paper_info["year"]}\n'
+        for find in self.FINDINGS:
+            text += find.text + '(' + find.description + ')' + '\n'
+        return text
+
 
 class Finding():
     """
