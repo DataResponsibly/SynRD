@@ -29,6 +29,7 @@ class PrivateDataGenerator():
         "saw2018cross": "domains/saw2018cross-domain.json",
         "jeong2021math": "domains/jeong2021math-domain.json",
         "fairman19marijuana": "domains/fairman19marijuana-domain.json",
+        "fruiht2018naturally": "domains/fruiht2018naturally-domain.json",
     }
 
     def __init__(self, publication):
