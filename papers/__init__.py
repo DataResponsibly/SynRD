@@ -1,2 +1,2 @@
-from papers.fairman19marijuana.fairman19marijuana import Fairman19Marijuana
-from papers.jeong21math.jeong21math import Jeong2021Math
+from papers.fairman2019marijuana.fairman2019marijuana import Fairman2019Marijuana
+from papers.jeong2021math.jeong2021math import Jeong2021Math
