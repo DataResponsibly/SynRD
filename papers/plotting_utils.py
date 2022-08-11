@@ -21,7 +21,7 @@ def plot_box_map(data, title, vmin=0, vmax=5):
     plt.show()
     return plt
 
-def plot_box_simple_small(data, title, vmin=0, vmax=5):
+def plot_box_simple_small(data, vmin=0, vmax=5):
     import matplotlib.pyplot as plt
     import seaborn as sb
     fig, ax = plt.subplots(figsize=(10, 4))
