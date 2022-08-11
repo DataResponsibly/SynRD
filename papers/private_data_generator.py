@@ -30,6 +30,7 @@ class PrivateDataGenerator():
         "jeong2021math": "domains/jeong2021math-domain.json",
         "fairman2019marijuana": "domains/fairman2019marijuana-domain.json",
         "fruiht2018naturally": "domains/fruiht2018naturally-domain.json",
+        "lee2021ability": "domains/lee2021ability-domain.json",
     }
 
     def __init__(self, publication):
@@ -48,9 +49,20 @@ class PrivateDataGenerator():
             self.publication.DEFAULT_PAPER_ATTRIBUTES['id'] : df
         }
 
+        # Threshold binning for larger values for privbayes:
+        # NOTE: this is due to time efficiency issues
+        bins = 10
+        df_privbayes = df.copy()
+        binned = {}
+        for col in df_privbayes.columns:
+            if len(df_privbayes[col].unique()) > 40:
+                col_df = pd.qcut(df_privbayes[col], q=bins)
+                df_privbayes[col] = col_df.apply(lambda row : row.mid).astype(int)
+                binned[col] = True
+
         temp_files_dir = 'temp'
         os.makedirs(temp_files_dir, exist_ok=True)
-        df.to_csv(os.path.join(temp_files_dir, "temp.csv"))
+        df_privbayes.to_csv(os.path.join(temp_files_dir, "temp.csv"))
 
         for pub_name, df in df_map.items():
             print('Generating: ' + pub_name)
@@ -88,12 +100,14 @@ class PrivateDataGenerator():
                         patectgan = PytorchDPSynthesizer(eps, 
                                                         PATECTGAN(preprocessor_eps=(preprocess_factor * eps)), 
                                                         preprocessor=None)
+                        # Sadly, patectgan needs this sort of rounding right now
+                        df_patectgan = df[df.columns].round(0).astype(int)
                         patectgan.fit(
-                            df,
-                            categorical_columns=list(df.columns),
+                            df_patectgan,
+                            categorical_columns=list(df_patectgan.columns),
                             transformer=BaseTransformer,
                         )
-                        sample_size = len(df)
+                        sample_size = len(df_patectgan)
                         patectgan_synth_data = patectgan.sample(sample_size)
                         patectgan_synth_data.to_pickle(folder_name + 'patectgan_' + str(it) + '.pickle')
                         print(patectgan_synth_data.apply(lambda x: x.unique()))
@@ -118,6 +132,9 @@ class PrivateDataGenerator():
                         # specify categorical attributes
                         categorical_attributes = {k: True for k, v in dict_domain.items() if v < threshold_value}
                         
+                        # add the binned attributes
+                        categorical_attributes = {**categorical_attributes, **binned}
+
                         # Intialize a describer and a generator
                         describer = DataDescriber(category_threshold=threshold_value)
                         describer.describe_dataset_in_correlated_attribute_mode(f"{temp_files_dir}/temp.csv",

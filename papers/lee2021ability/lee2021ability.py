@@ -7,7 +7,11 @@ from statsmodels.regression.linear_model import WLS
 
 # Note: properly installing lightgbm allows you to run miceforest. If you have an M1 mac, please see:
 # https://towardsdatascience.com/install-xgboost-and-lightgbm-on-apple-m1-macs-cb75180a2dda
-import miceforest as mf
+# try:
+# import miceforest as mf
+# except ImportError:
+#     print('wrong architecture for miceforest, switch envs to boosted')
+
 from math import nan
 
 class Lee2021Ability(Publication):
@@ -265,10 +269,7 @@ class Lee2021Ability(Publication):
         base = [i[0] for i in base_year_score]
         base_var = completed_dataset[base]
         base_var.columns = ['base_math']
-
-        completed_dataset = completed_dataset.replace({'sex': self.SEX_MAP,
-                                                       'race': self.RACE_MAP})
-                                                        
+                                                         
         # concat full df
         full_df = pd.concat([acheive_var, 
                      teacher_var, 
@@ -278,8 +279,11 @@ class Lee2021Ability(Publication):
                      completed_dataset['race'],
                      completed_dataset['SES'], 
                      base_var,
-                     level_var,
-                     self.WEIGHTS], axis=1)
+                     level_var], axis=1)
+                     #self.WEIGHTS], axis=1)
+
+        # Ensure that SES is non-neg
+        full_df['SES'] = full_df['SES'] + abs(min(full_df['SES']))
 
         full_df.to_pickle(filename)
         return full_df
@@ -294,24 +298,27 @@ class Lee2021Ability(Publication):
                      'SES', 
                      'base_math',
                      'base_level']]
-        reverse_sex = {
-            "Male": 0,
-            "Female": 1
-        }
-        corr_df = corr_df.replace({'sex':reverse_sex})
+        # reverse_sex = {
+        #     "Male": 0,
+        #     "Female": 1
+        # }
+        # corr_df = corr_df.replace({'sex':reverse_sex})
         self.corr_df = corr_df.corr()
         return corr_df.corr()
     
     def table_3(self):
         table_3_results = {}
 
+        df_reg = self.dataframe.replace({'sex': self.SEX_MAP,
+                                        'race': self.RACE_MAP})
+
         self.WEIGHTS = self.dataframe['W1PARENT']
 
         def wls_model(form, name):
             model = WLS.from_formula(
                 form,
-                data=self.dataframe,
-                freq_weights=np.array(self.WEIGHTS.array)
+                data=df_reg,
+                #freq_weights=np.array(self.WEIGHTS.array)
             )
             regression = model.fit(method='pinv')
             table_3_results[name] = regression.summary2()
