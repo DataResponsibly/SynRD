@@ -1,5 +1,7 @@
 {
     "math":116,
+    "sex": 2,
+    "race": 5,
     "teacher":5,
     "ability":5,
     "parents":1,

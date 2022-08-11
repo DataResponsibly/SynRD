@@ -312,7 +312,7 @@ class Lee2021Ability(Publication):
         df_reg = self.dataframe.replace({'sex': self.SEX_MAP,
                                         'race': self.RACE_MAP})
 
-        self.WEIGHTS = self.dataframe['W1PARENT']
+        #self.WEIGHTS = self.dataframe['W1PARENT']
 
         def wls_model(form, name):
             model = WLS.from_formula(
@@ -381,10 +381,13 @@ class Lee2021Ability(Publication):
         # Difficult to replicate, but essentially checks the slopes
         # between high (+1SD) and low(-1SD) values for a given variable
         # which can be found using the covariance matrix.
+        df_reg = self.dataframe.replace({'sex': self.SEX_MAP,
+                                        'race': self.RACE_MAP})
+        
         model = WLS.from_formula(
                 'math ~ (teacher * parents * ability) + C(sex, Treatment(reference="Male")) + C(race, Treatment(reference="White")) + SES + base_math + base_level',
-                data=self.dataframe,
-                freq_weights=np.array(self.WEIGHTS.array)
+                data=df_reg,
+                #freq_weights=np.array(self.WEIGHTS.array)
         )
         regression = model.fit(method='pinv')
         cov = regression.cov_params()
