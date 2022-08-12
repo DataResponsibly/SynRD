@@ -148,50 +148,50 @@ class PrivateDataGenerator():
 
                     print('DONE: PATECTGAN.')
 
-                    # if not os.path.isfile(folder_name + 'privbayes_' + str(it) + '.pickle'):
-                    #     # The PrivBayes Synthesis
+                    if not os.path.isfile(folder_name + 'privbayes_' + str(it) + '.pickle'):
+                        # The PrivBayes Synthesis
 
-                    #     # specify which attributes are candidate keys of input dataset.
-                    #     candidate_keys = {'index': True}
+                        # specify which attributes are candidate keys of input dataset.
+                        candidate_keys = {'index': True}
 
-                    #     # An attribute is categorical if its domain size is less than this threshold.
-                    #     # Here modify the threshold to adapt to the domain size of "education" (which is 14 in input dataset).
-                    #     threshold_value = 40
+                        # An attribute is categorical if its domain size is less than this threshold.
+                        # Here modify the threshold to adapt to the domain size of "education" (which is 14 in input dataset).
+                        threshold_value = 40
 
-                    #     domain_name = self.DOMAINS[pub_name]
-                    #     with open(domain_name) as json_file:
-                    #         dict_domain = json.load(json_file)
+                        domain_name = self.DOMAINS[pub_name]
+                        with open(domain_name) as json_file:
+                            dict_domain = json.load(json_file)
 
-                    #     # specify categorical attributes
-                    #     categorical_attributes = {k: True for k, v in dict_domain.items() if v < threshold_value}
+                        # specify categorical attributes
+                        categorical_attributes = {k: True for k, v in dict_domain.items() if v < threshold_value}
                         
-                    #     # add the binned attributes
-                    #     categorical_attributes = {**categorical_attributes, **binned}
+                        # add the binned attributes
+                        categorical_attributes = {**categorical_attributes, **binned}
 
-                    #     # Intialize a describer and a generator
-                    #     describer = DataDescriber(category_threshold=threshold_value)
-                    #     describer.describe_dataset_in_correlated_attribute_mode(f"{temp_files_dir}/temp.csv",
-                    #                                                             epsilon=eps, 
-                    #                                                             k=2,
-                    #                                                             attribute_to_is_categorical=categorical_attributes,
-                    #                                                             attribute_to_is_candidate_key=candidate_keys,
-                    #                                                             seed=np.random.randint(1000000))
-                    #     describer.save_dataset_description_to_file(f"{temp_files_dir}/privbayes_description.csv")
+                        # Intialize a describer and a generator
+                        describer = DataDescriber(category_threshold=threshold_value)
+                        describer.describe_dataset_in_correlated_attribute_mode(f"{temp_files_dir}/temp.csv",
+                                                                                epsilon=eps, 
+                                                                                k=2,
+                                                                                attribute_to_is_categorical=categorical_attributes,
+                                                                                attribute_to_is_candidate_key=candidate_keys,
+                                                                                seed=np.random.randint(1000000))
+                        describer.save_dataset_description_to_file(f"{temp_files_dir}/privbayes_description.csv")
 
-                    #     generator = DataGenerator()
-                    #     generator.generate_dataset_in_correlated_attribute_mode(len(df),
-                    #                                                             f"{temp_files_dir}/privbayes_description.csv")
-                    #     generator.save_synthetic_data(f"{temp_files_dir}/privbayes_synth.csv")
-                    #     privbayes_synth_data = pd.read_csv(f"{temp_files_dir}/privbayes_synth.csv")
+                        generator = DataGenerator()
+                        generator.generate_dataset_in_correlated_attribute_mode(len(df),
+                                                                                f"{temp_files_dir}/privbayes_description.csv")
+                        generator.save_synthetic_data(f"{temp_files_dir}/privbayes_synth.csv")
+                        privbayes_synth_data = pd.read_csv(f"{temp_files_dir}/privbayes_synth.csv")
                         
-                    #     if self.slide_range:
-                    #         privbayes_synth_data = self.slide_range_backward(privbayes_synth_data, range_transform)
+                        if self.slide_range:
+                            privbayes_synth_data = self.slide_range_backward(privbayes_synth_data, range_transform)
                         
-                    #     privbayes_synth_data.to_pickle(folder_name + 'privbayes_' + str(it) + '.pickle')
-                    #     print(privbayes_synth_data.apply(lambda x: x.unique()))
-                    #     print(privbayes_synth_data.apply(lambda x: len(x.unique())))
+                        privbayes_synth_data.to_pickle(folder_name + 'privbayes_' + str(it) + '.pickle')
+                        print(privbayes_synth_data.apply(lambda x: x.unique()))
+                        print(privbayes_synth_data.apply(lambda x: len(x.unique())))
 
-                    # print('DONE: PrivBayes.')
+                    print('DONE: PrivBayes.')
 
 
 if __name__ == '__main__':
