@@ -1,6 +1,6 @@
-from papers.meta_classes import Publication, Finding
-from papers.meta_classes import NonReproducibleFindingException
-from papers.file_utils import PathSearcher
+from meta_classes import Publication, Finding
+from meta_classes import NonReproducibleFindingException
+from file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 import os
@@ -18,10 +18,10 @@ class Fairman2019Marijuana(Publication):
     }
     DATAFRAME_COLUMNS = ['YEAR', 'CLASS', 'SEX', 'RACE', 'AGE', 'MINAGE']
     INPUT_FILES = [
-        'data/32722-0001-Data.tsv', 'data/23782-0001-Data.tsv', 'data/04596-0001-Data.tsv',
-        'data/26701-0001-Data.tsv', 'data/29621-0001-Data.tsv', 'data/36361-0001-Data.tsv',
-        'data/35509-0001-Data.tsv', 'data/04373-0001-Data.tsv', 'data/21240-0001-Data.tsv',
-        'data/34481-0001-Data.tsv', 'data/34933-0001-Data.tsv'
+        'fairman2019marijuana/data/32722-0001-Data.tsv', 'fairman2019marijuana/data/23782-0001-Data.tsv', 'fairman2019marijuana/data/04596-0001-Data.tsv',
+        'fairman2019marijuana/data/26701-0001-Data.tsv', 'fairman2019marijuana/data/29621-0001-Data.tsv', 'fairman2019marijuana/data/36361-0001-Data.tsv',
+        'fairman2019marijuana/data/35509-0001-Data.tsv', 'fairman2019marijuana/data/04373-0001-Data.tsv', 'fairman2019marijuana/data/21240-0001-Data.tsv',
+        'fairman2019marijuana/data/34481-0001-Data.tsv', 'fairman2019marijuana/data/34933-0001-Data.tsv'
     ]
     INPUT_FIELDS = [
         'NEWRACE', 'AGE','IRSEX', 'USEACM', 'CIGTRY', 'ALCTRY', 'MJAGE', 'CIGARTRY', 'CHEWTRY', 'SNUFTRY', 'SLTTRY',
@@ -57,7 +57,7 @@ class Fairman2019Marijuana(Publication):
                 filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
             try:
                 dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-            except FileNotFoundError:
+            except BaseException:
                 dataframe = self._recreate_dataframe()
         super().__init__(dataframe)
         self.FINDINGS = self.FINDINGS + [
