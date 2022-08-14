@@ -3,6 +3,16 @@ def plot_line_nested_epsilon_dict(data):
     import pandas as pd
     return sns.lineplot(data=pd.DataFrame(data).T)
 
+def plot_line_nested_epsilon_dict_error_bars(data, legend="brief"):
+    import seaborn as sns
+    import pandas as pd
+    g = sns.lineplot(data=pd.DataFrame(data), x="str_eps", y="value", hue="synth", style="synth", 
+                                err_style="bars", ci=95, err_kws={"capsize": 5}, legend=legend)
+    if legend:
+        g.get_legend().set_title(None)
+    g.set(xlabel=None, ylabel=None)
+    return g
+
 def plot_box_map(data, title, vmin=0, vmax=5):
     import matplotlib.pyplot as plt
     import seaborn as sb

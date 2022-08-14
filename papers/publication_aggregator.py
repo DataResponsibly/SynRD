@@ -109,6 +109,75 @@ class PublicationAggregator():
         
         return soft_percentages
 
+    def real_vs_private_soft_error_bars(self):
+        """
+        Calculate percent matching of soft findings on
+        real vs private across epsilons and synthesizers
+        """
+        from statsmodels.stats.weightstats import DescrStatsW
+
+        # pub_id -> percentages_at_epsilon
+        #soft_means = {}
+        #soft_lower_cis = {}
+        #soft_upper_cis = {}
+        soft_data = {}
+        soft_data["str_eps"] = []
+        soft_data["synth"] = []
+        soft_data["value"] = []
+
+        def synth_helper(synth_name, findings, str_eps, pub_id):
+            proportion_array = []
+            for synth in findings:
+                bool_synth = []
+                for _, result in synth.items():
+                    bool_synth.append(result[1])
+                
+                proportion_array.append(sum([1 if bool_synth[i] == real_bool_soft[i] else 0 for i in range(len(bool_synth))]) / len(bool_synth))
+                soft_data["str_eps"].append(str_eps)
+                soft_data["synth"].append(synth_name)
+                soft_data["value"].append(sum([1 if bool_synth[i] == real_bool_soft[i] else 0 for i in range(len(bool_synth))]) / len(bool_synth))
+            
+            #soft_means[pub_id][str_eps][synth_name] = np.mean(proportion_array)
+            #conf_int = DescrStatsW(data=proportion_array, weights=None).tconfint_mean()
+            #soft_lower_cis[pub_id][str_eps][synth_name] = conf_int[0]
+            #soft_upper_cis[pub_id][str_eps][synth_name] = conf_int[1]
+            
+        for p in self.publications:
+            # epsilon -> percent_soft_findings
+            pub_id = p.DEFAULT_PAPER_ATTRIBUTES['id']
+            pub_file_base_df = p.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
+            #soft_means[pub_id] = {}
+            #soft_lower_cis[pub_id] = {}
+            #soft_upper_cis[pub_id] = {}
+
+            p_base_instantiated = p(filename=pub_file_base_df)
+            # data_generator = PrivateDataGenerator(p_base_instantiated)
+
+            # Run all real non visual findings 
+            real_results = p_base_instantiated.run_all_non_visual_findings()
+            real_bool_soft = []
+            for _, result in real_results.items():
+                real_bool_soft.append(result[1])
+
+            # In case data has not already been generated
+            # data_generator.generate()
+
+            for (_, str_eps) in self.EPSILONS:
+                # Create the findings
+                mst_findings, patectgan_findings, privbayes_findings = self._run_all_findings(#data_generator,
+                                                                                            p,
+                                                                                            pub_id,
+                                                                                            str_eps)
+                #soft_means[pub_id][str_eps] = {}
+                #soft_lower_cis[pub_id][str_eps] = {}
+                #soft_upper_cis[pub_id][str_eps] = {}
+
+                synth_helper('mst', mst_findings, str_eps, pub_id)
+                synth_helper('patectgan', patectgan_findings, str_eps, pub_id)
+                synth_helper('privbayes', privbayes_findings, str_eps, pub_id)
+        
+        return soft_data
+
     def finding_arrays_soft(self, str_eps):
         """
         Simply return arrays of soft findings for each
