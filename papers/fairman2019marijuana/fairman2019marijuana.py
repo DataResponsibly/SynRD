@@ -35,7 +35,7 @@ class Fairman2019Marijuana(Publication):
         8: '20-21', 9: '20-21'
     }
     SEX_MAP = {'Male': 0, 'Female': 1}
-    RACE_MAP = {'White': 0, 'Black': 1, 'AI/AN': 2, 'NHOPI': 3, 'Asian': 4, 'Multi-racial': 5, 'Hispanic': 6}
+    RACE_MAP = {'White': 0, 'Black': 1, 'AI/AN': 2, 'NHOPI': 3, 'Asian': 4, 'Multi-\nracial': 5, 'Hispanic': 6}
     CLASSES = {
         'CIGTRY': 0, 'ALCTRY': 1, 'MJAGE': 2, 'CIGARTRY': 3, 'CHEWTRY': 3, 'SNUFTRY': 3, 'SLTTRY': 3, 'COCAGE': 4,
         'HALLAGE': 4, 'HERAGE': 4, 'INHAGE': 4, 'ANALAGE': 4, 'SEDAGE': 4, 'STIMAGE': 4, 'TRANAGE': 4, 'NOUSAGE': 5
@@ -406,6 +406,45 @@ class Fairman2019Marijuana(Publication):
                          np.allclose(asian_marijuana_ratio, 9.4, atol=10e-2)]
         return [white_marijuana_ratio, asian_marijuana_ratio], soft_finding, hard_findings
 
+    def figure_1(self):
+        import matplotlib
+        import matplotlib.pylab as plt
+        matplotlib.rc('font', size=15)
+        matplotlib.rc('axes', titlesize=20)
+        df = self.dataframe.copy()
+        df['AGE_GROUP'] = df['AGE'].map(self.AGE_GROUP_MAP)
+        df['SEX'] = df['SEX'].map(dict(zip(self.SEX_MAP.values(), self.SEX_MAP.keys())))
+        df['RACE'] = df['RACE'].map(dict(zip(self.RACE_MAP.values(), self.RACE_MAP.keys())))
+        df['YEAR'] = df['YEAR'].map(dict(zip(self.YEAR_MAP.values(), self.YEAR_MAP.keys())))
+        df['CLASS'] = df['CLASS'].map(dict(zip(self.CLASSES_PRETTY.values(), self.CLASSES_PRETTY.keys())))
+        cols = ['MARIJUANA', 'CIGARETTES', 'ALCOHOL', 'OTHER_TABACCO', 'OTHER_DRUGS', 'NOUSAGE']
+        prop_sex = pd.crosstab(index=df['SEX'], columns=df['CLASS'], normalize="index") * 100
+        prop_race = pd.crosstab(index=df['RACE'], columns=df['CLASS'], normalize="index") * 100
+        prop_age = pd.crosstab(index=df['AGE_GROUP'], columns=df['CLASS'], normalize="index") * 100
+        prop_year = pd.crosstab(index=df['YEAR'], columns=df['CLASS'], normalize="index") * 100
+        figure, axis = plt.subplots(1, 4, gridspec_kw={'width_ratios': [1, 2, 3, 4]})
+        figure.set_size_inches(15, 6, forward=True)
+        figure.tight_layout()
+        prop_sex[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[0], legend=None, xlabel='Sex')
+        prop_age[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[1], legend=None, xlabel='Age Group')
+        prop_race[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[2], legend=None,
+                             xlabel='Race/Ethnicity')
+        prop_year[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[3], legend=None,
+                             xlabel='Survey Year')
+        axis[0].yaxis.set_major_formatter('{x:1.0f}%')
+        axis[1].set_yticks([])
+        axis[2].set_yticks([])
+        axis[3].set_yticks([])
+        axis[0].xaxis.set_label_coords(.5, -.25)
+        axis[1].xaxis.set_label_coords(.5, -.25)
+        axis[2].xaxis.set_label_coords(.5, -.25)
+        axis[3].xaxis.set_label_coords(.5, -.25)
+        plt.subplots_adjust(wspace=0.05)
+        plt.legend(loc='upper center', bbox_to_anchor=(-0.30, 1.15), ncol=6)
+        plt.savefig('fairman2019marijuana_figure_1.png',
+                    facecolor='white', transparent=False, bbox_inches='tight', pad_inches=.5)
+        return plt
+
     def finding_6_4(self):
         """
         As shown in Table 1, males were more likely than females to have initiated marijuana first in comparison to
@@ -503,5 +542,6 @@ class Fairman2019Marijuana(Publication):
 
 if __name__ == '__main__':
     paper = Fairman2019Marijuana()
+    paper.figure_1()
     for find in paper.FINDINGS:
         print(find.description, find.run())
