@@ -1,6 +1,6 @@
-from papers.meta_classes import Publication, Finding
-from papers.meta_classes import NonReproducibleFindingException
-from papers.file_utils import PathSearcher
+from meta_classes import Publication, Finding
+from meta_classes import NonReproducibleFindingException
+from file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 import os
@@ -18,10 +18,10 @@ class Fairman2019Marijuana(Publication):
     }
     DATAFRAME_COLUMNS = ['YEAR', 'CLASS', 'SEX', 'RACE', 'AGE', 'MINAGE']
     INPUT_FILES = [
-        'data/32722-0001-Data.tsv', 'data/23782-0001-Data.tsv', 'data/04596-0001-Data.tsv',
-        'data/26701-0001-Data.tsv', 'data/29621-0001-Data.tsv', 'data/36361-0001-Data.tsv',
-        'data/35509-0001-Data.tsv', 'data/04373-0001-Data.tsv', 'data/21240-0001-Data.tsv',
-        'data/34481-0001-Data.tsv', 'data/34933-0001-Data.tsv'
+        'fairman2019marijuana/data/32722-0001-Data.tsv', 'fairman2019marijuana/data/23782-0001-Data.tsv', 'fairman2019marijuana/data/04596-0001-Data.tsv',
+        'fairman2019marijuana/data/26701-0001-Data.tsv', 'fairman2019marijuana/data/29621-0001-Data.tsv', 'fairman2019marijuana/data/36361-0001-Data.tsv',
+        'fairman2019marijuana/data/35509-0001-Data.tsv', 'fairman2019marijuana/data/04373-0001-Data.tsv', 'fairman2019marijuana/data/21240-0001-Data.tsv',
+        'fairman2019marijuana/data/34481-0001-Data.tsv', 'fairman2019marijuana/data/34933-0001-Data.tsv'
     ]
     INPUT_FIELDS = [
         'NEWRACE', 'AGE','IRSEX', 'USEACM', 'CIGTRY', 'ALCTRY', 'MJAGE', 'CIGARTRY', 'CHEWTRY', 'SNUFTRY', 'SLTTRY',
@@ -35,17 +35,17 @@ class Fairman2019Marijuana(Publication):
         8: '20-21', 9: '20-21'
     }
     SEX_MAP = {'Male': 0, 'Female': 1}
-    RACE_MAP = {'White': 0, 'Black': 1, 'AI/AN': 2, 'NHOPI': 3, 'Asian': 4, 'Multi-racial': 5, 'Hispanic': 6}
+    RACE_MAP = {'White': 0, 'Black': 1, 'AI/AN': 2, 'NHOPI': 3, 'Asian': 4, 'Multi-\nracial': 5, 'Hispanic': 6}
     CLASSES = {
         'CIGTRY': 0, 'ALCTRY': 1, 'MJAGE': 2, 'CIGARTRY': 3, 'CHEWTRY': 3, 'SNUFTRY': 3, 'SLTTRY': 3, 'COCAGE': 4,
-        'HALLAGE': 4, 'HERAGE': 4, 'INHAGE': 4, 'ANALAGE': 4, 'SEDAGE': 4, 'STIMAGE': 4, 'TRANAGE': 4, 'NOUSAGE': 5
+        'HALLAGE': 4, 'HERAGE': 4, 'INHAGE': 4, 'ANALAGE': 4, 'SEDAGE': 4, 'STIMAGE': 4, 'TRANAGE': 4, 'NO USAGE': 5
     }
     CLASSES_PRETTY = {
-        'CIGARETTES': 0, 'ALCOHOL': 1, 'MARIJUANA': 2, 'OTHER_TABACCO': 3, 'OTHER_DRUGS': 4, 'NOUSAGE': 5
+        'CIGARETTES': 0, 'ALCOHOL': 1, 'MARIJUANA': 2, 'OTHER TABACCO': 3, 'OTHER DRUGS': 4, 'NO USAGE': 5
     }
     USE_ACM_MAP = {
         1: CLASSES['ALCTRY'], 2: CLASSES['CIGTRY'], 3: CLASSES['MJAGE'],
-        4: CLASSES['ALCTRY'], 5: CLASSES['CIGTRY'], 6: CLASSES['MJAGE'], 91: CLASSES['NOUSAGE'],
+        4: CLASSES['ALCTRY'], 5: CLASSES['CIGTRY'], 6: CLASSES['MJAGE'], 91: CLASSES['NO USAGE'],
     }
 
     def __init__(self, dataframe=None, filename=None, path=None):
@@ -57,7 +57,7 @@ class Fairman2019Marijuana(Publication):
                 filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
             try:
                 dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-            except FileNotFoundError:
+            except BaseException:
                 dataframe = self._recreate_dataframe()
         super().__init__(dataframe)
         self.FINDINGS = self.FINDINGS + [
@@ -144,9 +144,9 @@ class Fairman2019Marijuana(Publication):
         drugs_classes = list(self.CLASSES)[:-1]
         main_df['MINAGE'] = main_df[drugs_classes].values.min(axis=1)
         main_df['MINAGE'] = np.where(main_df['MINAGE'] > 900, 999, main_df['MINAGE'])
-        main_df['MINAGE_CLASS'] = np.where(main_df['MINAGE'] > 900, self.CLASSES['NOUSAGE'], None)
-        main_df['CLASSES_LIST'] = np.where(main_df['MINAGE'] > 900, str(self.CLASSES['NOUSAGE']), None)
-        main_df = main_df[~((main_df.MINAGE_CLASS == self.CLASSES['NOUSAGE']) &
+        main_df['MINAGE_CLASS'] = np.where(main_df['MINAGE'] > 900, self.CLASSES['NO_USAGE'], None)
+        main_df['CLASSES_LIST'] = np.where(main_df['MINAGE'] > 900, str(self.CLASSES['NO_USAGE']), None)
+        main_df = main_df[~((main_df.MINAGE_CLASS == self.CLASSES['NO_USAGE']) &
                             (main_df.USEACM == 99))]  # remove where unknown class
         main_df['YEAR'] = main_df['file_name'].map(self.FILE_YEAR_MAP)  # infer year
         # make all vars to range from 0 to max(var) - required for mst
@@ -221,8 +221,8 @@ class Fairman2019Marijuana(Publication):
         """
         other tobacco (14.8 vs. 15.7;  0.9 years)
         """
-        mean_age_first_use_2004 = self._get_mean_minage_class_year('OTHER_TABACCO', 2004)
-        mean_age_first_use_2014 = self._get_mean_minage_class_year('OTHER_TABACCO', 2014)
+        mean_age_first_use_2004 = self._get_mean_minage_class_year('OTHER TABACCO', 2004)
+        mean_age_first_use_2014 = self._get_mean_minage_class_year('OTHER TABACCO', 2014)
         age_diff = np.round(mean_age_first_use_2014 - mean_age_first_use_2004, 1)
         findings = [mean_age_first_use_2004, mean_age_first_use_2014]
         soft_finding = mean_age_first_use_2014 > mean_age_first_use_2004
@@ -233,8 +233,8 @@ class Fairman2019Marijuana(Publication):
         """
         and other drug use (14.4 vs. 15.0;  0.6 years)
         """
-        mean_age_first_use_2004 = self._get_mean_minage_class_year('OTHER_DRUGS', 2004)
-        mean_age_first_use_2014 = self._get_mean_minage_class_year('OTHER_DRUGS', 2014)
+        mean_age_first_use_2004 = self._get_mean_minage_class_year('OTHER DRUGS', 2004)
+        mean_age_first_use_2014 = self._get_mean_minage_class_year('OTHER DRUGS', 2014)
         age_diff = np.round(mean_age_first_use_2014 - mean_age_first_use_2004, 1)
         findings = [mean_age_first_use_2004, mean_age_first_use_2014]
         soft_finding = mean_age_first_use_2014 > mean_age_first_use_2004
@@ -251,8 +251,8 @@ class Fairman2019Marijuana(Publication):
         marijuana_ratio = table[self.CLASSES_PRETTY['MARIJUANA']] * 100
         alcohol_ratio = table[self.CLASSES_PRETTY['ALCOHOL']] * 100
         cigarettes_ratio = table[self.CLASSES_PRETTY['CIGARETTES']] * 100
-        other_tobacco_ratio = table[self.CLASSES_PRETTY['OTHER_TABACCO']] * 100
-        other_drugs_ratio = table[self.CLASSES_PRETTY['OTHER_DRUGS']] * 100
+        other_tobacco_ratio = table[self.CLASSES_PRETTY['OTHER TABACCO']] * 100
+        other_drugs_ratio = table[self.CLASSES_PRETTY['OTHER DRUGS']] * 100
         findings = [marijuana_ratio, alcohol_ratio, cigarettes_ratio, other_drugs_ratio, other_tobacco_ratio]
         soft_finding = (marijuana_ratio < alcohol_ratio) & (marijuana_ratio < cigarettes_ratio) & \
                        (marijuana_ratio > other_tobacco_ratio)
@@ -293,8 +293,8 @@ class Fairman2019Marijuana(Publication):
         """
         and increased in youth having abstained from substance use (35.5% to 46.3%)
         """
-        no_usage_prop_2004 = self._get_prop_class_year('NOUSAGE', 2004)
-        no_usage_prop_2014 = self._get_prop_class_year('NOUSAGE', 2014)
+        no_usage_prop_2004 = self._get_prop_class_year('NO USAGE', 2004)
+        no_usage_prop_2014 = self._get_prop_class_year('NO USAGE', 2014)
         findings = [no_usage_prop_2004, no_usage_prop_2014]
         soft_finding = no_usage_prop_2004 < no_usage_prop_2014
         hard_findings = [np.allclose(no_usage_prop_2004, 35.5, atol=10e-2), np.allclose(no_usage_prop_2014, 46.3, atol=10e-2)]
@@ -322,8 +322,8 @@ class Fairman2019Marijuana(Publication):
         or other tobacco products first (5.7%),
         """
         table = self.table_s1(feature='SEX')
-        male_other_tobacco_ratio = table[self.SEX_MAP['Male'], self.CLASSES_PRETTY['OTHER_TABACCO']] * 100
-        female_other_tobacco_ratio = table[self.SEX_MAP['Female'], self.CLASSES_PRETTY['OTHER_TABACCO']] * 100
+        male_other_tobacco_ratio = table[self.SEX_MAP['Male'], self.CLASSES_PRETTY['OTHER TABACCO']] * 100
+        female_other_tobacco_ratio = table[self.SEX_MAP['Female'], self.CLASSES_PRETTY['OTHER TABACCO']] * 100
         findings = [female_other_tobacco_ratio, male_other_tobacco_ratio]
         soft_finding = male_other_tobacco_ratio > female_other_tobacco_ratio
         hard_findings = [np.allclose(male_other_tobacco_ratio,  5.7, atol=10e-2)]
@@ -405,6 +405,48 @@ class Fairman2019Marijuana(Publication):
         hard_findings = [np.allclose(white_marijuana_ratio, 9.4, atol=10e-2),
                          np.allclose(asian_marijuana_ratio, 9.4, atol=10e-2)]
         return [white_marijuana_ratio, asian_marijuana_ratio], soft_finding, hard_findings
+
+    def figure_1(self):
+        import matplotlib
+        import matplotlib.pylab as plt
+        matplotlib.rc('legend', fontsize=36)
+        matplotlib.rc('axes', labelsize=30)
+        matplotlib.rc('xtick', labelsize=30)
+        matplotlib.rc('ytick', labelsize=30)
+        df = self.dataframe.copy()
+        df['AGE_GROUP'] = df['AGE'].map(self.AGE_GROUP_MAP)
+        df['SEX'] = df['SEX'].map(dict(zip(self.SEX_MAP.values(), self.SEX_MAP.keys())))
+        df['RACE'] = df['RACE'].map(dict(zip(self.RACE_MAP.values(), self.RACE_MAP.keys())))
+        df['YEAR'] = df['YEAR'].map(dict(zip(self.YEAR_MAP.values(), self.YEAR_MAP.keys())))
+        df['CLASS'] = df['CLASS'].map(dict(zip(self.CLASSES_PRETTY.values(), self.CLASSES_PRETTY.keys())))
+        cols = ['MARIJUANA', 'CIGARETTES', 'ALCOHOL', 'OTHER TABACCO', 'OTHER DRUGS', 'NO USAGE']
+        prop_sex = pd.crosstab(index=df['SEX'], columns=df['CLASS'], normalize="index") * 100
+        prop_race = pd.crosstab(index=df['RACE'], columns=df['CLASS'], normalize="index") * 100
+        prop_age = pd.crosstab(index=df['AGE_GROUP'], columns=df['CLASS'], normalize="index") * 100
+        prop_year = pd.crosstab(index=df['YEAR'], columns=df['CLASS'], normalize="index") * 100
+        figure, axis = plt.subplots(1, 4, gridspec_kw={'width_ratios': [1, 2, 3, 4]})
+
+        figure.set_size_inches(20, 8, forward=True)
+        figure.tight_layout()
+        prop_sex[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[0], legend=None, xlabel='Sex')
+        prop_age[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[1], legend=None, xlabel='Age Group')
+        prop_race[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[2], legend=None,
+                             xlabel='Race/Ethnicity')
+        prop_year[cols].plot(kind='bar', stacked=True, colormap='tab20', ax=axis[3], legend=None,
+                             xlabel='Survey Year')
+        axis[0].yaxis.set_major_formatter('{x:1.0f}%')
+        axis[1].set_yticks([])
+        axis[2].set_yticks([])
+        axis[3].set_yticks([])
+        axis[0].xaxis.set_label_coords(.5, -.34)
+        axis[1].xaxis.set_label_coords(.5, -.34)
+        axis[2].xaxis.set_label_coords(.5, -.34)
+        axis[3].xaxis.set_label_coords(.5, -.34)
+        plt.subplots_adjust(wspace=0.05)
+        plt.legend(loc='upper center', bbox_to_anchor=(-0.30, 1.32), ncol=3)
+        plt.savefig('fairman2019marijuana_figure_1.png',
+                    facecolor='white', transparent=False, bbox_inches='tight', pad_inches=.5)
+        return plt
 
     def finding_6_4(self):
         """
@@ -503,5 +545,6 @@ class Fairman2019Marijuana(Publication):
 
 if __name__ == '__main__':
     paper = Fairman2019Marijuana()
+    paper.figure_1()
     for find in paper.FINDINGS:
         print(find.description, find.run())

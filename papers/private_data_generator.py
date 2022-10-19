@@ -30,16 +30,35 @@ class PrivateDataGenerator():
         "jeong2021math": "domains/jeong2021math-domain.json",
         "fairman2019marijuana": "domains/fairman2019marijuana-domain.json",
         "fruiht2018naturally": "domains/fruiht2018naturally-domain.json",
+        "lee2021ability": "domains/lee2021ability-domain.json",
+        "iverson22football": "domains/iverson22football-domain.json",
     }
 
-    def __init__(self, publication):
+    def __init__(self, publication, slide_range=False, privbayes_limit=40, privbayes_bins=10):
         self.publication = publication
         self.cont_features = publication.cont_features
+        self.slide_range = slide_range
+        self.privbayes_limit = privbayes_limit
+        self.privbayes_bins = privbayes_bins
 
     def prepare_dataframe(self):
         df = self.publication.dataframe
         print(df.apply(lambda x: x.unique()))
         print(df.apply(lambda x: len(x.unique())))
+        return df
+
+    def slide_range_forward(self, df):
+        transform = {}
+        for c in df.columns:
+            if min(df[c]) > 0:
+                transform[c] = min(df[c])
+                df[c] = df[c] - min(df[c])
+        return df, transform
+
+    def slide_range_backward(self, df, transform):
+        for c in df.columns:
+            if c in transform:
+                df[c] = df[c] + transform[c]
         return df
     
     def generate(self):
@@ -49,9 +68,23 @@ class PrivateDataGenerator():
             self.publication.DEFAULT_PAPER_ATTRIBUTES['id'] : df
         }
 
+        if self.slide_range:
+            df, range_transform = self.slide_range_forward(df)
+
+        # Threshold binning for larger values for privbayes:
+        # NOTE: this is due to time efficiency issues
+        df_privbayes = df.copy()
+        binned = {}
+        for col in df_privbayes.columns:
+            if len(df_privbayes[col].unique()) > self.privbayes_limit:
+                col_df = pd.qcut(df_privbayes[col], q=self.privbayes_bins, duplicates='drop')
+                df_privbayes[col] = col_df.apply(lambda row : row.mid).astype(int)
+                binned[col] = True
+        print('UNIQUE')
+        print(df_privbayes.apply(lambda x: len(x.unique())))
         temp_files_dir = 'temp'
         os.makedirs(temp_files_dir, exist_ok=True)
-        df.to_csv(os.path.join(temp_files_dir, "temp.csv"))
+        df_privbayes.to_csv(os.path.join(temp_files_dir, "temp.csv"))
 
         for pub_name, df in df_map.items():
             print('Generating: ' + pub_name)
@@ -74,9 +107,14 @@ class PrivateDataGenerator():
                         mst = MSTSynthesizer(epsilon=eps,
                                              domain=pub_name, 
                                              domains_dict=self.DOMAINS)
+                        
                         mst.fit(df)
                         sample_size = len(df)
                         mst_synth_data = mst.sample(sample_size)
+
+                        if self.slide_range:
+                            mst_synth_data = self.slide_range_backward(mst_synth_data, range_transform)
+
                         mst_synth_data.to_pickle(folder_name + 'mst_' + str(it) + '.pickle')
                         print(mst_synth_data.apply(lambda x: x.unique()))
                         print(mst_synth_data.apply(lambda x: len(x.unique())))
@@ -89,13 +127,22 @@ class PrivateDataGenerator():
                         patectgan = PytorchDPSynthesizer(eps, 
                                                         PATECTGAN(preprocessor_eps=(preprocess_factor * eps)), 
                                                         preprocessor=None)
+                        # Sadly, patectgan needs this sort of rounding right now
+                        if df.isnull().any().any():
+                            df = df.fillna(0) 
+
+                        df_patectgan = df[df.columns].round(0).astype(int)
                         patectgan.fit(
-                            df,
-                            categorical_columns=list(df.columns),
+                            df_patectgan,
+                            categorical_columns=list(df_patectgan.columns),
                             transformer=BaseTransformer,
                         )
-                        sample_size = len(df)
+                        sample_size = len(df_patectgan)
                         patectgan_synth_data = patectgan.sample(sample_size)
+
+                        if self.slide_range:
+                            patectgan_synth_data = self.slide_range_backward(patectgan_synth_data, range_transform)
+
                         patectgan_synth_data.to_pickle(folder_name + 'patectgan_' + str(it) + '.pickle')
                         print(patectgan_synth_data.apply(lambda x: x.unique()))
                         print(patectgan_synth_data.apply(lambda x: len(x.unique())))
@@ -124,6 +171,9 @@ class PrivateDataGenerator():
                         # specify categorical attributes
                         categorical_attributes = {k: True for k, v in dict_domain.items() if v < threshold_value}
                         
+                        # add the binned attributes
+                        categorical_attributes = {**categorical_attributes, **binned}
+
                         # Intialize a describer and a generator
                         describer = DataDescriber(category_threshold=threshold_value)
                         describer.describe_dataset_in_correlated_attribute_mode(f"{temp_files_dir}/temp.csv",
@@ -139,23 +189,13 @@ class PrivateDataGenerator():
                                                                                 f"{temp_files_dir}/privbayes_description.csv")
                         generator.save_synthetic_data(f"{temp_files_dir}/privbayes_synth.csv")
                         privbayes_synth_data = pd.read_csv(f"{temp_files_dir}/privbayes_synth.csv")
+                        
+                        if self.slide_range:
+                            privbayes_synth_data = self.slide_range_backward(privbayes_synth_data, range_transform)
+                        
                         privbayes_synth_data.to_pickle(folder_name + 'privbayes_' + str(it) + '.pickle')
                         print(privbayes_synth_data.apply(lambda x: x.unique()))
                         print(privbayes_synth_data.apply(lambda x: len(x.unique())))
 
                     print('DONE: PrivBayes.')
 
-
-if __name__ == '__main__':
-    from papers import Fairman2019Marijuana, Jeong2021Math
-
-    for p in [Jeong2021Math]:
-        # epsilon -> percent_soft_findings
-        pub_id = p.DEFAULT_PAPER_ATTRIBUTES['id']
-        pub_file_base_df = p.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
-
-        p_base_instantiated = p(filename=pub_file_base_df)
-        data_generator = PrivateDataGenerator(p_base_instantiated)
-
-        # In case data has not already been generated
-        data_generator.generate()

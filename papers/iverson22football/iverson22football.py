@@ -5,8 +5,8 @@ import scipy.stats as stats
 from statsmodels.stats.contingency_tables import Table2x2
 from statsmodels.stats.proportion import proportions_chisquare
 
-from papers.file_utils import PathSearcher
-from papers.meta_classes import Publication, Finding, NonReproducibleFindingException
+from file_utils import PathSearcher
+from meta_classes import Publication, Finding, NonReproducibleFindingException
 
 
 class Iverson22Football(Publication):
@@ -33,7 +33,7 @@ class Iverson22Football(Publication):
     ]
 
     INPUT_FILES = [
-        'data/21600-0001-Data.tsv', 'data/21600-0032-Data.tsv'
+        'iverson22football/data/21600-0001-Data.tsv', 'iverson22football/data/21600-0032-Data.tsv'
     ]
 
     # FILENAME = "iverson22football"
@@ -51,24 +51,24 @@ class Iverson22Football(Publication):
                 dataframe = self._recreate_dataframe()
         super().__init__(dataframe)
         self.FINDINGS = self.FINDINGS + [
-            Finding(self.finding_3_1),
-            Finding(self.finding_3_2),
-            Finding(self.finding_3_3),
-            Finding(self.finding_4_1),
-            Finding(self.finding_4_2),
-            Finding(self.finding_4_3),
-            Finding(self.finding_4_4),
+            Finding(self.finding_3_1, description="finding_3_1"),
+            Finding(self.finding_3_2, description="finding_3_2"),
+            Finding(self.finding_3_3, description="finding_3_3"),
+            Finding(self.finding_4_1, description="finding_4_1"),
+            Finding(self.finding_4_2, description="finding_4_2"),
+            Finding(self.finding_4_3, description="finding_4_3"),
+            Finding(self.finding_4_4, description="finding_4_4"),
             # Finding(self.finding_4_5),
-            Finding(self.finding_4_6),
-            Finding(self.finding_4_7),
-            Finding(self.finding_4_8),
-            Finding(self.finding_4_9),
-            Finding(self.finding_4_10),
-            Finding(self.finding_4_11),
-            Finding(self.finding_4_12),
-            Finding(self.finding_4_13),
-            Finding(self.finding_4_14),
-            Finding(self.finding_4_15)
+            Finding(self.finding_4_6, description="finding_4_6"),
+            Finding(self.finding_4_7, description="finding_4_7"),
+            Finding(self.finding_4_8, description="finding_4_8"),
+            Finding(self.finding_4_9, description="finding_4_9"),
+            Finding(self.finding_4_10, description="finding_4_10"),
+            Finding(self.finding_4_11, description="finding_4_11"),
+            Finding(self.finding_4_12, description="finding_4_12"),
+            Finding(self.finding_4_13, description="finding_4_13"),
+            Finding(self.finding_4_14, description="finding_4_14"),
+            Finding(self.finding_4_15, description="finding_4_15")
         ]
 
     def _recreate_dataframe(self, filename='iverson22football_dataframe.pickle'):

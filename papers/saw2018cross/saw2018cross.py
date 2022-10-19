@@ -309,7 +309,6 @@ class Saw2018Cross(Publication):
                                               (filter1['X2STU30OCC_STEM1'] == 1)).astype(np.int8)
 
         filter1 = filter1[self.DATAFRAME_COLUMNS]
-        print(filter1.columns)
         filter1.to_pickle(filename)
         return filter1
 
@@ -575,7 +574,6 @@ class Saw2018Cross(Publication):
         hard_findings_values = [interest - similar_set_mean for interest in similar_set] + \
                                [interest - dissimilar_set_mean for interest in dissimilar_set]
         soft_finding_bool = (similar_set_mean - dissimilar_set_mean) >= 0.015
-        print(([similar_set, dissimilar_set], soft_finding_bool, hard_findings_values))
         return ([similar_set, dissimilar_set], soft_finding_bool, hard_findings_values)
     
     def finding_526_5(self):

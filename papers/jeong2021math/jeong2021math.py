@@ -1,6 +1,6 @@
-from papers.meta_classes import Publication, Finding
-from papers.meta_classes import NonReproducibleFindingException
-from papers.file_utils import PathSearcher
+from meta_classes import Publication, Finding
+from meta_classes import NonReproducibleFindingException
+from file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 
@@ -46,7 +46,7 @@ class Jeong2021Math(Publication):
                 filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
             try:
                 dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-            except FileNotFoundError:
+            except:
                 dataframe = self._recreate_dataframe()
         super().__init__(dataframe)
         self.train_results, self.test_results = self.score_by_class(self.dataframe)
@@ -90,7 +90,7 @@ class Jeong2021Math(Publication):
 
     def _recreate_dataframe(self, filename='jeong2021math_dataframe.pickle'):
         # school_survey = pd.read_csv('data/36423-0001-Data.tsv', sep='\t')
-        student_survey = pd.read_csv('data/36423-0002-Data.tsv', sep='\t')
+        student_survey = pd.read_csv('jeong2021math/data/36423-0002-Data.tsv', sep='\t')
         data = student_survey[self.DATAFRAME_COLUMNS]
         data['RACE_GROUP'] = data['X1RACE'].map(self.RACE_GROUP_MAP)
         data = data[data['RACE_GROUP'].isin(self.RACE_CLASSES.values())]
