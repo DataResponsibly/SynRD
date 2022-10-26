@@ -1,0 +1,11 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: README
+parts:
+  # - caption: Simulator
+  #   chapters:
+  - caption: Sample notebook
+    chapters:
+    - file: papers/generate_figures
