@@ -14,5 +14,6 @@ setup(
     author_email="lr2872@nyu.edu",
     url="https://github.com/DataResponsibly/SynRD",
     packages=["SynRD"],
+    # setup_requires=['wheel'],
     install_requires=["smartnoise-synth", "rpy2"],
 )
