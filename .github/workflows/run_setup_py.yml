@@ -20,7 +20,7 @@ jobs:
         run: |
           pip install flake8 pytest setuptools wheel twine
       - name: Build 
-        run: python setup.py sdist bdist_wheel
+        run: python setup.py sdist bdist wheel
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
