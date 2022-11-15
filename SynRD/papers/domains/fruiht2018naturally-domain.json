@@ -1,0 +1,13 @@
+{
+    "BIO_SEX": 2,
+    "AGE_YEARS": 22,
+    "MENTOR": 2,
+    "PARENT_NO_EDU": 2,
+    "RACE": 6,
+    "RACE_HISPANIC": 2,
+    "RACE_WHITE": 2,
+    "RACE_BLACK": 2,
+    "RACE_OTHER": 2,
+    "EDU_ATTAINED": 14,
+    "EDU_ATTAINED_BINARY": 2
+}
