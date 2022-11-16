@@ -1,6 +1,8 @@
 # import SynRD
 # from SynRD.papers import get_papers
-from SynRD import Benchmark, Publication, get_papers
+import pandas as pd
+
+from SynRD import Benchmark, get_papers
 
 
 # Custom Synthesizer
@@ -8,7 +10,7 @@ class Synthesizer:
     def __init__(self) -> None:
         pass
 
-    def fit(self, paper: Publication):
+    def fit(self, paper: pd.DataFrame):
         pass
 
     def sample(self, n):
@@ -23,10 +25,12 @@ def main():
     benchmark = Benchmark()
     for paper in get_papers():
         print(paper)
-        new_synth.fit(paper)
+        new_synth.fit(paper.dataframe)
         # dataset = new_synth.sample(len(paper))
         dataset = new_synth.sample(10)
-        benchmark.eval(dataset)
+        # Probably we could use property
+        paper.set_dataframe(dataset)
+        benchmark.eval(paper)
         # benchmark.plot(plots=all)
 
     print(benchmark.summary())
