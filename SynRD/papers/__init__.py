@@ -34,3 +34,8 @@ def get_papers() -> list[Publication]:
             )
 
     return papers
+
+from .private_data_generator import PrivateDataGenerator
+from .publication_aggregator import PublicationAggregator
+
+__all__ = ["PrivateDataGenerator", "PublicationAggregator"]
