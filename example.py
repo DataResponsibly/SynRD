@@ -2,7 +2,7 @@
 # from SynRD.papers import get_papers
 import pandas as pd
 
-from SynRD import Benchmark, get_papers
+from SynRD import Benchmark, get_papers, load
 
 
 # Custom Synthesizer
@@ -21,6 +21,7 @@ class Synthesizer:
 
 def main():
     new_synth = Synthesizer()
+    # dataset = load('original')
 
     benchmark = Benchmark()
     for paper in get_papers():
