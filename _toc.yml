@@ -8,4 +8,4 @@ parts:
   #   chapters:
   - caption: Sample notebook
     chapters:
-    - file: papers/generate_figures
+    - file: notebooks/generate_figures
