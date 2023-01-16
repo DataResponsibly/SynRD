@@ -1,4 +1,4 @@
-from papers.saw2018cross.saw2018cross import Saw2018Cross
+from SynRD.papers import Saw2018Cross
 
 class TestSaw2018Cross:
 

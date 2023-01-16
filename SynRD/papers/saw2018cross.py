@@ -1,4 +1,4 @@
-from meta_classes import Publication, Finding, VisualFinding, FigureFinding
+from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding
 
 import pandas as pd
 import numpy as np

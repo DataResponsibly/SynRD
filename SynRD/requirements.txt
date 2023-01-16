@@ -2,6 +2,7 @@ pandas
 numpy
 scikit-learn
 git+https://github.com/ryan112358/private-pgm.git
+DataSynthesizer
 smartnoise-synth
 diffprivlib
 rpy2
