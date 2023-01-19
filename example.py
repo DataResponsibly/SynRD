@@ -2,7 +2,9 @@
 # from SynRD.papers import get_papers
 import pandas as pd
 
-from SynRD import Benchmark, get_papers, load
+from SynRD.synthesizers import MSTSynthesizer
+from SynRD.benchmark import Benchmark
+from SynRD.papers import Saw2018Cross
 
 
 # Custom Synthesizer
@@ -24,15 +26,18 @@ def main():
     # dataset = load('original')
 
     benchmark = Benchmark()
-    for paper in get_papers():
-        print(paper)
-        new_synth.fit(paper.dataframe)
+    new_synth = MSTSynthesizer(epsilon=1.0, slide_range=False)
+    saw = Saw2018Cross()
+    for paper in [saw]: # need to make sure get_papers() is working
+        print(str(paper))
+        new_synth.fit(paper.real_dataframe)
         # dataset = new_synth.sample(len(paper))
-        dataset = new_synth.sample(10)
+        dataset = new_synth.sample(len(paper.real_dataframe))
         # Probably we could use property
-        paper.set_dataframe(dataset)
+        paper.set_synthetic_dataframe(dataset)
         benchmark.eval(paper)
         # benchmark.plot(plots=all)
+
 
     print(benchmark.summary())
 

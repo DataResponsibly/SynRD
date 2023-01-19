@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 from itertools import chain
+import json
 
 class Saw2018Cross(Publication):
     """
@@ -139,10 +140,14 @@ class Saw2018Cross(Publication):
     def __init__(self, dataframe=None, filename=None):
         if filename is not None:
             self.dataframe = pd.read_pickle(filename)
+            self.real_dataframe = pd.read_pickle(filename)
         elif dataframe is not None:
             self.dataframe = dataframe
+            self.real_dataframe = dataframe
         else:
             self.dataframe = self._recreate_dataframe()
+            self.real_dataframe = self._recreate_dataframe()
+        self.columns = self.real_dataframe.columns
 
         self.FINDINGS = self.FINDINGS + [
             VisualFinding(self.table_b2, description="table_b2"),
@@ -265,11 +270,13 @@ class Saw2018Cross(Publication):
         
 
         self.table_b2_dataframe = None
+        # TODO: missing super call
         
-        
+    def __str__(self):
+        return json.dumps(self.DEFAULT_PAPER_ATTRIBUTES, sort_keys=True, indent=4)
 
     def _recreate_dataframe(self, filename='saw2018cross_dataframe.pickle'):
-        student_survey = pd.read_csv('saw2018cross/data/36423-0002-Data.tsv',sep='\t')
+        student_survey = pd.read_csv('data/36423-0002-Data.tsv',sep='\t')
 
         filter1 = student_survey[student_survey['X2UNIV2A'] == 1]
         filter1 = filter1[(filter1['S1GRD0809'] != 3) & \
@@ -396,6 +403,7 @@ class Saw2018Cross(Publication):
             s = row
             s.name = ind
             s.name = s.name + tuple('n')
+            # full_intersectional_table = pd.concat([full_intersectional_table, s])
             full_intersectional_table = full_intersectional_table.append(s)
 
         full_intersectional_table = full_intersectional_table.reindex(self.TABLE_B2_REINDEX)
@@ -621,6 +629,7 @@ class Saw2018Cross(Publication):
         for ses_type in list(self.SES_MAP.values()):
             row = ses_df.xs((ses_type, 1), level=[0,1], axis=0, drop_level=False).groupby(level=0).sum()/\
                 ses_df.xs((ses_type, 0), level=[0,1], axis=0, drop_level=False).groupby(level=0).sum()
+            # df_ses_percentages = pd.concat([df_ses_percentages, row])
             df_ses_percentages = df_ses_percentages.append(row)
         
         checks_per_column = []

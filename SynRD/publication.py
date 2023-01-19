@@ -23,8 +23,10 @@ class Publication():
     FILENAME = None
 
     def __init__(self, dataframe=None, filename=None, description=None):
+        self.real_dataframe = dataframe
         self.dataframe = dataframe
         self._description = description
+        self.columns = self.real_dataframe.columns
 
     def run_all_findings(self):
         results = {}
@@ -40,6 +42,11 @@ class Publication():
                 result = finding.run()
                 results[str(finding)] = result
         return results
+
+    def set_synthetic_dataframe(self, df):
+        assert len(df.columns) > 0 
+        assert set(df.columns) == set(self.columns)
+        self.synthetic_dataframe = df
 
     def _read_pickle_dataframe(self):
         return pd.read_pickle(self.FILENAME + '_dataframe.pickle')
