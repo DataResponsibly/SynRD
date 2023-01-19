@@ -1,3 +1,4 @@
+data
 papers/*/data
 unfinished/*/data
 archive/*/data
@@ -185,4 +186,4 @@ cython_debug/
 .vscode
 
 papers/temp*
-datasets
+# datasets
