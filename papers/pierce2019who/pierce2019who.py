@@ -5,6 +5,8 @@ import numpy as np
 
 from itertools import chain
 
+from statsmodels.regression.mixed_linear_model import MixedLM
+
 class Pierce2019Who(Publication):
     """
     A class wrapper for all publication classes, for shared functionality.
@@ -19,6 +21,18 @@ class Pierce2019Who(Publication):
         'base_dataframe_pickle': 'pierce2019who_dataframe.pickle'
     }
     
+    SEX_MAP = {
+        1: 'male',
+        2: 'female'
+    }
+
+    EDUCATION_MAP = {
+        1: 'less than a high school diploma',
+        2: 'high school diploma',
+        3: 'some college',
+        4: '4-year degree',
+        5: 'graduate degree',
+    }
     
     DATAFRAME_COLUMNS = ['positive_emotion', 
                          'negative_emotion', 
@@ -40,6 +54,7 @@ class Pierce2019Who(Publication):
     
     FILENAME = 'pierce2019who'
     
+    table = None
     
     def __init__(self, dataframe=None, filename=None):
         if filename is not None:
@@ -50,68 +65,69 @@ class Pierce2019Who(Publication):
             self.dataframe = self._recreate_dataframe()
 
         self.FINDINGS = self.FINDINGS + [
-            # VisualFinding(self.table_b2, description="table_b2"),
-            # FigureFinding(self.figure_2, description="figure_2"),
+            VisualFinding(self.table_2, description="table_2"),
             Finding(self.finding_3284_1, description="finding_3284_1",
                     text="""When accounting for between-individual differences, spousal support 
                             has the strongest relationship with positive emotional states, reaffirming 
-                            the findings of Walen and Lachman (2000). Increased spousal support 
-                            is associated with an increased positive emotional state. A direct 
-                            comparison of the coefficients reveals that positive spousal support 
-                            has a 232% greater correlation than support from children, and a 320% 
-                            greater correlation than support from friends. A Wald test comparing 
-                            coefficients confirms that the correlation stemming from spousal support 
-                            is significantly larger than those stemming from children and friends.
+                            the findings of Walen and Lachman (2000). 
                             """),
             Finding(self.finding_3286_1, description="finding_3286_1",
+                    text="""Increased spousal support is associated with an increased positive 
+                            emotional state. A direct comparison of the coefficients reveals that 
+                            positive spousal support has a 232% greater correlation than support 
+                            from children, and a 320% greater correlation than support from friends. 
+                            A Wald test comparing coefficients confirms that the correlation stemming 
+                            from spousal support is significantly larger than those stemming from children and friends.
+                            """),
+            Finding(self.finding_3286_2, description="finding_3286_2",
                     text="""the stark difference between support and strain. Support from all three 
                             sources is significantly correlated with more positive emotional states.
                             """),
-            Finding(self.finding_3286_2, description="finding_3286_2",
+            Finding(self.finding_3286_3, description="finding_3286_3",
                     text="""However, of the three sources of strain, only the strain stemming from 
                             spouses is significantly correlated with lower positive emotional states. 
                             The other two sources are insignificant predictors of positive emotional 
                             states, meaning that having straining children and friends is not significantly 
                             associated with lower positive emotion.
                             """),
-            Finding(self.finding_3286_3, description="finding_3286_3",
+            Finding(self.finding_3286_4, description="finding_3286_4",
                     text="""In the case of positive emotions, only spousal support is shown to have 
                             a significant causal link to positive emotions. That is to say, as spouses 
                             become more supportive over time, individuals report more positive emotional 
                             states.
                             """),
-            Finding(self.finding_3286_4, description="finding_3286_4",
+            Finding(self.finding_3286_5, description="finding_3286_5",
                     text="""This was not the case for support from children and friends, despite being 
                             correlated with positive emotions.
                             """),
-            Finding(self.finding_3286_5, description="finding_3286_5",
+            Finding(self.finding_3286_6, description="finding_3286_6",
                     text="""In the case of social strain, none of the within-individual metrics are 
                             significant predictors of positive emotions. This finding demonstrates that 
                             as spouses, children, and friends exerted more strain, there is no significant 
                             change on the reported level of positive emotions.
                             """),
-            Finding(self.finding_3286_6, description="finding_3286_6",
+            Finding(self.finding_3286_7, description="finding_3286_7",
                     text="""Similar to the results for positive emotional states, we found that spouses 
                             have the greatest overall correlation with negative emotional states.
                             """),
-            Finding(self.finding_3286_7, description="finding_3286_7",
+            Finding(self.finding_3286_8, description="finding_3286_8",
                     text="""Spousal support and friend support are the only types of support to be 
                             negatively correlated with negative emotional states.
                             """),
-            Finding(self.finding_3286_8, description="finding_3286_8",
+            Finding(self.finding_3286_9, description="finding_3286_9",
                     text="""Furthermore, the correlation between spousal support and negative emotional 
                             states is 244% greater than the correlation of support stemming from friends. 
                             A Wald test confirms that the difference between spousal support and friend 
                             support is statistically significant.
                             """),
-            Finding(self.finding_3286_9, description="finding_3286_9",
+            Finding(self.finding_3286_10, description="finding_3286_10",
                     text="""For the between-individual coefficients regarding strain, we found significant 
                             correlations between strain and negative emotions stemming from both spouses 
                             and children. Although the coefficient for spousal strain is greater in magnitude
                             than that of child strain, the Wald test comparing the coefficients demonstrates 
                             that there is no significant difference between the measures.
                             """),
-            Finding(self.finding_3286_10, description="finding_3286_10",
+            Finding(self.finding_3286_11, description="finding_3286_11",
                     text="""Finally, we find no significant correlation between friend-based strain and 
                             negative emotional states.
                             """),
@@ -171,12 +187,11 @@ class Pierce2019Who(Publication):
         df = raw[(raw['V2060'] == 1) & (raw['V2225'] > 0) & (raw['V2017'] > 0)]
         
         missing_val = {-95: np.nan, -96: np.nan, -99: np.nan}
-        check_box = {1: 1, 5: 0}
+        # check_box = {1: 1, 5: 0}
         df.replace({'V103': missing_val, 'V104': missing_val, 'V546': missing_val,
                     'V1002': missing_val, 'V1006': missing_val, 'V1007': missing_val,
                     'V1010': missing_val, 'V1012': missing_val, 'V2007': missing_val,
                     'V2017':missing_val, 'V2020': missing_val,
-                    'V1105': check_box,
                     }, inplace=True)
         
         # Listwise deletion as in the original paper
@@ -239,23 +254,83 @@ class Pierce2019Who(Publication):
         
         return df
     
+    def table_2(self):
+        table_2_results = {}
+
+        df_lm = self.dataframe.replace({'sex': self.SEX_MAP,
+                                         'education_group': self.EDUCATION_MAP,})
+        
+        vc = {'confidants': '0 + C(confidants)', 'age': '0 + C(age)', 'education_group': '0 + C(education_group)', 
+            'income': '0 + C(income)', 'sex': '0 + C(sex)', 'retired': '0 + C(retired)', 'num_child': '0 + C(num_child)'} 
+        
+        def mlm_model(form, name):
+            model = MixedLM.from_formula(
+                form, 
+                vc_formula=vc, 
+                data=df_lm, 
+                groups=df_lm['age_group']
+            )
+            result = model.fit()
+            table_2_results[name] = result.summary2()
+            
+        
+        # Positive emotion model
+        mlm_model(
+            'positive_emotion ~ spouse_support + spouse_strain + child_support + child_strain + friend_support + friend_strain \
+                + C(confidants) + C(sex, Treatment(reference="male") + C(income) + \
+                + C(education_group, Treatment(reference="less than a high school diploma")) \
+                + C(age) + C(retired) + C(num_child)',
+            'positive_emotion_model'
+        )
+        
+        # Negative emotion model
+        mlm_model(
+            'negative_emotion ~ spouse_support + spouse_strain + child_support + child_strain + friend_support + friend_strain \
+                + C(confidants) + C(sex, Treatment(reference="male") + C(income) + \
+                + C(education_group, Treatment(reference="less than a high school diploma")) \
+                + C(age) + C(retired) + C(num_child)',
+            'negative_emotion_model'
+        )
+    
+        self.table = table_2_results
+        return table_2_results
+    
+    def table_2_check(self):
+        if self.table is None:
+            results = self.table_2()
+            self.table = results
+        else: 
+            results = self.table
+        return results
     
     def finding_3284_1(self):
         """
         When accounting for between-individual differences, spousal support 
         has the strongest relationship with positive emotional states, reaffirming 
-        the findings of Walen and Lachman (2000). Increased spousal support 
-        is associated with an increased positive emotional state. A direct 
-        comparison of the coefficients reveals that positive spousal support 
-        has a 232% greater correlation than support from children, and a 320% 
-        greater correlation than support from friends. A Wald test comparing 
-        coefficients confirms that the correlation stemming from spousal support 
-        is significantly larger than those stemming from children and friends.
+        the findings of Walen and Lachman (2000). 
+        """
+        df_lm = self.table_2_check()
+        pos = df_lm['positive_emotion_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        child = pos.tables[1].loc['child_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (spouse > child) and (spouse > friends)
+        return soft_finding
+    
+
+    def finding_3286_1(self):
+        """
+        Increased spousal support is associated with an increased positive 
+        emotional state. A direct comparison of the coefficients reveals that 
+        positive spousal support has a 232% greater correlation than support 
+        from children, and a 320% greater correlation than support from friends. 
+        A Wald test comparing coefficients confirms that the correlation stemming 
+        from spousal support is significantly larger than those stemming from children and friends.
         """
         pass
     
     
-    def finding_3286_1(self):
+    def finding_3286_2(self):
         """
         the stark difference between support and strain. Support from all three 
         sources is significantly correlated with more positive emotional states.
@@ -263,7 +338,7 @@ class Pierce2019Who(Publication):
         pass
     
     
-    def finding_3286_2(self):
+    def finding_3286_3(self):
         """
         However, of the three sources of strain, only the strain stemming from 
         spouses is significantly correlated with lower positive emotional states. 
@@ -272,9 +347,8 @@ class Pierce2019Who(Publication):
         associated with lower positive emotion.
         """
         pass
-
     
-    def finding_3286_3(self):
+    def finding_3286_4(self):
         """
         In the case of positive emotions, only spousal support is shown to have 
         a significant causal link to positive emotions. That is to say, as spouses 
@@ -283,14 +357,14 @@ class Pierce2019Who(Publication):
         """
         pass
     
-    def finding_3286_4(self):
+    def finding_3286_5(self):
         """
         This was not the case for support from children and friends, despite being 
         correlated with positive emotions.
         """
         pass
     
-    def finding_3286_5(self):
+    def finding_3286_6(self):
         """
         In the case of social strain, none of the within-individual metrics are 
         significant predictors of positive emotions. This finding demonstrates that 
@@ -299,21 +373,21 @@ class Pierce2019Who(Publication):
         """
         pass
     
-    def finding_3286_6(self):
+    def finding_3286_7(self):
         """
         Similar to the results for positive emotional states, we found that spouses 
         have the greatest overall correlation with negative emotional states.
         """
         pass
     
-    def finding_3286_7(self):
+    def finding_3286_8(self):
         """
         Spousal support and friend support are the only types of support to be 
         negatively correlated with negative emotional states.
         """
         pass
     
-    def finding_3286_8(self):
+    def finding_3286_9(self):
         """
         Furthermore, the correlation between spousal support and negative emotional 
         states is 244% greater than the correlation of support stemming from friends. 
@@ -322,7 +396,7 @@ class Pierce2019Who(Publication):
         """
         pass
     
-    def finding_3286_9(self):
+    def finding_3286_10(self):
         """
         For the between-individual coefficients regarding strain, we found significant 
         correlations between strain and negative emotions stemming from both spouses 
@@ -332,7 +406,7 @@ class Pierce2019Who(Publication):
         """
         pass
     
-    def finding_3286_10(self):
+    def finding_3286_11(self):
         """
         Finally, we find no significant correlation between friend-based strain and 
         negative emotional states.
@@ -409,7 +483,7 @@ class Pierce2019Who(Publication):
         """
         pass
     
-    def finding_3287_1(self):
+    def finding_3287_10(self):
         """
         All else equal, men are in fact less likely to report negative emotional states 
         than their female counterparts. To put the magnitude of the gender effect into 
