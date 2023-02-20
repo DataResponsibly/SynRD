@@ -6,7 +6,7 @@ A Differentially Private (DP) Synthetic Data benchmarking package, posing the qu
 Citation: `Rosenblatt, L., Holovenko, A., Rumezhak, T., Stadnik, A., Herman, B., Stoyanovich, J., & Howe, B. (2022). Epistemic Parity: Reproducibility as an Evaluation Metric for Differential Privacy. arXiv preprint arXiv:2208.12700.` (under review)
 
 ## Installing the benchmark
-The benchmark is currently still in `beta-0.1`. Still, you can install the development version by running the following commands:
+The benchmark is currently in `beta-0.1`. Still, you can install the development version by running the following commands:
 1. Create your preferred package management environment with `python=3.7` (for example, `conda create -n "synrd" python=3.7`)
 2. `git clone https://github.com/DataResponsibly/SynRD.git`
 3. `cd SynRD`
