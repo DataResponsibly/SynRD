@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python](https://img.shields.io/badge/python-3.7%20%7C%203.8-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python](https://img.shields.io/badge/python-3.7-blue)](https://www.python.org/)
 
 # SynRD Package
 A Differentially Private (DP) Synthetic Data benchmarking package, posing the question: "Can a DP Synthesizer produce private (tabular) data that preserves scientific findings?" In other words, do DP Synthesizers satisfy *Epistemic Parity*?
