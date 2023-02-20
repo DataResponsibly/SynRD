@@ -83,8 +83,10 @@ class MSTSynthesizer(Synthesizer):
     def __init__(self, 
                  epsilon: float, 
                  slide_range: bool = False,
-                 thresh = 0.05):
+                 thresh = 0.05,
+                 preprocess_factor: float = 0.05):
         self.synthesizer = SmartnoiseMSTSynthesizer(epsilon=epsilon)
+        self.preprocess_factor = preprocess_factor
         super().__init__(epsilon, slide_range, thresh)
 
     def fit(self, df: pd.DataFrame):
@@ -95,7 +97,7 @@ class MSTSynthesizer(Synthesizer):
                 increase the `thresh` parameter.')
 
         df = self._slide_range(df)
-        self.synthesizer.fit(df)
+        self.synthesizer.fit(df, preprocessor_eps=(self.preprocess_factor * self.epsilon))
 
     def sample(self, n):
         df = self.synthesizer.sample(n)
@@ -106,7 +108,7 @@ class PATECTGAN(Synthesizer):
     def __init__(self, 
                  epsilon: float, 
                  slide_range: bool = False,
-                 preprocess_factor: float = 0.1,
+                 preprocess_factor: float = 0.05,
                  thresh = 0.05):
         self.preprocess_factor = preprocess_factor
         self.synthesizer = PytorchDPSynthesizer(epsilon=epsilon, 

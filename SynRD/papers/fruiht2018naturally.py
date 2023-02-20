@@ -1,12 +1,17 @@
 import numpy as np
 import pandas as pd
 
+import pkgutil
+import sys, os
+
+import rpy2.robjects as ro
 from rpy2.robjects import default_converter, r, pandas2ri, vectors
 from rpy2.robjects.conversion import localconverter, py2rpy, rpy2py
 from rpy2.robjects.packages import importr
 
-from file_utils import PathSearcher
-from meta_classes import FigureFinding, Finding, Publication, VisualFinding
+from SynRD.papers.file_utils import PathSearcher
+from SynRD.utils import _class_to_papername
+from SynRD.publication import FigureFinding, Finding, Publication, VisualFinding
 
 
 class Fruiht2018Naturally(Publication):
@@ -33,18 +38,10 @@ class Fruiht2018Naturally(Publication):
 
     FILENAME = "fruiht2018naturally"
 
-    def __init__(self, dataframe=None, filename=None, path=None):
-        if path is None:
-            path = self.FILENAME
-        self.path_searcher = PathSearcher(path)
+    def __init__(self, dataframe=None):
+        super(Fruiht2018Naturally, self).__init__(dataframe=dataframe)
+        self.path_searcher = PathSearcher(_class_to_papername(self.__class__))
 
-        if filename is not None:
-            self.dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-        elif dataframe is not None:
-            self.dataframe = dataframe
-        else:
-            self.dataframe = self._recreate_dataframe()
-    
         self.FINDINGS = self.FINDINGS + [
             # Note: Table 1, Figure 1, and several findings can not be replicated
             # due to the manual coding task undertaken. Omit or is there another way
@@ -306,10 +303,13 @@ class Fruiht2018Naturally(Publication):
                     assert np.isnan(self.table_2_npmatrix[row, col])
 
     def _calculate_table_2(self, print_debug=False):
-        r.source(self.path_searcher.get_path('processv41/PROCESS v4.1 for R/process.R'))
+        #r.source(self.path_searcher.get_path('processv41/PROCESS v4.1 for R/process.R'))
+        r.source(self.get_data_smart("SynRD", "papers/process.R"))
+        pandas2ri.activate()
 
         with localconverter(default_converter + pandas2ri.converter):
-            r_df = py2rpy(self.dataframe)
+            r_df = ro.conversion.py2rpy(self.dataframe)
+            #r_df = py2rpy(self.dataframe)
         
         r_covariate_names = vectors.StrVector(["AGE_YEARS", "BIO_SEX", "RACE_HISPANIC", "RACE_BLACK", "RACE_OTHER"])
 
@@ -441,4 +441,28 @@ class Fruiht2018Naturally(Publication):
         return (values, soft_finding, hard_findings)
 
     
-        
+    def get_data_smart(self, package, resource, as_string=False):
+        """Rewrite of pkgutil.get_data() that actually lets the user determine if data should
+        be returned read into memory (aka as_string=True) or just return the file path.
+
+        Credit: https://stackoverflow.com/questions/5003755/how-to-use-pkgutils-get-data-with-csv-reader-in-python
+
+        """
+
+        loader = pkgutil.get_loader(package)
+        if loader is None or not hasattr(loader, 'get_data'):
+            return None
+        mod = sys.modules.get(package) or loader.load_module(package)
+        if mod is None or not hasattr(mod, '__file__'):
+            return None
+
+        # Modify the resource name to be compatible with the loader.get_data
+        # signature - an os.path format "filename" starting with the dirname of
+        # the package's __file__
+        parts = resource.split('/')
+        parts.insert(0, os.path.dirname(mod.__file__))
+        resource_name = os.path.join(*parts)
+        if as_string:
+            return loader.get_data(resource_name)
+        else:
+            return resource_name

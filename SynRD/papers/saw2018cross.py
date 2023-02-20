@@ -6,6 +6,8 @@ import numpy as np
 from itertools import chain
 import json
 
+import os.path
+
 class Saw2018Cross(Publication):
     """
     A class wrapper for all publication classes, for shared functionality.
@@ -137,16 +139,9 @@ class Saw2018Cross(Publication):
                     (      'Other',  'lower-SES', 'girls', 'Yes')
     ]
 
-    def __init__(self, dataframe=None, filename=None):
-        if filename is not None:
-            self.dataframe = pd.read_pickle(filename)
-            self.real_dataframe = pd.read_pickle(filename)
-        elif dataframe is not None:
-            self.dataframe = dataframe
-            self.real_dataframe = dataframe
-        else:
-            self.dataframe = self._recreate_dataframe()
-            self.real_dataframe = self._recreate_dataframe()
+    def __init__(self, dataframe=None):
+        super(Saw2018Cross, self).__init__(dataframe=dataframe)
+        
         self.columns = self.real_dataframe.columns
 
         self.FINDINGS = self.FINDINGS + [
@@ -276,7 +271,7 @@ class Saw2018Cross(Publication):
         return json.dumps(self.DEFAULT_PAPER_ATTRIBUTES, sort_keys=True, indent=4)
 
     def _recreate_dataframe(self, filename='saw2018cross_dataframe.pickle'):
-        student_survey = pd.read_csv('data/36423-0002-Data.tsv',sep='\t')
+        student_survey = pd.read_csv('data/HSLS09.tsv',sep='\t')
 
         filter1 = student_survey[student_survey['X2UNIV2A'] == 1]
         filter1 = filter1[(filter1['S1GRD0809'] != 3) & \

@@ -5,8 +5,8 @@ import scipy.stats as stats
 from statsmodels.stats.contingency_tables import Table2x2
 from statsmodels.stats.proportion import proportions_chisquare
 
-from ..file_utils import PathSearcher
-from ...publication import Publication, Finding, NonReproducibleFindingException
+from SynRD.papers.file_utils import PathSearcher
+from SynRD.publication import Publication, Finding, NonReproducibleFindingException
 
 
 class Iverson22Football(Publication):
@@ -38,18 +38,9 @@ class Iverson22Football(Publication):
 
     # FILENAME = "iverson22football"
 
-    def __init__(self, dataframe=None, filename=None, path=None):
-        if dataframe is None:
-            if path is None:
-                path = self.DEFAULT_PAPER_ATTRIBUTES['id']
-            self.path_searcher = PathSearcher(path)
-            if filename is None:
-                filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
-            try:
-                dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-            except FileNotFoundError:
-                dataframe = self._recreate_dataframe()
-        super().__init__(dataframe)
+    def __init__(self, dataframe=None):
+        super(Iverson22Football, self).__init__(dataframe=dataframe)
+        
         self.FINDINGS = self.FINDINGS + [
             Finding(self.finding_3_1, description="finding_3_1"),
             Finding(self.finding_3_2, description="finding_3_2"),

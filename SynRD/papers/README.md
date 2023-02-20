@@ -16,6 +16,15 @@ import rpy2
 rpy2.robjects.r['pi']  # Returns R object with the number pi
 ```
 
+# Other install options for R
+
+If you have a mac with an M1 chip, you may have more success installing rpy2 via the following:
+- Uninstall existing R versions on your machine.
+- Install `R-4.2.2-arm64.pkg` from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/).
+- `conda install -n base conda-forge::mamba`
+- `mamba install -c conda-forge rpy2`
+
+
 # Existing files
 Broadly, this folder is structured like this: 
 ```

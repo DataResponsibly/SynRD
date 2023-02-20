@@ -1,5 +1,5 @@
-# from ...publication import Publication, Finding, NonReproducibleFindingException
-from file_utils import PathSearcher
+from SynRD.publication import Publication, Finding, NonReproducibleFindingException
+from SynRD.papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 import os
@@ -47,18 +47,9 @@ class Fairman2019Marijuana(Publication):
         4: CLASSES['ALCTRY'], 5: CLASSES['CIGTRY'], 6: CLASSES['MJAGE'], 91: CLASSES['NO USAGE'],
     }
 
-    def __init__(self, dataframe=None, filename=None, path=None):
-        if dataframe is None:
-            if path is None:
-                path = self.DEFAULT_PAPER_ATTRIBUTES['id']
-            self.path_searcher = PathSearcher(path)
-            if filename is None:
-                filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
-            try:
-                dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-            except BaseException:
-                dataframe = self._recreate_dataframe()
-        super().__init__(dataframe)
+    def __init__(self, dataframe=None):
+        super(Fairman2019Marijuana, self).__init__(dataframe=dataframe)
+        
         self.FINDINGS = self.FINDINGS + [
             Finding(self.finding_5_1, description='finding_5_1', text="""
                 For each substance, the mean age of reported first use increased over the study period.

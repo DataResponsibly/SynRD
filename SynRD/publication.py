@@ -22,9 +22,13 @@ class Publication():
 
     FILENAME = None
 
-    def __init__(self, dataframe=None, filename=None, description=None):
-        self.real_dataframe = dataframe
-        self.dataframe = dataframe
+    def __init__(self, dataframe=None, description=None):
+        if dataframe is not None:
+            self.dataframe = dataframe
+            self.real_dataframe = dataframe
+        else:
+            raise ValueError("Must set dataframe to initialize a paper class.")
+        
         self._description = description
         self.columns = self.real_dataframe.columns
 

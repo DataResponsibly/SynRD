@@ -1,4 +1,4 @@
-from meta_classes import Publication, Finding, VisualFinding
+from SynRD.publication import Publication, Finding, VisualFinding
 
 import pandas as pd
 import numpy as np
@@ -84,13 +84,8 @@ class Lee2021Ability(Publication):
 
     cov_df = None
 
-    def __init__(self, dataframe=None, filename=None):
-        if filename is not None:
-            self.dataframe = pd.read_pickle(filename)
-        elif dataframe is not None:
-            self.dataframe = dataframe
-        else:
-            self.dataframe = self._recreate_dataframe()
+    def __init__(self, dataframe=None):
+        super(Lee2021Ability, self).__init__(dataframe=dataframe)
         
         self.FINDINGS = self.FINDINGS + [
             VisualFinding(self.table_2, description="table_2"),
@@ -136,7 +131,7 @@ class Lee2021Ability(Publication):
         ]
     
     def _recreate_dataframe(self, filename='lee2021ability_dataframe.pickle'):
-        student_survey = pd.read_csv('lee2021ability/data/36423-0002-Data.tsv',sep='\t')
+        student_survey = pd.read_csv('data/HSLS09.tsv',sep='\t')
 
         # Math enrollment
         student_survey = student_survey[(student_survey['S2MSPR12'] == 1) & (student_survey['S1MFALL09'] == 1)]

@@ -11,6 +11,7 @@ with open("README.md", "r") as f:
 setup(
     name="SynRD",
     version="0.1",
+    python_requires='== 3.7.*', # Unfortunately, need specific python version for rpy2
     description="Benchmark for differentially private synthetic data.",
     long_description=long_description,
     author="Lucas Rosenblatt",
@@ -19,17 +20,25 @@ setup(
     packages=["SynRD", 
               "SynRD.synthesizers",
               "SynRD.benchmark",
-              "SynRD.papers"],
+              "SynRD.papers",
+              "SynRD.datasets"],
+    package_data={'SynRD': ['papers/process.R']},
     # setup_requires=['wheel'],
     install_requires=["DataSynthesizer",
                      "smartnoise-synth", 
                       "pandas", 
                       "numpy", 
-                      "scikit-learn", 
+                      "tqdm",
+                      "requests",
+                      "scikit-learn",
+                      "disjoint-set",
+                      "networkx",
                       "diffprivlib", 
-                      "rpy2", 
-                      "pathlib"],
+                      "pathlib",
+                      "statsmodels"],
 )
 
 # NOTE: Independent installation of mbi required with:
 # `pip install git+https://github.com/ryan112358/private-pgm.git` 
+
+# NOTE: Independent installation of rpy2 required as well, see README.

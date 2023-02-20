@@ -1,6 +1,5 @@
-from meta_classes import Publication, Finding
-from meta_classes import NonReproducibleFindingException
-from file_utils import PathSearcher
+from SynRD.publication import Publication, Finding, NonReproducibleFindingException
+from SynRD.papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 
@@ -37,18 +36,9 @@ class Jeong2021Math(Publication):
     FILENAME = 'jeong2021math'
     RANDOM_STATE_MAX = 30
 
-    def __init__(self, dataframe=None, filename=None, path=None):
-        if dataframe is None:
-            if path is None:
-                path = self.DEFAULT_PAPER_ATTRIBUTES['id']
-            self.path_searcher = PathSearcher(path)
-            if filename is None:
-                filename = self.DEFAULT_PAPER_ATTRIBUTES['base_dataframe_pickle']
-            try:
-                dataframe = pd.read_pickle(self.path_searcher.get_path(filename))
-            except:
-                dataframe = self._recreate_dataframe()
-        super().__init__(dataframe)
+    def __init__(self, dataframe=None):
+        super(Jeong2021Math, self).__init__(dataframe=dataframe)
+        
         self.train_results, self.test_results = self.score_by_class(self.dataframe)
         self.table_1 = self.get_results_by_class(self.test_results)
         self.FINDINGS = self.FINDINGS + [
@@ -89,8 +79,7 @@ class Jeong2021Math(Publication):
         ]
 
     def _recreate_dataframe(self, filename='jeong2021math_dataframe.pickle'):
-        # school_survey = pd.read_csv('data/36423-0001-Data.tsv', sep='\t')
-        student_survey = pd.read_csv('jeong2021math/data/36423-0002-Data.tsv', sep='\t')
+        student_survey = pd.read_csv('data/HSLS09.tsv', sep='\t')
         data = student_survey[self.DATAFRAME_COLUMNS]
         data['RACE_GROUP'] = data['X1RACE'].map(self.RACE_GROUP_MAP)
         data = data[data['RACE_GROUP'].isin(self.RACE_CLASSES.values())]

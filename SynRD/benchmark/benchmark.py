@@ -1,10 +1,22 @@
 import pandas as pd
 import numpy as np
 
+from SynRD.publication import Publication
+from SynRD.datasets.dataset_loader import DataRetriever
+from SynRD.utils import _class_to_papername
+
 class Benchmark:
     def __init__(self) -> None:
         self.results = {}
         self.tests = [self.real_vs_private_soft_findings]
+
+    def initialize_papers(self, papers: "list[Publication]"):
+        df_map = DataRetriever(papers).retrieve_necessary_data()
+        initialized_papers = []
+        for paper in papers:
+            real_dataframe = df_map[_class_to_papername(paper) + "_processed"]
+            initialized_papers.append(paper(dataframe=real_dataframe))
+        return initialized_papers
 
     def eval(self, paper, tests=None):
         results = {}
@@ -18,7 +30,7 @@ class Benchmark:
 
     def summary(self) -> str:
         return "\n".join(
-            [f"{paper_name=}: {result=}" for paper_name, result in self.results.items()]
+            [f"{paper_name}: {result}" for paper_name, result in self.results.items()]
         )
     
     def real_vs_private_soft_findings(self, paper):
