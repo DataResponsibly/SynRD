@@ -44,11 +44,11 @@ class Pierce2019Who(Publication):
                          'friend_strain',
                          'confidants', 
                          'age', 
-                         'age_group', 
+                         'age_category', 
                          'income', 
                          'sex', 
                          'education', 
-                         'education_group',
+                         'education_category',
                          'retired', 
                          'num_child']
     
@@ -217,23 +217,23 @@ class Pierce2019Who(Publication):
         
         def age_categorize(row):  
             if row['age'] < 45:
-                return 'under 45'
+                return '0'
             elif row['age'] >= 45 and row['age'] <= 65:
-                return '45-65'
+                return '1'
             elif row['age'] > 65:
-                return 'over 65'
+                return '2'
             
         def education_categorize(row):  
             if row['education'] < 12:
-                return '1'
+                return '0'
             elif 12 <= row['education'] < 14:
-                return '2'
+                return '1'
             elif 14 <= row['education'] < 16:
-                return '3'
+                return '2'
             elif 16 <= row['education'] < 17:
-                return '4'
+                return '3'
             elif row['education'] >= 17:
-                return '5'
+                return '4'
         
         # Control variables
         df['confidants'] = df['V546']
@@ -246,9 +246,8 @@ class Pierce2019Who(Publication):
 
         df = df.dropna(axis='index', subset=['confidants','age','age','income','sex',
                                             'education','retired','num_child'], how='any')
-
-        df['age_group'] = df.apply(lambda row: age_categorize(row), axis=1)
-        df['education_group'] = df.apply(lambda row: education_categorize(row), axis=1)
+        df['age_category'] = df.apply(lambda row: age_categorize(row), axis=1)
+        df['education_category'] = df.apply(lambda row: education_categorize(row), axis=1)
         df = df[self.DATAFRAME_COLUMNS]
         df.to_pickle(filename)
         
@@ -258,37 +257,33 @@ class Pierce2019Who(Publication):
         table_2_results = {}
 
         df_lm = self.dataframe.replace({'sex': self.SEX_MAP,
-                                         'education_group': self.EDUCATION_MAP,})
+                                         'education_category': self.EDUCATION_MAP,})
         
-        vc = {'confidants': '0 + C(confidants)', 'age': '0 + C(age)', 'education_group': '0 + C(education_group)', 
+        vc = {'confidants': '0 + C(confidants)', 'age_category': '0 + C(age_category)', 'education_category': '0 + C(education_category)', 
             'income': '0 + C(income)', 'sex': '0 + C(sex)', 'retired': '0 + C(retired)', 'num_child': '0 + C(num_child)'} 
-        
+
         def mlm_model(form, name):
             model = MixedLM.from_formula(
                 form, 
                 vc_formula=vc, 
                 data=df_lm, 
-                groups=df_lm['age_group']
+                groups=df_lm['age_category']
             )
             result = model.fit()
             table_2_results[name] = result.summary2()
             
-        
+        # TODO: Modify stats equations
         # Positive emotion model
         mlm_model(
             'positive_emotion ~ spouse_support + spouse_strain + child_support + child_strain + friend_support + friend_strain \
-                + C(confidants) + C(sex, Treatment(reference="male") + C(income) + \
-                + C(education_group, Treatment(reference="less than a high school diploma")) \
-                + C(age) + C(retired) + C(num_child)',
+                + C(confidants) + C(sex) + C(income) + C(education_category) + C(age_category) + C(retired) + C(num_child)',
             'positive_model'
         )
         
         # Negative emotion model
         mlm_model(
             'negative_emotion ~ spouse_support + spouse_strain + child_support + child_strain + friend_support + friend_strain \
-                + C(confidants) + C(sex, Treatment(reference="male") + C(income) + \
-                + C(education_group, Treatment(reference="less than a high school diploma")) \
-                + C(age) + C(retired) + C(num_child)',
+                + C(confidants) + C(sex) + C(income) + C(education_category) + C(age_category) + C(retired) + C(num_child)',
             'negative_model'
         )
     
@@ -317,7 +312,6 @@ class Pierce2019Who(Publication):
         soft_finding = (spouse > child) and (spouse > friends)
         return soft_finding
     
-
     def finding_3286_1(self):
         """
         Increased spousal support is associated with an increased positive 
@@ -335,7 +329,6 @@ class Pierce2019Who(Publication):
         soft_finding = (spouse == child * 2.32) and (spouse == friends * 3.2)
         return soft_finding
     
-    
     def finding_3286_2(self):
         """
         the stark difference between support and strain. Support from all three 
@@ -348,7 +341,6 @@ class Pierce2019Who(Publication):
         friends = pos.tables[1].loc['friend_support']['Coef.']
         soft_finding = (spouse > 0) and (child > 0) and (friends > 0)
         return soft_finding
-    
     
     def finding_3286_3(self):
         """
@@ -409,23 +401,22 @@ class Pierce2019Who(Publication):
         have the greatest overall correlation with negative emotional states.
         """
         df = self.table_2_check()
-        pos = df['negative_model']
-        spouse = pos.tables[1].loc['spouse_strain']['Coef.']
-        child = pos.tables[1].loc['child_strain']['Coef.']
-        friends = pos.tables[1].loc['friend_strain']['Coef.']
+        neg = df['negative_model']
+        spouse = neg.tables[1].loc['spouse_strain']['Coef.']
+        child = neg.tables[1].loc['child_strain']['Coef.']
+        friends = neg.tables[1].loc['friend_strain']['Coef.']
         soft_finding = (spouse > child) and (spouse > friends)
         return soft_finding
         
-    
     def finding_3286_8(self):
         """
         Spousal support and friend support are the only types of support to be 
         negatively correlated with negative emotional states.
         """
         df = self.table_2_check()
-        pos = df['negative_model']
-        spouse = pos.tables[1].loc['spouse_support']['Coef.']
-        friends = pos.tables[1].loc['friend_support']['Coef.']
+        neg = df['negative_model']
+        spouse = neg.tables[1].loc['spouse_support']['Coef.']
+        friends = neg.tables[1].loc['friend_support']['Coef.']
         soft_finding = (spouse < 0) and (friends < 0)
         return soft_finding
     
@@ -437,9 +428,9 @@ class Pierce2019Who(Publication):
         support is statistically significant.
         """
         df = self.table_2_check()
-        pos = df['negative_model']
-        spouse = pos.tables[1].loc['spouse_support']['Coef.']
-        friends = pos.tables[1].loc['friend_support']['Coef.']
+        neg = df['negative_model']
+        spouse = neg.tables[1].loc['spouse_support']['Coef.']
+        friends = neg.tables[1].loc['friend_support']['Coef.']
         soft_finding = (spouse == friends * 2.44)
         return soft_finding
     
@@ -452,9 +443,9 @@ class Pierce2019Who(Publication):
         that there is no significant difference between the measures.
         """
         df = self.table_2_check()
-        pos = df['negative_model']
-        spouse = pos.tables[1].loc['spouse_strain']['Coef.']
-        child = pos.tables[1].loc['child_strain']['Coef.']
+        neg = df['negative_model']
+        spouse = neg.tables[1].loc['spouse_strain']['Coef.']
+        child = neg.tables[1].loc['child_strain']['Coef.']
         soft_finding = (spouse >= child)
         return soft_finding
     
@@ -464,8 +455,8 @@ class Pierce2019Who(Publication):
         negative emotional states.
         """
         df = self.table_2_check()
-        pos = df['negative_model']
-        friends = pos.tables[1].loc['friend_strain']['Coef.']
+        neg = df['negative_model']
+        friends = neg.tables[1].loc['friend_strain']['Coef.']
         soft_finding = (friends >= 0)
         return soft_finding
     
@@ -476,9 +467,9 @@ class Pierce2019Who(Publication):
         the predicted directions.
         """
         df = self.table_2_check()
-        pos = df['negative_model']
-        support = pos.tables[1].loc['spouse_support']['Coef.']
-        strain = pos.tables[1].loc['spouse_strain']['Coef.']
+        neg = df['negative_model']
+        support = neg.tables[1].loc['spouse_support']['Coef.']
+        strain = neg.tables[1].loc['spouse_strain']['Coef.']
         soft_finding = (support > 0) and (strain > 0)
         return soft_finding
     
@@ -489,7 +480,11 @@ class Pierce2019Who(Publication):
         The magnitude of child-based strain is similar in size to that of spouse-based 
         strain.
         """
-        pass
+        df = self.table_2_check()
+        neg = df['negative_model']
+        child = neg.tables[1].loc['child_strain']['Coef.']
+        soft_finding = (child > 0)
+        return soft_finding 
     
     def finding_3287_3(self):
         """
@@ -497,7 +492,13 @@ class Pierce2019Who(Publication):
         more likely to report positive emotional states and less likely to report negative 
         emotional states than their poorer counterparts.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['positive_model']
+        neg = df['negative_model']
+        high_income = pos.tables[1].loc['income']['Coef.']
+        low_income = neg.tables[1].loc['income']['Coef.']
+        soft_finding = (high_income > 0) and (low_income < 0)
+        return soft_finding
     
     def finding_3287_4(self):
         """
@@ -506,20 +507,27 @@ class Pierce2019Who(Publication):
         life, she is no more likely to report positive emotional states than when she 
         was earning less money.
         """
+        # TODO: Within variable
         pass
     
     def finding_3287_5(self):
         """
         The same null finding holds true for negative emotional states.
         """
+        # TODO: Within variable
         pass
+        
     
     def finding_3287_6(self):
         """
         we find no relationship between chronological age and positive emotional states, 
         but we do find a nonlinear correlation between age and negative emotional states.
         """
-        pass
+        df = self.table_2_check()
+        neg = df['negative_model']
+        age = neg.tables[1].loc['age']['Coef.']
+        soft_finding = (age < 0)
+        return soft_finding
     
     def finding_3287_7(self):
         """
@@ -527,6 +535,7 @@ class Pierce2019Who(Publication):
         report negative emotional states. This trend reverses at the apex of the curve 
         which we calculate to be approximately 65 years of age.
         """
+        # TODO: Age Categories
         pass
     
     def finding_3287_8(self):
@@ -535,6 +544,7 @@ class Pierce2019Who(Publication):
         people at 34–74 years of age, thus leading to the conclusion that the nonlinear 
         pattern is asymmetric.
         """
+        # TODO: Age Categories
         pass
     
     def finding_3287_9(self):
@@ -542,7 +552,12 @@ class Pierce2019Who(Publication):
         Although gender does not significantly correlate with positive emotional states, 
         we find that it does significantly correlate to negative emotional states.
         """
-        pass
+        df = self.table_2_check()
+        neg = df['negative_model']
+        sex = neg.tables[1].loc['sex']['Coef.']
+        soft_finding = (sex < 0)
+        return soft_finding
+        
     
     def finding_3287_10(self):
         """
@@ -551,6 +566,7 @@ class Pierce2019Who(Publication):
         context, being a man has the same benefit as making US$5,500 more per year on 
         negative emotional outcomes.
         """
+        # TODO: Income
         pass
     
     
