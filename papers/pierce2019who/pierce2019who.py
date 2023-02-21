@@ -280,7 +280,7 @@ class Pierce2019Who(Publication):
                 + C(confidants) + C(sex, Treatment(reference="male") + C(income) + \
                 + C(education_group, Treatment(reference="less than a high school diploma")) \
                 + C(age) + C(retired) + C(num_child)',
-            'positive_emotion_model'
+            'positive_model'
         )
         
         # Negative emotion model
@@ -289,7 +289,7 @@ class Pierce2019Who(Publication):
                 + C(confidants) + C(sex, Treatment(reference="male") + C(income) + \
                 + C(education_group, Treatment(reference="less than a high school diploma")) \
                 + C(age) + C(retired) + C(num_child)',
-            'negative_emotion_model'
+            'negative_model'
         )
     
         self.table = table_2_results
@@ -309,8 +309,8 @@ class Pierce2019Who(Publication):
         has the strongest relationship with positive emotional states, reaffirming 
         the findings of Walen and Lachman (2000). 
         """
-        df_lm = self.table_2_check()
-        pos = df_lm['positive_emotion_model']
+        df = self.table_2_check()
+        pos = df['positive_model']
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
@@ -327,7 +327,13 @@ class Pierce2019Who(Publication):
         A Wald test comparing coefficients confirms that the correlation stemming 
         from spousal support is significantly larger than those stemming from children and friends.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['positive_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        child = pos.tables[1].loc['child_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (spouse == child * 2.32) and (spouse == friends * 3.2)
+        return soft_finding
     
     
     def finding_3286_2(self):
@@ -335,7 +341,13 @@ class Pierce2019Who(Publication):
         the stark difference between support and strain. Support from all three 
         sources is significantly correlated with more positive emotional states.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['positive_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        child = pos.tables[1].loc['child_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (spouse > 0) and (child > 0) and (friends > 0)
+        return soft_finding
     
     
     def finding_3286_3(self):
@@ -346,7 +358,13 @@ class Pierce2019Who(Publication):
         states, meaning that having straining children and friends is not significantly 
         associated with lower positive emotion.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['positive_model']
+        spouse = pos.tables[1].loc['spouse_strain']['Coef.']
+        child = pos.tables[1].loc['child_strain']['Coef.']
+        friends = pos.tables[1].loc['friend_strain']['Coef.']
+        soft_finding = (spouse < 0) and (child > 0) and (friends > 0)
+        return soft_finding
     
     def finding_3286_4(self):
         """
@@ -355,14 +373,26 @@ class Pierce2019Who(Publication):
         become more supportive over time, individuals report more positive emotional 
         states.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['positive_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        child = pos.tables[1].loc['child_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (spouse > child) and (spouse > friends)
+        return soft_finding
     
     def finding_3286_5(self):
         """
         This was not the case for support from children and friends, despite being 
         correlated with positive emotions.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['positive_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        child = pos.tables[1].loc['child_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (child > 0) and (friends > 0)
+        return soft_finding
     
     def finding_3286_6(self):
         """
@@ -378,14 +408,26 @@ class Pierce2019Who(Publication):
         Similar to the results for positive emotional states, we found that spouses 
         have the greatest overall correlation with negative emotional states.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['negative_model']
+        spouse = pos.tables[1].loc['spouse_strain']['Coef.']
+        child = pos.tables[1].loc['child_strain']['Coef.']
+        friends = pos.tables[1].loc['friend_strain']['Coef.']
+        soft_finding = (spouse > child) and (spouse > friends)
+        return soft_finding
+        
     
     def finding_3286_8(self):
         """
         Spousal support and friend support are the only types of support to be 
         negatively correlated with negative emotional states.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['negative_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (spouse < 0) and (friends < 0)
+        return soft_finding
     
     def finding_3286_9(self):
         """
@@ -394,7 +436,12 @@ class Pierce2019Who(Publication):
         A Wald test confirms that the difference between spousal support and friend 
         support is statistically significant.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['negative_model']
+        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        friends = pos.tables[1].loc['friend_support']['Coef.']
+        soft_finding = (spouse == friends * 2.44)
+        return soft_finding
     
     def finding_3286_10(self):
         """
@@ -404,14 +451,23 @@ class Pierce2019Who(Publication):
         than that of child strain, the Wald test comparing the coefficients demonstrates 
         that there is no significant difference between the measures.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['negative_model']
+        spouse = pos.tables[1].loc['spouse_strain']['Coef.']
+        child = pos.tables[1].loc['child_strain']['Coef.']
+        soft_finding = (spouse >= child)
+        return soft_finding
     
     def finding_3286_11(self):
         """
         Finally, we find no significant correlation between friend-based strain and 
         negative emotional states.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['negative_model']
+        friends = pos.tables[1].loc['friend_strain']['Coef.']
+        soft_finding = (friends >= 0)
+        return soft_finding
     
     def finding_3287_1(self):
         """
@@ -419,7 +475,12 @@ class Pierce2019Who(Publication):
         have a significant causal link to individual’s negative emotional states in 
         the predicted directions.
         """
-        pass
+        df = self.table_2_check()
+        pos = df['negative_model']
+        support = pos.tables[1].loc['spouse_support']['Coef.']
+        strain = pos.tables[1].loc['spouse_strain']['Coef.']
+        soft_finding = (support > 0) and (strain > 0)
+        return soft_finding
     
     def finding_3287_2(self):
         """
