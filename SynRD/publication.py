@@ -1,6 +1,61 @@
 import json
 import pandas as pd
 
+from enum import Enum
+
+class _MEAN_DIFFERENCE(Enum):
+    # We are comparing apples before to apples now
+    TEMPORAL_FIXED_CLASS = 1
+    # We are comparing apples to oranges
+    BETWEEN_CLASS = 2
+
+class _PATH_ANALYSIS(Enum):
+    # Degree of relationship between an apple and orange
+    VARIABILITY = 1
+    # Difference in orange or apple specific per unit coefficient change in pathway analysis
+    COEFFICIENT_DIFFERENCE = 2
+    # Dependence of an apple on the value of an orange
+    INTERACTION_EFFECT = 3
+
+class _LOGISTIC(Enum):
+    # Overall, how well can we classify apples and/or oranges
+    ACCURACY = 1
+    # How many negative apples did we classify as positive
+    FNR = 2
+    # How many positive apples did we classify as negative
+    FPR = 3
+    # What proportion of all apples do we think are positive
+    PREDICTED_BASE_RATE = 4
+
+class _REGRESSION(Enum):
+    # Structural equation modeling for examining multiple causal pathways between fruit
+    # See _PATH_ANALYSIS
+    PATH_ANALYSIS = _PATH_ANALYSIS
+    # Difference in coefficient for OLS or other simple regression between apples and oranges
+    COEFFICIENT_COMPARISON = 1
+    # Just the apple coefficient sign
+    COEFFICIENT_SIGN = 2
+    # Classification of apples and oranges
+    LOGISTIC = _LOGISTIC
+
+class _CORRELATION(Enum):
+    # Linear bivariate strength and direction of relationship between apples and oranges
+    PEARSON_CORRELATION = 1
+    # Non-linear relationship between apples and oranges
+    # (usually used for ordinal or categorical data)
+    SPEARMAN_CORRELATION = 2
+
+class TAXONOMY(Enum):
+    # See _MEAN_DIFFERENCE
+    MEAN_DIFFERENCE = _MEAN_DIFFERENCE
+    # Just describing apples or oranges or both
+    DESCRIPTIVE_STATISTICS = 2
+    # See _REGRESSION
+    REGRESSION = _REGRESSION
+    # See _CORRELATION
+    CORRELATION = _CORRELATION
+
+
 class Publication():
     """
     A class wrapper for all publication classes, for shared functionality.
@@ -85,11 +140,13 @@ class Finding():
                  finding_lambda, 
                  args=None, 
                  description=None, 
-                 text=None):
+                 text=None,
+                 finding_type: TAXONOMY = None):
         self.finding_lambda = finding_lambda
         self.args = args
         self.description = description
         self.text = text
+        self.finding_type = finding_type
 
     def run(self):
         if self.args is None:

@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding
+from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding, TAXONOMY
 
 import pandas as pd
 import numpy as np
@@ -152,29 +152,34 @@ class Saw2018Cross(Publication):
                             students were interested in pursuing a STEM career upon entering 
                             high school (see Figure 1). The percentage declined slightly to 
                             10.0% for the same cohort of students after they spent their first 
-                            three years in high school."""),
+                            three years in high school.""", 
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_526_2, description="finding_526_2",
                     text="""First, the rates of interest in STEM professions dropped slightly 
                             for all racial/ethnic groups (ranging from 0.9% for Hispanics to 3.7% 
-                            for multiracial students), except for Blacks."""),   
+                            for multiracial students), except for Blacks.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),   
             Finding(self.finding_526_3, description="finding_526_3",
                     text="""Second, Black and Hispanic students consistently had significantly 
                             lower rates of interest (both in early 9th grade and late 11th grade) 
                             and persistence in STEM professions. At the end of 11th grade, for example, 
                             while 10.8% of Whites, 9.5% of Asians, and 11.6% of multiracial students 
-                            aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did."""),
+                            aspired to a career in STEM, only 6.8% of Blacks and 8.2% of Hispanics did.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_526_4, description="finding_526_4",
                     text="""Third, interestingly, among those who previously were not interested 
                             in STEM fields, students from all racial/ethnic backgrounds, except 
                             Blacks (5.1%), gained interest in STEM jobs at a similar rate 
-                            (about 7%) after spending three years in high school."""),
+                            (about 7%) after spending three years in high school.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_526_5, description="finding_526_5",
                     text="""Of those who aspired to a career in STEM in early 9th grade, 
                             only about 34.3% maintained their interest until late 11th 
                             grade (or persisters). Interestingly, about 6.9% students 
                             (or emergers) who initially did not aspire to STEM careers 
                             developed an interest three years after enrolling in high 
-                            school."""),    
+                            school.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),    
             Finding(self.finding_526_6, description="finding_526_6",
                     text="""The patterns of SES disparities were clear and quite 
                             consistent across multiple indicators of cross-sectional 
@@ -184,14 +189,15 @@ class Saw2018Cross(Publication):
                             grade, for instance, while about 14.4% of high SES students 
                             aspired to pursue a career in STEM, only 10.6% of 
                             high-middle SES, 9.0% of low-middle SES, and 7.1% of low SES 
-                            students did."""),     
+                            students did.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),     
             Finding(self.finding_526_7, description="finding_526_7",
                     text="""Although the persistence and emergence rates are fairly 
                             low, the absolute numbers of nonpersisters (unweighted 
                             1,272 out of 1,988) and emergers (unweighted 1,132 out of 
                             14,941) are more or less identical, which explains the 
                             quite stable rates of STEM career aspirations among high 
-                            school students over time."""), 
+                            school students over time.""", finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS), 
             Finding(self.finding_526_8, description="finding_526_8",
                     text="""As shown in Figure 1 (for regression estimates, see 
                             Appendix Table B1), considerable cross-sectional and 
@@ -203,44 +209,51 @@ class Saw2018Cross(Publication):
                             about 14.5% of boys and 8.4% of girls were interested 
                             in a STEM career (a 6.1% gap). At the end of 11th grade, 
                             the corresponding percentages were 14.7% and 5.3%, 
-                            suggesting that the gender gap grew to 9.4 percentage points."""),
+                            suggesting that the gender gap grew to 9.4 percentage points.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_526_9, description="finding_526_9",
                     text="""From a longitudinal perspective, students from the two 
                             lower SES groups—low-middle and low SES groups—had 
                             significantly fewer persisters (31.9% and 29.9%) and 
                             emergers (6.1% and 5.4%) than their high SES peers 
-                            (45.1% and 9.0%, respectively)."""),  
+                            (45.1% and 9.0%, respectively).""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),  
             Finding(self.finding_526_10, description="finding_526_10",
                     text="""The growing gender gap resulted from the lower percentage 
                             of persisters (24.6%) as well as the lower percentage of 
                             emergers (3.7%) among girls throughout the first three 
                             years of high school. For boys, the corresponding percentages 
-                            were 40.0% and 10.5%."""),  
+                            were 40.0% and 10.5%.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),  
             Finding(self.finding_527_1, description="finding_527_1",
                     text="""For Whites, the patterns of cross-sectional and longitudinal 
                             disparities in STEM career aspirations across gender and SES 
                             groups were prominent and consistent. In particular, higher 
                             SES boys reported the highest rates of all four indicators 
                             of STEM career aspirations, followed by lower SES boys, 
-                            higher SES girls, and lower SES girls."""),  
+                            higher SES girls, and lower SES girls.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),  
             Finding(self.finding_527_4, description="finding_527_4",
                     text="""First, compared with their White counterparts (interracial 
                             but intragender and intra-SES comparisons), higher SES boys 
                             from Black, Asian, and multiracial groups showed similar 
                             levels of STEM career aspirations in nearly all indicators, 
                             except that higher SES boys from the Hispanic group reported 
-                            lower levels of career aspirations in STEM in those indicators."""),  
+                            lower levels of career aspirations in STEM in those indicators.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),  
             Finding(self.finding_527_5, description="finding_527_5",
                     text="""For example, while 17.9% of White boys from higher SES 
                             families aspired to a career in STEM upon entering high 
                             school, only 1.8% of Black girls from lower SES families 
-                            did (a 16.1% gap)."""),  
+                            did (a 16.1% gap).""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),  
             Finding(self.finding_527_6, description="finding_527_6",
                     text="""From high school freshman to junior year, the gaps in 
                             STEM career aspirations between White boys from higher 
                             SES households and girls from all racial/ethnic groups, 
                             regardless of their SES, on average grew by 6.6 percentage 
-                            points."""),
+                            points.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_527_7, description="finding_527_7",
                     text="""Second, compared with their White high SES peers 
                             (intragender but interracial and inter-SES comparisons), 
@@ -248,18 +261,21 @@ class Saw2018Cross(Publication):
                             comparable rates of STEM career aspirations, unlike Black, 
                             Hispanic, and multiracial boys from lower SES families who 
                             consistently had significantly lower rates of all four 
-                            indicators."""),
+                            indicators.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_527_8, description="finding_527_8",
                     text="""In terms of persisters, whereas nearly half of White boys 
                             from higher SES families (46.6%) who initially had a career 
                             interest in STEM maintained their interest, only about 14.0% 
                             of Black boys from lower SES group, Hispanic girls from 
-                            higher SES group, and Asian girls from lower SES group did."""),
+                            higher SES group, and Asian girls from lower SES group did.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_527_9, description="finding_527_9",
                     text="""Third, compared with White higher SES boys, girls from Black, 
                             Hispanic, Asian, and multiracial groups, regardless of their 
                             SES, had significantly lower rates of almost all four 
-                            indicators of STEM career aspirations in high school.""")
+                            indicators of STEM career aspirations in high school.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS)
                                    
         ]
         

@@ -11,7 +11,7 @@ from rpy2.robjects.packages import importr
 
 from SynRD.papers.file_utils import PathSearcher
 from SynRD.utils import _class_to_papername
-from SynRD.publication import FigureFinding, Finding, Publication, VisualFinding
+from SynRD.publication import FigureFinding, Finding, Publication, VisualFinding, TAXONOMY
 
 
 class Fruiht2018Naturally(Publication):
@@ -51,7 +51,7 @@ class Fruiht2018Naturally(Publication):
                     text="""The overall model was significant, F (8,
                             4172) = 111.98, p < .001, and explained approximately
                             18% of the variability in educational attainment (see
-                            Table 2)."""),
+                            Table 2).""", finding_type=TAXONOMY.REGRESSION.value.PATH_ANALYSIS.value.VARIABILITY),
             Finding(self.finding_390_2, description="finding_390_2",
                     text="""As hypothesized, in the final model, we found a
                             significant main effect of parental education (B = -1.91,
@@ -60,28 +60,33 @@ class Fruiht2018Naturally(Publication):
                             from college moved about two steps further in their education 
                             (e.g., the difference between a high school graduate
                             and someone who completed a vocational certification, or
-                            the difference between a bachelors and doctoral degree)."""),
+                            the difference between a bachelors and doctoral degree).""",
+                            finding_type=TAXONOMY.REGRESSION.value.PATH_ANALYSIS.value.COEFFICIENT_DIFFERENCE),
             Finding(self.finding_390_3, description="finding_390_3",
                     text="""There was also a significant main effect of the presence
                             of a mentor (B = .40, t = 3.68 p < .001, 95% CI = .19
                             to .61) such that students who reported having a mentor
                             in adolescence or emerging adulthood, had significantly
-                            higher educational attainment than those who did not."""),
+                            higher educational attainment than those who did not.""",
+                            finding_type=TAXONOMY.REGRESSION.value.PATH_ANALYSIS.value.COEFFICIENT_DIFFERENCE),
             Finding(self.finding_391_1, description="finding_391_1",
                     text="""Finally, there was a significant effect
                             of race such that African Americans had significantly
-                            lower educational attainment than other participants."""),
+                            lower educational attainment than other participants.""",
+                            finding_type=TAXONOMY.REGRESSION.value.PATH_ANALYSIS.value.COEFFICIENT_DIFFERENCE),
             Finding(self.finding_391_2, description="finding_391_2",
                     text="""In addition, the analysis revealed a significant interaction
                             between parental education and availability of a mentor in the
                             final model, suggesting that having a mentor moderates the 
                             relationship between having a parent who graduated from college 
                             and educational attainment in adulthood. The interaction effect 
-                            was very small but statistically significant (dR2 = .001, p < .05)."""),
+                            was very small but statistically significant (dR2 = .001, p < .05).""",
+                            finding_type=TAXONOMY.REGRESSION.value.PATH_ANALYSIS.value.INTERACTION_EFFECT),
             Finding(self.finding_391_3, description="finding_391_3",
                     text="""Having a mentor was more beneficial to young people whose parents did 
                             not attend college (B = .74, p < .001) than for those with at least one 
-                            parent who is a college graduate (B = .40, p < .001)."""),
+                            parent who is a college graduate (B = .40, p < .001).""",
+                            finding_type=TAXONOMY.REGRESSION.value.PATH_ANALYSIS.value.COEFFICIENT_DIFFERENCE),
             #VisualFinding(self.table_1, description="table_1"),
             #FigureFinding(self.figure_1, description="figure_1"),
             #Finding(self.finding_392_1, description="finding_392_1",

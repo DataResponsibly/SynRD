@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, NonReproducibleFindingException
+from SynRD.publication import Publication, Finding, NonReproducibleFindingException, TAXONOMY
 from SynRD.papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
@@ -46,36 +46,36 @@ class Jeong2021Math(Publication):
                 \With the HSLS dataset, we observe that prediction accuracy is 68.2 ± 0.1 % if we predict students’ math
                 performance in the 9th grade based only on their past performance. Accuracy improves to 75.0 ± 0.1 %,
                 by utilizing more features such as students’ and parents’ survey responses.
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.ACCURACY),
             Finding(self.finding_3_1, description="finding_3_1", text="""
                 First, notice that the difference in accuracy between WA and BHN is negligible.
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.ACCURACY),
             Finding(self.finding_3_2, description="finding_3_2", text="""
                 However, FNR was considerably smaller for WA students compared to BHN. The relative difference in FNR was up
                 to 78%. This implies that WA students are less prone to get an underestimated prediction by the ML model.
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.FNR),
             Finding(self.finding_3_3, description="finding_3_3", text="""
                 At the same time, FPR is 42% higher for WA than BHN students. In other words, WA students more frequently
                 receive the benefit of the doubt from the trained ML model.
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.FPR),
             Finding(self.finding_3_4, description="finding_3_4", text="""
                 We also observe that PBR is higher in WA students than in BHN students. This may reflect the difference in the
                 ground truth data. The observed base rate was 0.57 for WA and 0.38 for BHN students. (difference = 0.19).
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.PREDICTED_BASE_RATE),
             Finding(self.finding_3_5, description="finding_3_5", text="""
                 However, the PBR difference from the trained random forest models was about 0.23, indicating that the existing
                 racial performance gap is exaggerated in the ML model’s predictions.
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.PREDICTED_BASE_RATE),
             Finding(self.finding_3_6, description="finding_3_6", text="""
                 The FPR of 0.30 for WA students (see Table 1) means that 30% of the students who would not perform well in the
                 9th grade will be placed in the advanced class. They are given the benefit of the doubt and the opportunity to
                 learn more advanced math. On the other hand, only 18% of the BHN students get the same benefit of the doubt (FPR=0.18).
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.FPR),
             Finding(self.finding_3_7, description="finding_3_7", text="""
                 The FNR of 0.21 in WA students indicates that 21% ofWA students who would in fact perform well in the future
                 will be placed in the basic class by the ML algorithm. For BHN students, a startlingly high 37% will be
                 incorrectly placed in the basic class, their academic potential ignored by the algorithm.
-                """),
+                """, finding_type=TAXONOMY.REGRESSION.value.LOGISTIC.value.FNR),
         ]
 
     def _recreate_dataframe(self, filename='jeong2021math_dataframe.pickle'):

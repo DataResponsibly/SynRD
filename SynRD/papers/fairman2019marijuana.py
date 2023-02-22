@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, NonReproducibleFindingException
+from SynRD.publication import Publication, Finding, NonReproducibleFindingException, TAXONOMY
 from SynRD.papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
@@ -54,60 +54,60 @@ class Fairman2019Marijuana(Publication):
             Finding(self.finding_5_1, description='finding_5_1', text="""
                 For each substance, the mean age of reported first use increased over the study period.
                 The mean age of first marijuana use increased ( 0.5 years)  from 14.7 years in 2004 to 15.2 years in 2014;.
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_2, description='finding_5_2', text="""
                 these numbers were comparable to those for age of first use of cigarettes (13.6 vs. 15.0; 1.4 years)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_3, description='finding_5_3', text="""
                 alcohol (14.4 vs. 15.2;  0.8 years)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_4, description='finding_5_4', text="""
                 other tobacco (14.8 vs. 15.7;  0.9 years)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_5, description='finding_5_5', text="""
                 and other drug use (14.4 vs. 15.0;  0.6 years)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_6, description='finding_5_6', text="""
                 Aggregated across survey years, 5.8% of respondents reported that they initiated marijuana before other substances,
                 compared to 29.8% for alcohol, 14.2% for cigarettes, 3.6% for other tobacco products, and 5.9% other drugs
                 (these data are provided in online supplemental Table S1)
-                """),
+                """, finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
             Finding(self.finding_5_7, description='finding_5_7', text="""
                 From 2004 to 2014, the proportion who had initiated marijuana before other substances increased
                 from 4.4% to 8.0% (Figure 1),
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_8, description='finding_5_8', text="""
                 declined for those having initiated cigarettes first (21.4% to 8.9%)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_9, description='finding_5_9', text="""
                 and increased in youth having abstained from substance use (35.5% to 46.3%)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_5_10, description='finding_5_10', text="""
                 Males were more likely than females to have initiated marijuana first (7.1%)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_11, description='finding_5_11', text="""
                 or other tobacco products first (5.7%),
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_12, description='finding_5_12', text="""
                 whereas females were more likely than males to have initiated cigarettes (15.2%)
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_13, description='finding_5_13', text="""
                 or alcohol first (32.0%).
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_14, description='finding_5_14', text="""
                 Considering age, a small proportion of 12–13-year-olds (0.6%) reported initiating marijuana before other substances,
                 but by ages 18–19 and 20–21-years this proportion increased to 9.1%
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_6_1, description='finding_6_1', text="""
                 and 9.4%, respectively.
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             Finding(self.finding_6_2, description='finding_6_2', text="""
                 American Indian/Alaskan Native (AI/AN) (11.8%) and Black youth (9.4%) had the highest proportion of initiating
                 marijuana first;
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_6_3, description='finding_6_3', text="""
                 White (4.6%) and Asian youth (2.5% had the lowest).
-                """),
+                """, finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
         ]
 
     def _merge_input_files(self):

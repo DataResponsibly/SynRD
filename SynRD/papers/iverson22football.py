@@ -6,7 +6,7 @@ from statsmodels.stats.contingency_tables import Table2x2
 from statsmodels.stats.proportion import proportions_chisquare
 
 from SynRD.papers.file_utils import PathSearcher
-from SynRD.publication import Publication, Finding, NonReproducibleFindingException
+from SynRD.publication import Publication, Finding, NonReproducibleFindingException, TAXONOMY
 
 
 class Iverson22Football(Publication):
@@ -42,24 +42,87 @@ class Iverson22Football(Publication):
         super(Iverson22Football, self).__init__(dataframe=dataframe)
         
         self.FINDINGS = self.FINDINGS + [
-            Finding(self.finding_3_1, description="finding_3_1"),
-            Finding(self.finding_3_2, description="finding_3_2"),
-            Finding(self.finding_3_3, description="finding_3_3"),
-            Finding(self.finding_4_1, description="finding_4_1"),
-            Finding(self.finding_4_2, description="finding_4_2"),
-            Finding(self.finding_4_3, description="finding_4_3"),
-            Finding(self.finding_4_4, description="finding_4_4"),
+            Finding(self.finding_3_1, description="finding_3_1",
+                    text="""The sample was, on average, 38 years old at the Wave V assessment.""",
+                    finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
+            Finding(self.finding_3_2, description="finding_3_2",
+                    text="""During the Wave V assessment, 307 (17.4%) men reported being
+                            diagnosed with depression at some point in their life, 275 (15.6%) being
+                            diagnosed with an anxiety disorder or panic disorder at some point in their
+                            life, 211 (12.0%) having received psychological or emotional counseling
+                            in the past 12 months, 125 (7.1%) reported seriously thinking about suicide
+                            in the past year, and 101 (5.8%) reported feeling depressed in the previous week
+                            (i.e., “a lot of the time” or “most of the time or all of the time” over the past 7 days).""",
+                            finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
+            Finding(self.finding_3_3, description="finding_3_3",
+                    text="""Examining responses the participants gave during the Wave I assessment when they were adolescents,
+                            369 (20.9%) reported playing (or intending to play) football in high school and 952 (54.0%) reported not
+                            intending to play football in high school. Of note, 441 participants (25% of the sample) did not answer
+                            this question and were excluded from analyses pertaining to football participation.""",
+                            finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
+            Finding(self.finding_4_1, description="finding_4_1",
+                    text="""During Wave I, there were 174 boys (9.9%) who reported undergoing psychological counseling in the past year
+                            while in high school. During the Wave V interview, ~24 years later, those individuals who underwent
+                            psychological counseling during adolescence were much more likely to report (i) a lifetime history of
+                            depression [37.4 vs. 15.3%, χ2 ((11)) = 53.17, p &lt; 0.001, OR= 3.31, 95% CI = 2.37-4.64],""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_2, description="finding_4_2",
+                    text="""(ii) a lifetime history of an anxiety disorder or panic disorder [31.0 vs. 14.9%, χ2 ((11)) = 41.12, p &lt; 0.001,
+                            OR= 2.61, 95% CI = 1.94-3.50],""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_3, description="finding_4_3",
+                    text="""(iii) having received psychological counseling in the past 12 months [31.0 vs. 12.0%, χ2 ((11)) = 36.00, p &lt; 0.001,
+                            OR= 2.70, 95% CI = 1.98-3.67],""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_4, description="finding_4_4",
+                    text="""(iv) suicidal ideation in the past year [12.6 vs. 6.4%, χ2(1) = 9.24 , 95%CI = 1.29–3.44],
+                            , p = 0.002, OR = 2.11""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
             # Finding(self.finding_4_5),
-            Finding(self.finding_4_6, description="finding_4_6"),
-            Finding(self.finding_4_7, description="finding_4_7"),
-            Finding(self.finding_4_8, description="finding_4_8"),
-            Finding(self.finding_4_9, description="finding_4_9"),
-            Finding(self.finding_4_10, description="finding_4_10"),
-            Finding(self.finding_4_11, description="finding_4_11"),
-            Finding(self.finding_4_12, description="finding_4_12"),
-            Finding(self.finding_4_13, description="finding_4_13"),
-            Finding(self.finding_4_14, description="finding_4_14"),
-            Finding(self.finding_4_15, description="finding_4_15")
+            Finding(self.finding_4_6, description="finding_4_6",
+                    text="""When interviewed during adolescence, 186 boys (10.6%) endorsed thoughts of suicide in the past year.
+                            At the followup assessment, ∼24 years later, those men who reported suicide ideation during adolescence,
+                            compared to those who did not, weremore likely to report (i) a lifetime history of depression
+                            [28.0 vs. 16.0%, χ2 (1) = 16.54, p &lt; 0.001, OR = 2.03, 95% CI = 1.44– 2.88]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_7, description="finding_4_7",
+                    text="""(ii) having received psychological or emotional counseling in the past 12 months
+                            [21.5 vs. 10.8%, χ2(1) = 17.95, p &lt; 0.001, OR= 2.26, 95% CI = 1.54–3.31]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_8, description="finding_4_8",
+                    text="""(iii) suicide ideation in the past year
+                            [19.4 vs. 5.6%, χ2(1) = 48.18, p &lt; 0.001, OR= 4.06, 95%CI = 2.66–6.20]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_9, description="finding_4_9",
+                    text="""(iv) feeling depressed within the past 7 days
+                            [13.0 vs. 4.8%, χ2 (1) = 20.79, p &lt; 0.001, OR = 2.97, 95% CI = 1.82– 4.84]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_10, description="finding_4_10",
+                    text="""Those who reported suicidal ideation during adolescence had a higher lifetime history of anxiety
+                            disorder or panic disorder, but this result was not statistically significant
+                            [20.4 vs. 15.0%, χ2 (1) = 3.78, p = 0.052, OR = 1.46, 95% CI = 0.995–2.14]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.TEMPORAL_FIXED_CLASS),
+            Finding(self.finding_4_11, description="finding_4_11",
+                    text="""Participants who played football, compared to participants who did not, had similar rates of
+                            (i) being diagnosed with depression at some point in their life
+                            [13.6 vs. 17.5%; χ2 (1) = 3.09, p = 0.08, OR = 0.74 95% CI = 0.52–1.04; see Figure 1]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
+            Finding(self.finding_4_12, description="finding_4_12",
+                    text="""(ii) being diagnosed with an anxiety disorder or panic disorder at some point in their life
+                            [13.4 vs. 16.1%, χ2 (1) = 1.53, p = 0.22, OR= 0.80, 95%CI = 0.59–1.14]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
+            Finding(self.finding_4_13, description="finding_4_13",
+                    text="""(iii) having received psychological or emotional counseling in the past 12 months
+                            [10.4 vs. 11.6%, χ2 (1) = 0.37, p = 0.54, OR= 0.89, 95% CI = 0.60–1.31]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
+            Finding(self.finding_4_14, description="finding_4_14",
+                    text="""(iv) suicidal ideation in the past year
+                            [6.0 vs. 7.0%; χ2 (1) = 0.49, p = 0.48, OR = 0.84, 95% CI = 0.51–1.38]""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
+            Finding(self.finding_4_15, description="finding_4_15",
+                    text="""(v) feeling depressed in the past 7 days
+                            [4.1 vs. 6.2%; χ2 2.12, p = 0.15, OR = 0.65, 95% CI = 0.37–1.17]. (1)""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
         ]
 
     def _recreate_dataframe(self, filename='iverson22football_dataframe.pickle'):
