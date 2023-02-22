@@ -47,6 +47,12 @@ rpy2.robjects.r['pi']  # Returns R object with the number pi
 
 _________________
 
+# Notes on benchmark construction, reasoning, etc.
+
+## Taxonomy of findings
+![Taxonomy of findings](imgs/taxonomy_synrd.png "Taxonomy of findings")
+
+
 ## How to add a new paper
 Brief details on how to add a new paper.
 
