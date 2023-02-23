@@ -208,7 +208,7 @@ class PacSynth(Synthesizer):
         df = self._unslide_range(df)
         return df
 
-class AIMTSynthesizer(Synthesizer):
+class AIMSynthesizer(Synthesizer):
     def __init__(self, 
                  epsilon: float, 
                  slide_range: bool = False,
