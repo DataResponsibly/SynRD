@@ -20,6 +20,8 @@ class DataRetriever():
             [('jeong2021math.tsv', 'https://dataverse.harvard.edu/api/access/datafile/6948438')],
         'lee2021ability_processed': 
             [('lee2021ability.tsv', 'https://dataverse.harvard.edu/api/access/datafile/6948436')],
+        'pierce2019who_processed': 
+            [('pierce2019who.tsv','https://dataverse.harvard.edu/api/access/datafile/6950603')]
     }
 
     def __init__(self, papers, preprocessed=True):

@@ -206,3 +206,6 @@ class PacSynth(Synthesizer):
         df = self.synthesizer.sample(n)
         df = self._unslide_range(df)
         return df
+    
+class AIMSynthesizer(Synthesizer):
+    pass

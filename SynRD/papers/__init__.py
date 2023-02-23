@@ -4,7 +4,14 @@ from .iverson22football import Iverson22Football
 from .jeong2021math import Jeong2021Math
 from .fruiht2018naturally import Fruiht2018Naturally
 from .lee2021ability import Lee2021Ability
-__all__ = ["Saw2018Cross", "Iverson22Football"] # "Fairman2019Marijuana", 
+from .pierce2019who  import Pierce2019Who
+__all__ = ["Saw2018Cross", 
+            "Iverson22Football",
+            "Fairman2019Marijuana",
+            "Jeong2021Math",
+            "Fruiht2018Naturally",
+            "Lee2021Ability",
+            "Pierce2019Who"]
 
 # import contextlib
 # import importlib
