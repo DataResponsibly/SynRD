@@ -12,7 +12,7 @@ FEATURE_GROUPS = ["general", "statistical", "info-theory", "itemset"]
 MAPPINGS = {
     # "saw2018cross_dataframe.tsv": {"name": "saw2018cross", "target": ""},
     # "lee2021ability_dataframe.tsv": {"name": "lee2021ability", "target": ""},
-    # "jeong2021math_dataframe.tsv": {"name": "jeong2021math", "target": "X1TXMSCR"},
+    "jeong2021math_dataframe.tsv": {"name": "jeong2021math", "target": "TARGET"},
     # "iverson22football_dataframe.tsv": {"name": "iverson22football", "target": ""},
     # "fruiht2018naturally_dataframe.tsv": {"name": "fruiht2018naturally", "target": ""},
     "29621-0001-Data.tsv": {"name": "fairman2019marijuana", "target": "CLASS"},

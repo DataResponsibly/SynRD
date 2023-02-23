@@ -82,8 +82,13 @@ class Publication():
             self.dataframe = dataframe
             self.real_dataframe = dataframe
         else:
-            raise ValueError("Must set dataframe to initialize a paper class.")
-        
+            try:
+                self.dataframe = self._recreate_dataframe()
+            except NotImplementedError:
+                raise ValueError("Must set dataframe to initialize a paper class or implement _recreate_dataframe().")
+            except Exception as e:
+                raise ValueError(f"Couldn't initialize dataframe for paper.\nCaught {e}.")
+
         self._description = description
         self.columns = self.real_dataframe.columns
 
