@@ -130,20 +130,31 @@ class Assari2019Baseline(Publication):
     def finding_5_1(self):
         """Blacks were younger, had higher number of chronic medical conditions at baseline in comparison to Whites."""
         means = self.get_race_pools_with_means()
-        soft_finding = means['Age']['Black'] < means['Age']['White'] and means['HTN']['Black'] > means['HTN']['White']
-        return soft_finding
+        black_age = means['Age']['Black']
+        white_age = means['Age']['White']
+        black_htn = means['HTN']['Black']
+        white_htn = means['HTN']['White']
+        values = [black_age, white_age, black_htn, white_htn]
+        soft_finding = black_age < white_age and black_htn > white_htn
+        return (values, soft_finding, values)
 
     def finding_5_2(self):
         """Relative to White people, Black individuals had also lower educational attainment (p < 0.05 for all)."""
         means = self.get_race_pools_with_means()
-        soft_finding = means['Education']['Black'] < means['Education']['White']
-        return soft_finding
+        black_education = means['Education']['Black']
+        white_education = means['Education']['White']
+        values = [black_education, white_education]
+        soft_finding =  black_education < white_education
+        return (values, soft_finding, values)
 
     def finding_5_3(self):
         """Blacks also reported worse self-rated health (SRH) than Whites (Table 1)."""
         means = self.get_race_pools_with_means()
-        soft_finding = means['Health']['Black'] > means['Health']['White'] # note 1 = excellent, 5 = poor
-        return soft_finding
+        black_health = means['Health']['Black']
+        white_health = means['Health']['White']
+        values = [black_health, white_health]
+        soft_finding = black_health > white_health # note 1 = excellent, 5 = poor
+        return (values, soft_finding, values)
 
     def finding_5_4(self):
         """The overall prevalence of DM was 5.73%, (95%CI = 4.80-6.82)."""
@@ -156,14 +167,18 @@ class Assari2019Baseline(Publication):
     def finding_5_6(self):
         """Similarly, overall, people had 12.53 years of schooling at baseline (95%CI = 12.34-12.73)."""
         means = self._get_adjusted_means(self.dataframe)
-        soft_finding = round(means['Education'][0], 2) == 12.53
-        return soft_finding
+        years_schooling = means['Education'][0]
+        soft_finding = round(years_schooling, 2) == 12.53
+        return ([years_schooling], soft_finding, [years_schooling])
 
     def finding_5_7(self):
         """A comparison of racial groups showed higher educational attainment in Whites (12.69, 95%CI=12.48-12.90) than Blacks (11.37,95%CI = 10.90-11.84). Thus, on average, Whites had more than 1.3 years higher years [sic] of schooling than Blacks..."""
         means = self.get_race_pools_with_means()
-        soft_finding = means['Education']['White'] > means['Education']['Black'] + 1.3
-        return soft_finding
+        white_education = means['Education']['White']
+        black_education = means['Education']['Black']
+        values = [white_education, black_education]
+        soft_finding = white_education > black_education + 1.3
+        return (values, soft_finding, values)
 
     def finding_5_8(self):
         """Of the 177 that died, 121 were White (68.36%) and 56 were Black (31.64%)."""
@@ -171,8 +186,9 @@ class Assari2019Baseline(Publication):
         total = dead.shape[0]
         black_count = dead.loc[dead['Race'] == 2].shape[0]
         white_count = dead.loc[dead['Race'] == 1].shape[0]
+        values = [total, white_count, black_count]
         soft_finding = total == 177 and white_count == 121 and black_count == 56
-        return soft_finding
+        return (values, soft_finding, values)
 
     def finding_5_9(self):
         """Of the 177 that died, 33 were obese (18.64%) and 144 were not obese (81.36%) at baseline."""    
@@ -180,67 +196,77 @@ class Assari2019Baseline(Publication):
         total = dead.shape[0]
         obese_count = dead.loc[dead['Obesity'] == 1].shape[0]
         not_obese_count = dead.loc[dead['Obesity'] == 0].shape[0]
+        values = [total, obese_count, not_obese_count]
         soft_finding = total == 177 and obese_count == 33 and not_obese_count == 144
-        return soft_finding
+        return (values, soft_finding, values)
 
     def finding_6_1(self):
         """In bivariate association, race was not associated with death due to cerebrovascular (unadjusted HR for Blacks compared to Whites = 0.78, 95% CI = 0.55-1.11), suggesting that Whites and Blacks had similar risk of future cerebrovascular mortality over 25 years."""
         corr_df = self.get_corr()
-        soft_finding = abs(corr_df['Race'].loc['Death to cerebrovascular disease']) < 0.05
-        return soft_finding
+        corr_race_death = corr_df['Race'].loc['Death to cerebrovascular disease']
+        soft_finding = abs(corr_race_death) < 0.05
+        return ([corr_race_death], soft_finding, [corr_race_death])
 
     def finding_6_2(self):
         """In bivariate association, baseline obesity was not associated with future risk of cerebrovascular mortality (Unadjusted HR for Blacks compared to Whites = 0.84, 95% CI = 0.45-1.56), suggesting that Whites and Blacks had a similar risk of future cerebrovascular mortality over 25 years."""
         corr_df = self.get_corr()
-        soft_finding = abs(corr_df['Obesity'].loc['Death to cerebrovascular disease']) < 0.05
-        return soft_finding
+        corr_obesity_death = corr_df['Obesity'].loc['Death to cerebrovascular disease']
+        soft_finding = abs(corr_obesity_death) < 0.05
+        return ([corr_obesity_death], soft_finding, [corr_obesity_death])
 
     # TODO: check that race correlation is for Black
     def finding_6_3(self):
         """Race (Black) was negatively associated with education and income"""
         corr_df = self.get_corr()
-        soft_finding = corr_df['Race'].loc['Education'] < 0 and corr_df['Race'].loc['Income'] < 0
-        return soft_finding
+        values = [corr_df['Race'].loc['Education'], corr_df['Race'].loc['Income']]
+        soft_finding = all(x < 0 for x in values)
+        return (values, soft_finding, values)
 
     # TODO: check that race correlation is for Black
     def finding_6_4(self):
         """[race (Black) was]... positively associated with depressive symptoms, hypertension, and obesity."""
         corr_df = self.get_corr()
-        soft_finding = corr_df['Race'].loc['Depressive symptoms'] > 0 and corr_df['Race'].loc['HTN'] > 0 and corr_df['Race'].loc['Obesity'] > 0
-        return soft_finding
+        values = [corr_df['Race'].loc['Depressive symptoms'], corr_df['Race'].loc['HTN'], corr_df['Race'].loc['Obesity']]
+        soft_finding =  all(x > 0 for x in values)
+        return (values, soft_finding, values)
 
     # TODO: check that race correlation is for Black
     def finding_6_5(self):
         """Blacks more frequently smoked and less frequently exercised.""" # implies positive correlation with smoking and negative with exercise
         corr_df = self.get_corr()
-        soft_finding = corr_df['Race'].loc['Smoking'] > 0 and corr_df['Race'].loc['Exercise'] < 0
-        return soft_finding
+        values = [corr_df['Race'].loc['Smoking'], corr_df['Race'].loc['Exercise']]
+        soft_finding = values[0] > 0 and  values[1] < 0
+        return (values, soft_finding, values)
 
     # TODO: check that race correlation is for Black
     def finding_6_6(self):
         """Race was not associated with cerebrovascular death.""" # same as finding_6_1?
         corr_df = self.get_corr()
-        soft_finding = abs(corr_df['Race'].loc['Death to cerebrovascular disease']) < 0.05
-        return soft_finding
+        corr_race_death = corr_df['Race'].loc['Death to cerebrovascular disease']
+        soft_finding = abs(corr_race_death) < 0.05
+        return ([corr_race_death], soft_finding, [corr_race_death])
 
     # TODO: check that gender correlation is for female
     def finding_6_7(self):
         """Baseline obesity was associated with female gender and less education, income, smoking, and exercise."""
         corr_df = self.get_corr()
-        soft_finding = corr_df['Obesity'].loc['Gender'] > 0 and corr_df['Obesity'].loc['Education'] < 0 and corr_df['Obesity'].loc['Income'] < 0 and corr_df['Obesity'].loc['Smoking'] < 0 and corr_df['Obesity'].loc['Exercise'] < 0
-        return soft_finding
+        values = [corr_df['Obesity'].loc['Gender'], corr_df['Obesity'].loc['Education'], corr_df['Obesity'].loc['Income'], corr_df['Obesity'].loc['Smoking'], corr_df['Obesity'].loc['Exercise']]
+        soft_finding =  values[0] > 0 and all(x < 0 for x in values[1:])
+        return (values, soft_finding, values)
 
     def finding_6_8(self):
         """Obesity at baseline was associated with depressive symptoms and hypertension at baseline."""
         corr_df = self.get_corr()
-        soft_finding = corr_df['Obesity'].loc['Depressive symptoms'] > 0 and corr_df['Obesity'].loc['HTN'] > 0
-        return soft_finding
+        values = [corr_df['Obesity'].loc['Depressive symptoms'], corr_df['Obesity'].loc['HTN']]
+        soft_finding = all(x > 0 for x in values)
+        return (values, soft_finding, values)
     
     def finding_6_9(self):
         """Obesity at baseline was not associated with cerebrovascular death in the pooled sample (Table 2).""" # same as finding_6_2?
         corr_df = self.get_corr()
-        soft_finding = abs(corr_df['Obesity'].loc['Death to cerebrovascular disease']) < 0.05
-        return soft_finding
+        corr_obesity_death = corr_df['Obesity'].loc['Death to cerebrovascular disease']
+        soft_finding = abs(corr_obesity_death) < 0.05
+        return ([corr_obesity_death], soft_finding, [corr_obesity_death])
 
     def finding_6_10(self):
         """According to Model 1 in the pooled sample, baseline obesity did not predict cerebrovascular mortality (HR = 0.86, 0.49-1.51), independent of demographic, socioeconomic, health behaviors, and health factors at baseline."""
