@@ -6,6 +6,7 @@ import pickle
 from snsynth.pytorch import PytorchDPSynthesizer
 from snsynth.pytorch.nn import PATECTGAN as SmartnoisePATECTGAN
 from snsynth.mst import MSTSynthesizer as SmartnoiseMSTSynthesizer
+from snsynth.aim import AIMSynthesizer as SmartnoiseAIMSynthesizer
 from snsynth.aggregate_seeded import AggregateSeededSynthesizer
 from snsynth.transform import NoTransformer
 from DataSynthesizer.DataDescriber import DataDescriber
@@ -200,6 +201,26 @@ class PacSynth(Synthesizer):
         df = self.synthesizer.sample(n)
         df = self._unslide_range(df)
         return df
-    
+
 class AIMSynthesizer(Synthesizer):
-    pass
+    def __init__(self, 
+                 epsilon: float, 
+                 slide_range: bool = False,
+                 thresh = 0.05):
+        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=epsilon)
+        super().__init__(epsilon, slide_range, thresh)
+
+    def fit(self, df: pd.DataFrame):
+        categorical_check = (len(self._categorical_continuous(df)['categorical']) == len(list(df.columns)))
+        if not categorical_check:
+            raise ValueError('Please make sure that AIM gets categorical/ordinal\
+                features only. If you are sure you only passed categorical, \
+                increase the `thresh` parameter.')
+
+        df = self._slide_range(df)
+        self.synthesizer.fit(df)
+
+    def sample(self, n):
+        df = self.synthesizer.sample(n)
+        df = self._unslide_range(df)
+        return df
