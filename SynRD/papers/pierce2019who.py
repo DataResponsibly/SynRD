@@ -265,7 +265,7 @@ class Pierce2019Who(Publication):
                 groups=df_lm['age_category']
             )
             result = model.fit()
-            table_2_results[name] = result.summary2()
+            table_2_results[name] = result.summary()
             
         # TODO: Modify stats equations
         # Positive emotion model
