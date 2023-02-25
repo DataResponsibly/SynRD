@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import logging
+import pickle
 
 from snsynth.pytorch import PytorchDPSynthesizer
 from snsynth.pytorch.nn import PATECTGAN as SmartnoisePATECTGAN
@@ -30,13 +31,6 @@ class Synthesizer:
 
     def sample(self, n) -> pd.DataFrame:
         raise NotImplementedError
-
-    def load(self, file_path):
-        return pd.read_pickle(file_path)
-
-    def save(self, data, base_dir=None):
-        file_path = os.path.join(base_dir, self.__name__ + str(self.epsilon) + '.pickle')
-        data.to_pickle(file_path)
 
     def _slide_range(self, df):
         if self.slide_range:
