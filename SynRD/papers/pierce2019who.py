@@ -252,7 +252,7 @@ class Pierce2019Who(Publication):
         table_2_results = {}
 
         df_lm = self.dataframe.replace({'sex': self.GENDER_MAP,
-                                         'education_category': self.EDUCATION_MAP,})
+                                        'education_category': self.EDUCATION_MAP,})
         
         vc = {'confidants': '0 + C(confidants)', 'age_category': '0 + C(age_category)', 'education_category': '0 + C(education_category)', 
             'income': '0 + C(income)', 'sex': '0 + C(sex)', 'retired': '0 + C(retired)', 'num_child': '0 + C(num_child)'} 
@@ -265,6 +265,7 @@ class Pierce2019Who(Publication):
                 groups=df_lm['age_category']
             )
             result = model.fit()
+            print(result.summary())
             table_2_results[name] = result.summary()
             
         # TODO: Modify stats equations
@@ -304,7 +305,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse > child) and (spouse > friends)
+        soft_finding = (float(spouse) > float(child)) and (float(spouse) > float(friends))
         return soft_finding
     
     def finding_3286_1(self):
@@ -323,7 +324,8 @@ class Pierce2019Who(Publication):
         friends = pos.tables[1].loc['friend_support']['Coef.']
         # TODO: check the value of the coefficient
         # soft_finding = (spouse == child * 2.32) and (spouse == friends * 3.2)
-        soft_finding = (spouse >= child * 1.74) and (spouse >= friends * 2.4)
+        print(type(spouse), type(child), type(friends))
+        soft_finding = (float(spouse) >= float(child) * 1.74) and (float(spouse) >= float(friends) * 2.4)
         return soft_finding
     
     def finding_3286_2(self):
@@ -336,7 +338,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse > 0) and (child > 0) and (friends > 0)
+        soft_finding = (float(spouse) > 0 and float(child) > 0) and (float(friends) > 0)
         return soft_finding
     
     def finding_3286_3(self):
@@ -352,7 +354,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_strain']['Coef.']
         child = pos.tables[1].loc['child_strain']['Coef.']
         friends = pos.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (spouse < 0) and (child > 0) and (friends > 0)
+        soft_finding = (float(spouse) < 0) and (float(child) > 0) and (float(friends) > 0)
         return soft_finding
     
     def finding_3286_4(self):
@@ -367,7 +369,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse > child) and (spouse > friends)
+        soft_finding = (float(spouse) > float(child)) and (float(spouse) > float(friends))
         return soft_finding
     
     def finding_3286_5(self):
@@ -380,7 +382,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (child > 0) and (friends > 0)
+        soft_finding = (float(child) > 0) and (float(friends) > 0)
         return soft_finding
     
     def finding_3286_6(self):
@@ -402,7 +404,7 @@ class Pierce2019Who(Publication):
         spouse = neg.tables[1].loc['spouse_strain']['Coef.']
         child = neg.tables[1].loc['child_strain']['Coef.']
         friends = neg.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (spouse > child) and (spouse > friends)
+        soft_finding = (float(spouse) > float(child)) and (float(spouse) > float(friends))
         return soft_finding
         
     def finding_3286_8(self):
@@ -414,7 +416,7 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         spouse = neg.tables[1].loc['spouse_support']['Coef.']
         friends = neg.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse < 0) and (friends < 0)
+        soft_finding = (float(spouse) < 0) and (float(friends) < 0)
         return soft_finding
     
     def finding_3286_9(self):
@@ -430,7 +432,7 @@ class Pierce2019Who(Publication):
         friends = neg.tables[1].loc['friend_support']['Coef.']
         
         # TODO: Range of spouse and friends support
-        soft_finding = (spouse >= friends * 1.83)
+        soft_finding = (float(spouse) >= float(friends) * 1.83)
         return soft_finding
     
     def finding_3286_10(self):
@@ -445,7 +447,7 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         spouse = neg.tables[1].loc['spouse_strain']['Coef.']
         child = neg.tables[1].loc['child_strain']['Coef.']
-        soft_finding = (spouse >= child)
+        soft_finding = (float(spouse) >= float(child))
         return soft_finding
     
     def finding_3286_11(self):
@@ -456,7 +458,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         friends = neg.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (friends >= 0)
+        soft_finding = (float(friends) >= 0)
         return soft_finding
     
     def finding_3287_1(self):
@@ -469,7 +471,7 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         support = neg.tables[1].loc['spouse_support']['Coef.']
         strain = neg.tables[1].loc['spouse_strain']['Coef.']
-        soft_finding = (support > 0) and (strain > 0)
+        soft_finding = (float(support) > 0) and (float(strain) > 0)
         return soft_finding
     
     def finding_3287_2(self):
@@ -482,7 +484,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         child = neg.tables[1].loc['child_strain']['Coef.']
-        soft_finding = (child > 0)
+        soft_finding = (float(child) > 0)
         return soft_finding 
     
     def finding_3287_3(self):
@@ -491,12 +493,13 @@ class Pierce2019Who(Publication):
         more likely to report positive emotional states and less likely to report negative 
         emotional states than their poorer counterparts.
         """
+        # TODO: Debugging needed
         df = self.table_2_check()
         pos = df['positive_model']
         neg = df['negative_model']
         high_income = pos.tables[1].loc['income']['Coef.']
         low_income = neg.tables[1].loc['income']['Coef.']
-        soft_finding = (high_income > 0) and (low_income < 0)
+        soft_finding = (float(high_income) > 0) and (float(low_income) < 0)
         return soft_finding
     
     def finding_3287_4(self):
@@ -525,7 +528,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         age = neg.tables[1].loc['age_category']['Coef.']
-        soft_finding = (age < 0)
+        soft_finding = (float(age) < 0)
         return soft_finding
     
     def finding_3287_7(self):
@@ -538,7 +541,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         age = neg.tables[1].loc['age_category']['Coef.']
-        soft_finding = (age['2'] > age['1']) and (age['1'] > age['0'])
+        soft_finding = (float(age['2']) > float(age['1'])) and (float(age['1']) > float(age['0']))
         return soft_finding
     
     def finding_3287_8(self):
@@ -558,7 +561,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         sex = neg.tables[1].loc['sex']['Coef.']
-        soft_finding = (sex < 0)
+        soft_finding = (float(sex) < 0)
         return soft_finding
         
     
