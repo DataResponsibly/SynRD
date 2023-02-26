@@ -21,7 +21,9 @@ class DataRetriever():
         'lee2021ability_processed': 
             [('lee2021ability.tsv', 'https://dataverse.harvard.edu/api/access/datafile/6948436')],
         'pierce2019who_processed': 
-            [('pierce2019who.tsv','https://dataverse.harvard.edu/api/access/datafile/6950603')]
+            [('pierce2019who.tsv','https://dataverse.harvard.edu/api/access/datafile/6959655')],
+        'assari2019baseline_processed': 
+            [('assari2019baseline.tsv','https://dataverse.harvard.edu/api/access/datafile/6959652')]
     }
 
     def __init__(self, papers, preprocessed=True):
