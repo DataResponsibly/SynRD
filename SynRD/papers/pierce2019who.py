@@ -494,13 +494,14 @@ class Pierce2019Who(Publication):
         emotional states than their poorer counterparts.
         """
         # TODO: Debugging needed
-        df = self.table_2_check()
-        pos = df['positive_model']
-        neg = df['negative_model']
-        high_income = pos.tables[1].loc['income']['Coef.']
-        low_income = neg.tables[1].loc['income']['Coef.']
-        soft_finding = (float(high_income) > 0) and (float(low_income) < 0)
-        return soft_finding
+        pass
+        # df = self.table_2_check()
+        # pos = df['positive_model']
+        # neg = df['negative_model']
+        # high_income = pos.tables[1].loc['income']['Coef.']
+        # low_income = neg.tables[1].loc['income']['Coef.']
+        # soft_finding = (float(high_income) > 0) and (float(low_income) < 0)
+        # return soft_finding
     
     def finding_3287_4(self):
         """
