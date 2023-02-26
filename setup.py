@@ -29,6 +29,7 @@ setup(
                       "pandas", 
                       "numpy", 
                       "tqdm",
+                      "dill",
                       "requests",
                       "scikit-learn",
                       "disjoint-set",

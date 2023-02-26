@@ -54,5 +54,33 @@ class Benchmark:
         return 'Soft findings', percentage 
 
     
+def plot_example():
+    import random
+
+    import pandas as pd
+    import plotly.express as px
+
+    values = list(range(6))
+    values = "Nemo enim ipsam voluptatem quia voluptas ".split()
+
+    cols = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do".replace(
+        ",", ""
+    ).split()
+
+    data = [random.choices(values, k=100) for _ in range(len(cols))]
+
+    df = pd.DataFrame(index=cols, data=data)
+
+    df_ = (
+        df.stack()
+        .reset_index()
+        .rename(columns={"level_0": "index", "level_1": "col", 0: "value"})
+        .groupby(["index", "value"])["col"]
+        .count() .reset_index(name="n")
+        )
+
+    df_["value"] = df_["value"].astype(str)
+
+    px.bar(df_, y="index", x="n", color="value", orientation="h").show()
 
     
