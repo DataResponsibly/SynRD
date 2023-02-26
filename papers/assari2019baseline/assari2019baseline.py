@@ -181,7 +181,7 @@ class Assari2019Baseline(Publication):
         return (values, soft_finding, values)
 
     def finding_5_8(self):
-        """Of the 177 that died, 121 were White (68.36%) and 56 were Black (31.64%)."""
+        """Of the 177 that died, 121 were White (68.36%) and 56 were Black (31.64%). Note that we were unable to reproduce this result."""
         dead = self.get_dead()
         total = dead.shape[0]
         black_count = dead.loc[dead['Race'] == 2].shape[0]
@@ -191,7 +191,7 @@ class Assari2019Baseline(Publication):
         return (values, soft_finding, values)
 
     def finding_5_9(self):
-        """Of the 177 that died, 33 were obese (18.64%) and 144 were not obese (81.36%) at baseline."""    
+        """Of the 177 that died, 33 were obese (18.64%) and 144 were not obese (81.36%) at baseline. Note that we were unable to reproduce this result."""    
         dead = self.get_dead()
         total = dead.shape[0]
         obese_count = dead.loc[dead['Obesity'] == 1].shape[0]
@@ -224,7 +224,7 @@ class Assari2019Baseline(Publication):
 
     # TODO: check that race correlation is for Black
     def finding_6_4(self):
-        """[race (Black) was]... positively associated with depressive symptoms, hypertension, and obesity."""
+        """[race (Black) was]... positively associated with depressive symptoms, hypertension, and obesity. Note that we were unable to reproduce this result."""
         corr_df = self.get_corr()
         values = [corr_df['Race'].loc['Depressive symptoms'], corr_df['Race'].loc['HTN'], corr_df['Race'].loc['Obesity']]
         soft_finding =  all(x > 0 for x in values)
@@ -255,7 +255,7 @@ class Assari2019Baseline(Publication):
         return (values, soft_finding, values)
 
     def finding_6_8(self):
-        """Obesity at baseline was associated with depressive symptoms and hypertension at baseline."""
+        """Obesity at baseline was associated with depressive symptoms and hypertension at baseline. Note that we were unable to reproduce this result."""
         corr_df = self.get_corr()
         values = [corr_df['Obesity'].loc['Depressive symptoms'], corr_df['Obesity'].loc['HTN']]
         soft_finding = all(x > 0 for x in values)
