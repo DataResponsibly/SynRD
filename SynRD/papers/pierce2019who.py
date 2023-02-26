@@ -210,6 +210,9 @@ class Pierce2019Who(Publication):
         df['friend_support'] = df['V2216']
         df['friend_strain'] = df['V2217']
         
+        df['child_support'] = df['child_support'].replace(-99.0, 0)
+        df['child_strain'] = df['child_strain'].replace(-99.0, 0)
+        
         def age_categorize(row):  
             if row['age'] < 45:
                 return '0'
