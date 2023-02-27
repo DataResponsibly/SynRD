@@ -60,7 +60,7 @@ class Pierce2019Who(Publication):
         super(Pierce2019Who, self).__init__(dataframe=dataframe)
 
         self.FINDINGS = self.FINDINGS + [
-            VisualFinding(self.table_2, description="table_2"),
+            # VisualFinding(self.table_2, description="table_2"),
             Finding(self.finding_3284_1, description="finding_3284_1",
                     text="""When accounting for between-individual differences, spousal support 
                             has the strongest relationship with positive emotional states, reaffirming 
