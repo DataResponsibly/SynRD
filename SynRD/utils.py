@@ -12,7 +12,7 @@ def _int_uniform_sample(lower, upper):
 def bin_df_return_transform(df, columns, num_bins):
     column_transformations = {}
     for column in columns:
-        new_column, bins = pd.qcut(df[column], q=num_bins, retbins=True)
+        new_column, bins = pd.qcut(df[column], q=num_bins, retbins=True, duplicates='drop')
         column_transformations[column] = bins
         df[column] = new_column.cat.codes
     return df, column_transformations

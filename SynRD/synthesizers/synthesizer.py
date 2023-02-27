@@ -6,7 +6,8 @@ import pickle
 from snsynth.pytorch import PytorchDPSynthesizer
 from snsynth.pytorch.nn import PATECTGAN as SmartnoisePATECTGAN
 from snsynth.mst import MSTSynthesizer as SmartnoiseMSTSynthesizer
-from snsynth.aim import AIMSynthesizer as SmartnoiseAIMSynthesizer
+# from snsynth.aim import AIMSynthesizer as SmartnoiseAIMSynthesizer
+from SynRD.synthesizers.controllable_aim import SmartnoiseAIMSynthesizer
 from snsynth.aggregate_seeded import AggregateSeededSynthesizer
 from snsynth.transform import NoTransformer
 from DataSynthesizer.DataDescriber import DataDescriber
@@ -206,8 +207,9 @@ class AIMSynthesizer(Synthesizer):
     def __init__(self, 
                  epsilon: float, 
                  slide_range: bool = False,
-                 thresh = 0.05):
-        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=epsilon)
+                 thresh = 0.05,
+                 rounds_factor = 0.1):
+        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=epsilon, rounds_factor=rounds_factor)
         super().__init__(epsilon, slide_range, thresh)
 
     def fit(self, df: pd.DataFrame):
