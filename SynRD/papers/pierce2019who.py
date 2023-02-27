@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding
+from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding, TAXONOMY
 
 import pandas as pd
 import numpy as np
@@ -65,7 +65,8 @@ class Pierce2019Who(Publication):
                     text="""When accounting for between-individual differences, spousal support 
                             has the strongest relationship with positive emotional states, reaffirming 
                             the findings of Walen and Lachman (2000). 
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_1, description="finding_3286_1",
                     text="""Increased spousal support is associated with an increased positive 
                             emotional state. A direct comparison of the coefficients reveals that 
@@ -73,28 +74,33 @@ class Pierce2019Who(Publication):
                             from children, and a 320% greater correlation than support from friends. 
                             A Wald test comparing coefficients confirms that the correlation stemming 
                             from spousal support is significantly larger than those stemming from children and friends.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_2, description="finding_3286_2",
                     text="""the stark difference between support and strain. Support from all three 
                             sources is significantly correlated with more positive emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_3, description="finding_3286_3",
                     text="""However, of the three sources of strain, only the strain stemming from 
                             spouses is significantly correlated with lower positive emotional states. 
                             The other two sources are insignificant predictors of positive emotional 
                             states, meaning that having straining children and friends is not significantly 
                             associated with lower positive emotion.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_4, description="finding_3286_4",
                     text="""In the case of positive emotions, only spousal support is shown to have 
                             a significant causal link to positive emotions. That is to say, as spouses 
                             become more supportive over time, individuals report more positive emotional 
                             states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_5, description="finding_3286_5",
                     text="""This was not the case for support from children and friends, despite being 
                             correlated with positive emotions.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             # Finding(self.finding_3286_6, description="finding_3286_6",
             #         text="""In the case of social strain, none of the within-individual metrics are 
             #                 significant predictors of positive emotions. This finding demonstrates that 
@@ -104,44 +110,52 @@ class Pierce2019Who(Publication):
             Finding(self.finding_3286_7, description="finding_3286_7",
                     text="""Similar to the results for positive emotional states, we found that spouses 
                             have the greatest overall correlation with negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_8, description="finding_3286_8",
                     text="""Spousal support and friend support are the only types of support to be 
                             negatively correlated with negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_9, description="finding_3286_9",
                     text="""Furthermore, the correlation between spousal support and negative emotional 
                             states is 244% greater than the correlation of support stemming from friends. 
                             A Wald test confirms that the difference between spousal support and friend 
                             support is statistically significant.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_10, description="finding_3286_10",
                     text="""For the between-individual coefficients regarding strain, we found significant 
                             correlations between strain and negative emotions stemming from both spouses 
                             and children. Although the coefficient for spousal strain is greater in magnitude
                             than that of child strain, the Wald test comparing the coefficients demonstrates 
                             that there is no significant difference between the measures.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_11, description="finding_3286_11",
                     text="""Finally, we find no significant correlation between friend-based strain and 
                             negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3287_1, description="finding_3287_1",
                     text="""Similar to positive emotional states, both support and strain from spouses 
                             have a significant causal link to individual’s negative emotional states in 
                             the predicted directions.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3287_2, description="finding_3287_2",
                     text="""However, the results for negative emotional states differ slightly from positive 
                             emotions in that child-based strain is also a significant causal factor. 
                             The magnitude of child-based strain is similar in size to that of spouse-based 
                             strain.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3287_3, description="finding_3287_3",
                     text="""Unsurprisingly, the results show that individuals who earn high incomes are 
                             more likely to report positive emotional states and less likely to report negative 
                             emotional states than their poorer counterparts.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             # Finding(self.finding_3287_4, description="finding_3287_4",
             #         text="""Interestingly, this pattern is not observed at the within-person level. That 
             #                 is to say, as the same individual earns a greater amount money throughout her 
@@ -154,7 +168,8 @@ class Pierce2019Who(Publication):
             Finding(self.finding_3287_6, description="finding_3287_6",
                     text="""we find no relationship between chronological age and positive emotional states, 
                             but we do find a nonlinear correlation between age and negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             # Finding(self.finding_3287_7, description="finding_3287_7",
             #         text="""Based on the coefficients, we know that as people age, they are more likely to 
             #                 report negative emotional states. This trend reverses at the apex of the curve 
@@ -168,7 +183,8 @@ class Pierce2019Who(Publication):
             Finding(self.finding_3287_9, description="finding_3287_9",
                     text="""Although gender does not significantly correlate with positive emotional states, 
                             we find that it does significantly correlate to negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             # Finding(self.finding_3287_10, description="finding_3287_10",
             #         text="""All else equal, men are in fact less likely to report negative emotional states 
             #                 than their female counterparts. To put the magnitude of the gender effect into 

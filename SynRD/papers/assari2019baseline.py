@@ -41,37 +41,73 @@ class Assari2019Baseline(Publication):
 
         self.FINDINGS = self.FINDINGS + [
             Finding(self.finding_5_1, description="finding_5_1",
-                    text="""Blacks were younger, had higher number of chronic medical conditions at baseline in comparison to Whites."""),
+                    text="""Blacks were younger, had higher number of 
+                    chronic medical conditions at baseline in comparison to Whites.""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_2, description="finding_5_2",
-                    text="""Relative to White people, Black individuals had also lower educational attainment (p < 0.05 for all)."""),
+                    text="""Relative to White people, Black individuals had also 
+                    lower educational attainment (p < 0.05 for all).""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_3, description="finding_5_3",
-                    text="""Blacks also reported worse self-rated health (SRH) than Whites (Table 1)."""),
+                    text="""Blacks also reported worse self-rated health (SRH) than
+                    Whites (Table 1).""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_6, description="finding_5_6",
-                    text="""Similarly, overall, people had 12.53 years of schooling at baseline (95%CI = 12.34-12.73)."""),
+                    text="""Similarly, overall, people had 12.53 years of schooling at 
+                    baseline (95%CI = 12.34-12.73).""",
+                            finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
             Finding(self.finding_5_7, description="finding_5_7",
-                    text="""A comparison of racial groups showed higher educational attainment in Whites (12.69, 95%CI=12.48-12.90) than Blacks (11.37,95%CI = 10.90-11.84). Thus, on average, Whites had more than 1.3 years higher years [sic] of schooling than Blacks..."""),
+                    text="""A comparison of racial groups showed higher educational 
+                    attainment in Whites (12.69, 95%CI=12.48-12.90) than Blacks (11.37,95%CI 
+                    = 10.90-11.84). Thus, on average, Whites had more than 1.3 years higher 
+                    years [sic] of schooling than Blacks...""",
+                            finding_type=TAXONOMY.MEAN_DIFFERENCE.value.BETWEEN_CLASS),
             Finding(self.finding_5_8, description="finding_5_8",
-                    text="""Of the 177 that died, 121 were White (68.36%) and 56 were Black (31.64%)."""),
+                    text="""Of the 177 that died, 121 were White (68.36%) and 56 were 
+                    Black (31.64%).""",
+                            finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
             Finding(self.finding_5_9, description="finding_5_9",
-                    text="""Of the 177 that died, 33 were obese (18.64%) and 144 were not obese (81.36%) at baseline."""),
+                    text="""Of the 177 that died, 33 were obese (18.64%) and 144 were 
+                    not obese (81.36%) at baseline.""",
+                            finding_type=TAXONOMY.DESCRIPTIVE_STATISTICS),
             Finding(self.finding_6_1, description="finding_6_1",
-                    text="""In bivariate association, race was not associated with death due to cerebrovascular (unadjusted HR for Blacks compared to Whites = 0.78, 95% CI = 0.55-1.11), suggesting that Whites and Blacks had similar risk of future cerebrovascular mortality over 25 years."""),
+                    text="""In bivariate association, race was not associated with death 
+                    due to cerebrovascular (unadjusted HR for Blacks compared to 
+                    Whites = 0.78, 95% CI = 0.55-1.11), suggesting that Whites and 
+                    Blacks had similar risk of future cerebrovascular mortality over 25 years.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_2, description="finding_6_2",
-                    text="""In bivariate association, baseline obesity was not associated with future risk of cerebrovascular mortality (Unadjusted HR for Blacks compared to Whites = 0.84, 95% CI = 0.45-1.56), suggesting that Whites and Blacks had a similar risk of future cerebrovascular mortality over 25 years."""),
+                    text="""In bivariate association, baseline obesity was not associated 
+                    with future risk of cerebrovascular mortality (Unadjusted HR for 
+                    Blacks compared to Whites = 0.84, 95% CI = 0.45-1.56), suggesting 
+                    that Whites and Blacks had a similar risk of future cerebrovascular 
+                    mortality over 25 years.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_3, description="finding_6_3",
-                    text="""Race (Black) was negatively associated with education and income"""),
+                    text="""Race (Black) was negatively associated with education and income""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_4, description="finding_6_4",
-                    text="""[race (Black) was]... positively associated with depressive symptoms, hypertension, and obesity."""),
+                    text="""[race (Black) was]... positively associated with depressive 
+                    symptoms, hypertension, and obesity.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_5, description="finding_6_5",
-                    text="""Blacks more frequently smoked and less frequently exercised."""),
+                    text="""Blacks more frequently smoked and less frequently exercised.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_6, description="finding_6_6",
-                    text="""Race was not associated with cerebrovascular death."""),
+                    text="""Race was not associated with cerebrovascular death.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_7, description="finding_6_7",
-                    text="""Baseline obesity was associated with female gender and less education, income, smoking, and exercise."""),
+                    text="""Baseline obesity was associated with female gender and less
+                    education, income, smoking, and exercise.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_8, description="finding_6_8",
-                    text="""Obesity at baseline was associated with depressive symptoms and hypertension at baseline."""),
+                    text="""Obesity at baseline was associated with depressive symptoms and 
+                    hypertension at baseline.""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
             Finding(self.finding_6_9, description="finding_6_9",
-                    text="""Obesity at baseline was not associated with cerebrovascular death in the pooled sample (Table 2).""")
+                    text="""Obesity at baseline was not associated with cerebrovascular 
+                    death in the pooled sample (Table 2).""",
+                            finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION)
         ]    
     
     def _get_any_stroke_if_died(self, x):
