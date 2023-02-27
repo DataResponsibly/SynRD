@@ -18,22 +18,57 @@ class Benchmark:
             initialized_papers.append(paper(dataframe=real_dataframe))
         return initialized_papers
 
-    def eval(self, paper, tests=None):
+    def eval(self, paper, tests=None, verbose=False):
         results = {}
         tests_to_run = self.tests if tests is None else tests
 
         for test in tests_to_run:
-            name, result = test(paper)
+            name, result = test(paper, verbose=verbose)
             results[name] = result
-
+            
         self.results[paper.DEFAULT_PAPER_ATTRIBUTES['id']] = results
+        return results
+    
+    def eval_soft_findings(self, paper, B, tests=None, verbose=False):
+        """
+        Assumes that samples = n * B, where n is the number of samples in the real dataset
+        and B is the number of bootstrap samples.
+        """
+        assert(paper.synthetic_dataframe.shape[0] >= paper.real_dataframe.shape[0] * B)
+
+        results = {}
+        paper.dataframe = paper.real_dataframe
+        real_results = self.soft_findings(paper, verbose=verbose)
+        all_scores = []
+        for b in range(B):
+            paper.dataframe = paper.synthetic_dataframe.sample(n=paper.real_dataframe.shape[0], replace=True)
+            synth_results = self.soft_findings(paper, verbose=verbose)
+            score_real_vs_synth = self.score_real_vs_synth(real_results, synth_results)
+            all_scores.append(score_real_vs_synth)
+            
+        self.results[paper.DEFAULT_PAPER_ATTRIBUTES['id']] = [np.mean(all_scores), np.std(all_scores), np.percentile(all_scores,[2.5,97.5])]
+        return results
 
     def summary(self) -> str:
         return "\n".join(
             [f"{paper_name}: {result}" for paper_name, result in self.results.items()]
         )
     
-    def real_vs_private_soft_findings(self, paper):
+    def score_real_vs_synth(self, real_findings, synth_findings):
+        """
+        Calculate percent matching of soft findings on
+        real vs private
+        """
+        return sum([1 if r == s else 0 for r,s in zip(real_findings,synth_findings)]) / len(real_findings)
+    
+    def soft_findings(self, paper, verbose=False):
+        """
+        Run soft findings on paper.dataframe
+        """
+        findings = paper.run_all_non_visual_findings()
+        return [result[1] for _, result in findings.items()]
+    
+    def real_vs_private_soft_findings(self, paper, verbose=False):
         """
         Calculate percent matching of soft findings on
         real vs private across epsilons and synthesizers
@@ -47,7 +82,9 @@ class Benchmark:
         paper.dataframe = paper.synthetic_dataframe
         synth_findings = paper.run_all_non_visual_findings()
         synth_soft_findings = [result[1] for _, result in synth_findings.items()]
-
+        if verbose:
+            print(real_soft_findings)
+            print(synth_soft_findings)
         # Compare
         percentage = sum([1 if r == s else 0 for r,s in zip(real_soft_findings,synth_soft_findings)]) / len(real_soft_findings)
         
