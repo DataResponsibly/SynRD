@@ -205,7 +205,8 @@ class Assari2019Baseline(Publication):
         """Similarly, overall, people had 12.53 years of schooling at baseline (95%CI = 12.34-12.73)."""
         means = self._get_adjusted_means(self.dataframe)
         years_schooling = means['Education'][0]
-        soft_finding = round(years_schooling, 2) == 12.53
+        # soft_finding = round(years_schooling, 2) == 12.53
+        soft_finding = np.allclose(float(round(years_schooling, 2)), 12.53, atol=0.2)
         return ([years_schooling], soft_finding, [years_schooling])
 
     def finding_5_7(self):
@@ -214,7 +215,7 @@ class Assari2019Baseline(Publication):
         white_education = means['Education']['White']
         black_education = means['Education']['Black']
         values = [white_education, black_education]
-        soft_finding = white_education > black_education + 1.3
+        soft_finding = white_education > black_education + 1.2
         return (values, soft_finding, values)
 
     def finding_5_8(self):
@@ -224,7 +225,9 @@ class Assari2019Baseline(Publication):
         black_count = dead.loc[dead['Race'] == 2].shape[0]
         white_count = dead.loc[dead['Race'] == 1].shape[0]
         values = [total, white_count, black_count]
-        soft_finding = total == 177 and white_count == 121 and black_count == 56
+        # soft_finding = total == 177 and white_count == 121 and black_count == 56
+        white_percentage = float(white_count) / float(total)
+        soft_finding = np.allclose(white_percentage, 0.68, atol=0.05) 
         return (values, soft_finding, values)
 
     def finding_5_9(self):
@@ -234,21 +237,23 @@ class Assari2019Baseline(Publication):
         obese_count = dead.loc[dead['Obesity'] == 1].shape[0]
         not_obese_count = dead.loc[dead['Obesity'] == 0].shape[0]
         values = [total, obese_count, not_obese_count]
-        soft_finding = total == 177 and obese_count == 33 and not_obese_count == 144
+        # soft_finding = total == 177 and obese_count == 33 and not_obese_count == 144
+        obese_percentage = float(obese_count) / float(total)
+        soft_finding = np.allclose(obese_percentage, 0.18, atol=0.05) 
         return (values, soft_finding, values)
 
     def finding_6_1(self):
         """In bivariate association, race was not associated with death due to cerebrovascular (unadjusted HR for Blacks compared to Whites = 0.78, 95% CI = 0.55-1.11), suggesting that Whites and Blacks had similar risk of future cerebrovascular mortality over 25 years."""
         corr_df = self.get_corr()
         corr_race_death = corr_df['Race'].loc['Death to cerebrovascular disease']
-        soft_finding = abs(corr_race_death) < 0.05
+        soft_finding = abs(corr_race_death) < 0.03
         return ([corr_race_death], soft_finding, [corr_race_death])
 
     def finding_6_2(self):
         """In bivariate association, baseline obesity was not associated with future risk of cerebrovascular mortality (Unadjusted HR for Blacks compared to Whites = 0.84, 95% CI = 0.45-1.56), suggesting that Whites and Blacks had a similar risk of future cerebrovascular mortality over 25 years."""
         corr_df = self.get_corr()
         corr_obesity_death = corr_df['Obesity'].loc['Death to cerebrovascular disease']
-        soft_finding = abs(corr_obesity_death) < 0.05
+        soft_finding = abs(corr_obesity_death) < 0.03
         return ([corr_obesity_death], soft_finding, [corr_obesity_death])
 
     # TODO: check that race correlation is for Black

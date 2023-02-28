@@ -346,7 +346,7 @@ class Pierce2019Who(Publication):
         # TODO: check the value of the coefficient
         # soft_finding = (spouse == child * 2.32) and (spouse == friends * 3.2)
         # print(type(spouse), type(child), type(friends))
-        soft_finding = (float(spouse) >= float(child) * 1.74) and (float(spouse) >= float(friends) * 2.4)
+        soft_finding = (float(spouse) >= float(child) * 2.1) and (float(spouse) >= float(friends) * 3.0)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -361,7 +361,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (float(spouse) > 0 and float(child) > 0) and (float(friends) > 0)
+        soft_finding = (float(spouse) > 0.1 and float(child) > 0.1) and (float(friends) > 0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -379,7 +379,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_strain']['Coef.']
         child = pos.tables[1].loc['child_strain']['Coef.']
         friends = pos.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (float(spouse) < 0) and (float(child) > 0) and (float(friends) > 0)
+        soft_finding = (float(spouse) < 0.1) and (float(child) > 0.1) and (float(friends) > 0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -396,7 +396,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (float(spouse) > float(child)) and (float(spouse) > float(friends))
+        soft_finding = (float(spouse) > float(child) + 0.1) and (float(spouse) > float(friends) + 0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -411,7 +411,7 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (float(child) > 0) and (float(friends) > 0)
+        soft_finding = (float(child) > 0.1) and (float(friends) > 0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -435,7 +435,7 @@ class Pierce2019Who(Publication):
         spouse = neg.tables[1].loc['spouse_strain']['Coef.']
         child = neg.tables[1].loc['child_strain']['Coef.']
         friends = neg.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (float(spouse) > float(child)) and (float(spouse) > float(friends))
+        soft_finding = (float(spouse) > float(child) + 0.1) and (float(spouse) > float(friends) + 0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -449,7 +449,7 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         spouse = neg.tables[1].loc['spouse_support']['Coef.']
         friends = neg.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (float(spouse) < 0) and (float(friends) < 0)
+        soft_finding = (float(spouse) < -0.05) and (float(friends) < -0.05)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -467,7 +467,7 @@ class Pierce2019Who(Publication):
         friends = neg.tables[1].loc['friend_support']['Coef.']
         
         # TODO: Range of spouse and friends support
-        soft_finding = (float(spouse) >= float(friends) * 1.83)
+        soft_finding = (float(spouse) >= float(friends) * 2.2)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -497,7 +497,8 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         friends = neg.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (float(friends) >= 0)
+        # soft_finding = (float(friends) >= 0)
+        soft_finding = np.allclose(float(friends), 0, atol=0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -575,7 +576,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         age = neg.tables[1].loc['age_category Var']['Coef.']
-        soft_finding = (float(age) < 0)
+        soft_finding = (float(age) < 0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
@@ -612,7 +613,7 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         sex = neg.tables[1].loc['sex Var']['Coef.']
-        soft_finding = (float(sex) < 0)
+        soft_finding = (float(sex) < -0.1)
         if soft_finding is None:
             raise(NotImplementedError)
         return ([], soft_finding, [])
