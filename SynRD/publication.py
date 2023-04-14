@@ -78,6 +78,7 @@ class Publication():
     FILENAME = None
 
     def __init__(self, dataframe=None, description=None):
+        # FIXME: Just don't allow this to be None
         if dataframe is not None:
             self.dataframe = dataframe
             self.real_dataframe = dataframe
@@ -110,6 +111,8 @@ class Publication():
     def _read_pickle_dataframe(self):
         return pd.read_pickle(self.FILENAME + '_dataframe.pickle')
 
+    # FIXME: Why is this not used?
+    # FIXME: Why is this not a static method?
     def _recreate_dataframe(self):
         """
         Method for recreating a base dataframe for the publication.
