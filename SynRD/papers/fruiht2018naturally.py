@@ -46,7 +46,7 @@ class Fruiht2018Naturally(Publication):
             # Note: Table 1, Figure 1, and several findings can not be replicated
             # due to the manual coding task undertaken. Omit or is there another way
             # to signal that this will not be done? Will comment out at bottom.
-            VisualFinding(self.table_2, description="table_2"),
+            # VisualFinding(self.table_2, description="table_2"),
             Finding(self.finding_390_1, description="finding_390_1",
                     text="""The overall model was significant, F (8,
                             4172) = 111.98, p < .001, and explained approximately

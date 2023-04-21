@@ -88,8 +88,8 @@ class Lee2021Ability(Publication):
         super(Lee2021Ability, self).__init__(dataframe=dataframe)
         
         self.FINDINGS = self.FINDINGS + [
-            VisualFinding(self.table_2, description="table_2"),
-            VisualFinding(self.table_3, description="table_3"),
+            # VisualFinding(self.table_2, description="table_2"),
+            # VisualFinding(self.table_3, description="table_3"),
             Finding(self.finding_52_1, description="finding_52_1",
                     text="""As predicted, a negative correlation was found
                             between perceived low math teacher support and 11th 

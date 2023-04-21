@@ -145,8 +145,8 @@ class Saw2018Cross(Publication):
         self.columns = self.real_dataframe.columns
 
         self.FINDINGS = self.FINDINGS + [
-            VisualFinding(self.table_b2, description="table_b2"),
-            FigureFinding(self.figure_2, description="figure_2"),
+            # VisualFinding(self.table_b2, description="table_b2"),
+            # FigureFinding(self.figure_2, description="figure_2"),
             Finding(self.finding_526_1, description="finding_526_1",
                     text="""Among first-time 9th graders in fall 2009, only about 11.4% of 
                             students were interested in pursuing a STEM career upon entering 

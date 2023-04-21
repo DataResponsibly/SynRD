@@ -3,6 +3,7 @@ numpy
 tqdm
 scikit-learn
 git+https://github.com/ryan112358/private-pgm.git
+# git+https://github.com/opendp/smartnoise-sdk/#egg=smartnoise-synth&subdirectory=synth
 smartnoise-synth
 diffprivlib
 rpy2

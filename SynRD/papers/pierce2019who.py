@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding
+from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding, TAXONOMY
 
 import pandas as pd
 import numpy as np
@@ -21,17 +21,17 @@ class Pierce2019Who(Publication):
         'base_dataframe_pickle': 'pierce2019who_dataframe.pickle'
     }
     
-    SEX_MAP = {
-        1: 'male',
-        2: 'female'
+    GENDER_MAP = {
+        0: 'male',
+        1: 'female'
     }
 
     EDUCATION_MAP = {
-        1: 'less than a high school diploma',
-        2: 'high school diploma',
-        3: 'some college',
-        4: '4-year degree',
-        5: 'graduate degree',
+        0: 'less than a high school diploma',
+        1: 'high school diploma',
+        2: 'some college',
+        3: '4-year degree',
+        4: 'graduate degree',
     }
     
     DATAFRAME_COLUMNS = ['positive_emotion', 
@@ -60,12 +60,13 @@ class Pierce2019Who(Publication):
         super(Pierce2019Who, self).__init__(dataframe=dataframe)
 
         self.FINDINGS = self.FINDINGS + [
-            VisualFinding(self.table_2, description="table_2"),
+            # VisualFinding(self.table_2, description="table_2"),
             Finding(self.finding_3284_1, description="finding_3284_1",
                     text="""When accounting for between-individual differences, spousal support 
                             has the strongest relationship with positive emotional states, reaffirming 
                             the findings of Walen and Lachman (2000). 
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_1, description="finding_3286_1",
                     text="""Increased spousal support is associated with an increased positive 
                             emotional state. A direct comparison of the coefficients reveals that 
@@ -73,108 +74,123 @@ class Pierce2019Who(Publication):
                             from children, and a 320% greater correlation than support from friends. 
                             A Wald test comparing coefficients confirms that the correlation stemming 
                             from spousal support is significantly larger than those stemming from children and friends.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_2, description="finding_3286_2",
                     text="""the stark difference between support and strain. Support from all three 
                             sources is significantly correlated with more positive emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_3, description="finding_3286_3",
                     text="""However, of the three sources of strain, only the strain stemming from 
                             spouses is significantly correlated with lower positive emotional states. 
                             The other two sources are insignificant predictors of positive emotional 
                             states, meaning that having straining children and friends is not significantly 
                             associated with lower positive emotion.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_4, description="finding_3286_4",
                     text="""In the case of positive emotions, only spousal support is shown to have 
                             a significant causal link to positive emotions. That is to say, as spouses 
                             become more supportive over time, individuals report more positive emotional 
                             states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_5, description="finding_3286_5",
                     text="""This was not the case for support from children and friends, despite being 
                             correlated with positive emotions.
-                            """),
-            Finding(self.finding_3286_6, description="finding_3286_6",
-                    text="""In the case of social strain, none of the within-individual metrics are 
-                            significant predictors of positive emotions. This finding demonstrates that 
-                            as spouses, children, and friends exerted more strain, there is no significant 
-                            change on the reported level of positive emotions.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
+            # Finding(self.finding_3286_6, description="finding_3286_6",
+            #         text="""In the case of social strain, none of the within-individual metrics are 
+            #                 significant predictors of positive emotions. This finding demonstrates that 
+            #                 as spouses, children, and friends exerted more strain, there is no significant 
+            #                 change on the reported level of positive emotions.
+            #                 """),
             Finding(self.finding_3286_7, description="finding_3286_7",
                     text="""Similar to the results for positive emotional states, we found that spouses 
                             have the greatest overall correlation with negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_8, description="finding_3286_8",
                     text="""Spousal support and friend support are the only types of support to be 
                             negatively correlated with negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_9, description="finding_3286_9",
                     text="""Furthermore, the correlation between spousal support and negative emotional 
                             states is 244% greater than the correlation of support stemming from friends. 
                             A Wald test confirms that the difference between spousal support and friend 
                             support is statistically significant.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_10, description="finding_3286_10",
                     text="""For the between-individual coefficients regarding strain, we found significant 
                             correlations between strain and negative emotions stemming from both spouses 
                             and children. Although the coefficient for spousal strain is greater in magnitude
                             than that of child strain, the Wald test comparing the coefficients demonstrates 
                             that there is no significant difference between the measures.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3286_11, description="finding_3286_11",
                     text="""Finally, we find no significant correlation between friend-based strain and 
                             negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3287_1, description="finding_3287_1",
                     text="""Similar to positive emotional states, both support and strain from spouses 
                             have a significant causal link to individual’s negative emotional states in 
                             the predicted directions.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3287_2, description="finding_3287_2",
                     text="""However, the results for negative emotional states differ slightly from positive 
                             emotions in that child-based strain is also a significant causal factor. 
                             The magnitude of child-based strain is similar in size to that of spouse-based 
                             strain.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
             Finding(self.finding_3287_3, description="finding_3287_3",
                     text="""Unsurprisingly, the results show that individuals who earn high incomes are 
                             more likely to report positive emotional states and less likely to report negative 
                             emotional states than their poorer counterparts.
-                            """),
-            Finding(self.finding_3287_4, description="finding_3287_4",
-                    text="""Interestingly, this pattern is not observed at the within-person level. That 
-                            is to say, as the same individual earns a greater amount money throughout her 
-                            life, she is no more likely to report positive emotional states than when she 
-                            was earning less money.
-                            """),
-            Finding(self.finding_3287_5, description="finding_3287_5",
-                    text="""The same null finding holds true for negative emotional states.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
+            # Finding(self.finding_3287_4, description="finding_3287_4",
+            #         text="""Interestingly, this pattern is not observed at the within-person level. That 
+            #                 is to say, as the same individual earns a greater amount money throughout her 
+            #                 life, she is no more likely to report positive emotional states than when she 
+            #                 was earning less money.
+            #                 """),
+            # Finding(self.finding_3287_5, description="finding_3287_5",
+            #         text="""The same null finding holds true for negative emotional states.
+            #                 """),
             Finding(self.finding_3287_6, description="finding_3287_6",
                     text="""we find no relationship between chronological age and positive emotional states, 
                             but we do find a nonlinear correlation between age and negative emotional states.
-                            """),
-            Finding(self.finding_3287_7, description="finding_3287_7",
-                    text="""Based on the coefficients, we know that as people age, they are more likely to 
-                            report negative emotional states. This trend reverses at the apex of the curve 
-                            which we calculate to be approximately 65 years of age.
-                            """),
-            Finding(self.finding_3287_8, description="finding_3287_8",
-                    text="""However, it is important to note that 90% of the responses in our data are from 
-                            people at 34–74 years of age, thus leading to the conclusion that the nonlinear 
-                            pattern is asymmetric.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
+            # Finding(self.finding_3287_7, description="finding_3287_7",
+            #         text="""Based on the coefficients, we know that as people age, they are more likely to 
+            #                 report negative emotional states. This trend reverses at the apex of the curve 
+            #                 which we calculate to be approximately 65 years of age.
+            #                 """),
+            # Finding(self.finding_3287_8, description="finding_3287_8",
+            #         text="""However, it is important to note that 90% of the responses in our data are from 
+            #                 people at 34–74 years of age, thus leading to the conclusion that the nonlinear 
+            #                 pattern is asymmetric.
+            #                 """),
             Finding(self.finding_3287_9, description="finding_3287_9",
                     text="""Although gender does not significantly correlate with positive emotional states, 
                             we find that it does significantly correlate to negative emotional states.
-                            """),
-            Finding(self.finding_3287_10, description="finding_3287_10",
-                    text="""All else equal, men are in fact less likely to report negative emotional states 
-                            than their female counterparts. To put the magnitude of the gender effect into 
-                            context, being a man has the same benefit as making US$5,500 more per year on 
-                            negative emotional outcomes.
-                            """),
+                            """,
+                            finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON),
+            # Finding(self.finding_3287_10, description="finding_3287_10",
+            #         text="""All else equal, men are in fact less likely to report negative emotional states 
+            #                 than their female counterparts. To put the magnitude of the gender effect into 
+            #                 context, being a man has the same benefit as making US$5,500 more per year on 
+            #                 negative emotional outcomes.
+            #                 """),
         ]
         
     def _recreate_dataframe(self, filename='pierce2019who_dataframe.pickle'):
@@ -210,6 +226,9 @@ class Pierce2019Who(Publication):
         df['friend_support'] = df['V2216']
         df['friend_strain'] = df['V2217']
         
+        df['child_support'] = df['child_support'].replace(-99.0, 0)
+        df['child_strain'] = df['child_strain'].replace(-99.0, 0)
+        
         def age_categorize(row):  
             if row['age'] < 45:
                 return '0'
@@ -239,7 +258,7 @@ class Pierce2019Who(Publication):
         df['retired'] = df['V1105']
         df['num_child'] = df['V2017']
 
-        df = df.dropna(axis='index', subset=['confidants','age','age','income','sex',
+        df = df.dropna(axis='index', subset=['confidants','age','income','sex',
                                             'education','retired','num_child'], how='any')
         df['age_category'] = df.apply(lambda row: age_categorize(row), axis=1)
         df['education_category'] = df.apply(lambda row: education_categorize(row), axis=1)
@@ -251,8 +270,8 @@ class Pierce2019Who(Publication):
     def table_2(self):
         table_2_results = {}
 
-        df_lm = self.dataframe.replace({'sex': self.SEX_MAP,
-                                         'education_category': self.EDUCATION_MAP,})
+        df_lm = self.dataframe.replace({'sex': self.GENDER_MAP,
+                                        'education_category': self.EDUCATION_MAP,})
         
         vc = {'confidants': '0 + C(confidants)', 'age_category': '0 + C(age_category)', 'education_category': '0 + C(education_category)', 
             'income': '0 + C(income)', 'sex': '0 + C(sex)', 'retired': '0 + C(retired)', 'num_child': '0 + C(num_child)'} 
@@ -265,7 +284,8 @@ class Pierce2019Who(Publication):
                 groups=df_lm['age_category']
             )
             result = model.fit()
-            table_2_results[name] = result.summary2()
+            # print(result.summary())
+            table_2_results[name] = result.summary()
             
         # TODO: Modify stats equations
         # Positive emotion model
@@ -304,8 +324,10 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse > child) and (spouse > friends)
-        return soft_finding
+        soft_finding = (float(spouse) > float(child)) and (float(spouse) > float(friends))
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_1(self):
         """
@@ -321,8 +343,13 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse == child * 2.32) and (spouse == friends * 3.2)
-        return soft_finding
+        # TODO: check the value of the coefficient
+        # soft_finding = (spouse == child * 2.32) and (spouse == friends * 3.2)
+        # print(type(spouse), type(child), type(friends))
+        soft_finding = (float(spouse) >= float(child) * 2.1) and (float(spouse) >= float(friends) * 3.0)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_2(self):
         """
@@ -334,8 +361,10 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse > 0) and (child > 0) and (friends > 0)
-        return soft_finding
+        soft_finding = (float(spouse) > 0.1 and float(child) > 0.1) and (float(friends) > 0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_3(self):
         """
@@ -350,8 +379,10 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_strain']['Coef.']
         child = pos.tables[1].loc['child_strain']['Coef.']
         friends = pos.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (spouse < 0) and (child > 0) and (friends > 0)
-        return soft_finding
+        soft_finding = (float(spouse) < 0.1) and (float(child) > 0.1) and (float(friends) > 0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_4(self):
         """
@@ -365,8 +396,10 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse > child) and (spouse > friends)
-        return soft_finding
+        soft_finding = (float(spouse) > float(child) + 0.1) and (float(spouse) > float(friends) + 0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_5(self):
         """
@@ -378,8 +411,10 @@ class Pierce2019Who(Publication):
         spouse = pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (child > 0) and (friends > 0)
-        return soft_finding
+        soft_finding = (float(child) > 0.1) and (float(friends) > 0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_6(self):
         """
@@ -400,8 +435,10 @@ class Pierce2019Who(Publication):
         spouse = neg.tables[1].loc['spouse_strain']['Coef.']
         child = neg.tables[1].loc['child_strain']['Coef.']
         friends = neg.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (spouse > child) and (spouse > friends)
-        return soft_finding
+        soft_finding = (float(spouse) > float(child) + 0.1) and (float(spouse) > float(friends) + 0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
         
     def finding_3286_8(self):
         """
@@ -412,8 +449,10 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         spouse = neg.tables[1].loc['spouse_support']['Coef.']
         friends = neg.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse < 0) and (friends < 0)
-        return soft_finding
+        soft_finding = (float(spouse) < -0.05) and (float(friends) < -0.05)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_9(self):
         """
@@ -426,8 +465,12 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         spouse = neg.tables[1].loc['spouse_support']['Coef.']
         friends = neg.tables[1].loc['friend_support']['Coef.']
-        soft_finding = (spouse == friends * 2.44)
-        return soft_finding
+        
+        # TODO: Range of spouse and friends support
+        soft_finding = (float(spouse) >= float(friends) * 2.2)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_10(self):
         """
@@ -441,8 +484,10 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         spouse = neg.tables[1].loc['spouse_strain']['Coef.']
         child = neg.tables[1].loc['child_strain']['Coef.']
-        soft_finding = (spouse >= child)
-        return soft_finding
+        soft_finding = (float(spouse) >= float(child))
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3286_11(self):
         """
@@ -452,8 +497,11 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         friends = neg.tables[1].loc['friend_strain']['Coef.']
-        soft_finding = (friends >= 0)
-        return soft_finding
+        # soft_finding = (float(friends) >= 0)
+        soft_finding = np.allclose(float(friends), 0, atol=0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3287_1(self):
         """
@@ -465,8 +513,10 @@ class Pierce2019Who(Publication):
         neg = df['negative_model']
         support = neg.tables[1].loc['spouse_support']['Coef.']
         strain = neg.tables[1].loc['spouse_strain']['Coef.']
-        soft_finding = (support > 0) and (strain > 0)
-        return soft_finding
+        soft_finding = (float(support) > 0) and (float(strain) > 0)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3287_2(self):
         """
@@ -478,8 +528,10 @@ class Pierce2019Who(Publication):
         df = self.table_2_check()
         neg = df['negative_model']
         child = neg.tables[1].loc['child_strain']['Coef.']
-        soft_finding = (child > 0)
-        return soft_finding 
+        soft_finding = (float(child) > 0)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3287_3(self):
         """
@@ -487,13 +539,16 @@ class Pierce2019Who(Publication):
         more likely to report positive emotional states and less likely to report negative 
         emotional states than their poorer counterparts.
         """
+        # TODO: Debugging needed
         df = self.table_2_check()
         pos = df['positive_model']
         neg = df['negative_model']
-        high_income = pos.tables[1].loc['income']['Coef.']
-        low_income = neg.tables[1].loc['income']['Coef.']
-        soft_finding = (high_income > 0) and (low_income < 0)
-        return soft_finding
+        high_income = pos.tables[1].loc['income Var']['Coef.']
+        low_income = neg.tables[1].loc['income Var']['Coef.']
+        soft_finding = (float(high_income) > 0) and (float(low_income) < 0)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3287_4(self):
         """
@@ -520,9 +575,11 @@ class Pierce2019Who(Publication):
         """
         df = self.table_2_check()
         neg = df['negative_model']
-        age = neg.tables[1].loc['age']['Coef.']
-        soft_finding = (age < 0)
-        return soft_finding
+        age = neg.tables[1].loc['age_category Var']['Coef.']
+        soft_finding = (float(age) < 0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
     
     def finding_3287_7(self):
         """
@@ -530,8 +587,14 @@ class Pierce2019Who(Publication):
         report negative emotional states. This trend reverses at the apex of the curve 
         which we calculate to be approximately 65 years of age.
         """
-        # TODO: Age Categories
+        # TODO: fix
         pass
+        # df = self.table_2_check()
+        # neg = df['negative_model']
+        # age = neg.tables[1].loc['age_category Var']['Coef.']
+        # print(age)
+        # soft_finding = (float(age['2']) > float(age['1'])) and (float(age['1']) > float(age['0']))
+        # return soft_finding
     
     def finding_3287_8(self):
         """
@@ -539,7 +602,7 @@ class Pierce2019Who(Publication):
         people at 34–74 years of age, thus leading to the conclusion that the nonlinear 
         pattern is asymmetric.
         """
-        # TODO: Age Categories
+        # TODO: Age
         pass
     
     def finding_3287_9(self):
@@ -549,9 +612,11 @@ class Pierce2019Who(Publication):
         """
         df = self.table_2_check()
         neg = df['negative_model']
-        sex = neg.tables[1].loc['sex']['Coef.']
-        soft_finding = (sex < 0)
-        return soft_finding
+        sex = neg.tables[1].loc['sex Var']['Coef.']
+        soft_finding = (float(sex) < -0.1)
+        if soft_finding is None:
+            raise(NotImplementedError)
+        return ([], soft_finding, [])
         
     
     def finding_3287_10(self):
@@ -562,6 +627,8 @@ class Pierce2019Who(Publication):
         negative emotional outcomes.
         """
         # TODO: Income
+        # df = self.table_2_check()
+        # neg = df['negative_model']
         pass
     
     
