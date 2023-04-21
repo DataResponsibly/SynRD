@@ -9,11 +9,17 @@ class Yuze23Marital(Publication):
     # The sample included 777 married women and 615 married men who completed study
     # measures at both waves.
     GENERAL_INFO = {
-        "V1801": "X1:SEX OF RESPONDENT",
-        "V5801": "2X1:SEX OF RESPONDENT",
-        "V2060": "Married",
-        "V2015": "MARRIED/NOTMARRIED",
-        "V6060": "Dummy married",
+        "V1801": "Sex 1",
+        "V5801": "Sex 2",
+        "V2000": "Age",
+        "V2102": "Race",
+        "V4005": "Year of W2",
+        "V9003": "Dead by end W2",
+        # "V2060": "Married",
+        # "V601": "Married",
+        # "V4501": "Married",
+        # "V2015": "MARRIED/NOTMARRIED",
+        "V6060": "Married",
     }
 
     # 2.2.1. Marital satisfaction
@@ -26,12 +32,18 @@ class Yuze23Marital(Publication):
     # your worries or problems?” Items were rated on 5-point scales and summed
     # (α = 0.76 at Wave I, 0.79 at Wave II).
     MARITAL_SATISFACTION = {
-        "V12152": "W4.C3.MarSatis.Marital Satisfaction",
-        "V12153": "W4.C4.SpseCare.Spouse Makes R Feel Loved & Cared For",
-        "V12154": "W4.C5.SpseLstn.Spouse Willing to Listen to Rs Worries/Problems",
-        "V15410": " W5.SPSECARE.Spouse Makes R Feel Loved & Cared For",
-        "V15409": " W5.MARSATIS.Marital Satisfaction",
-        "V15412": " W5.SPSELSTN.Spouse Willing to Listen to Rs Worries/ Problems",
+        # "V12152": "Marital satisfaction 1",
+        # "V12153": "Feel loved 1",
+        # "V12154": "Spouse listens 1",
+        "V602": "Marital satisfaction 1",
+        "V405": "Feel loved 1",
+        "V407": "Spouse listens 1",
+        # "V15409": "Marital satisfaction 2",
+        # "V15410": "Fell loved 2",
+        # "V15412": "Spouse listens 2",
+        "V4502": "Marital satisfaction 2",
+        "V4407": "Fell loved 2",
+        "V4409": "Spouse listens 2",
     }
 
     # 2.2.2. Stressful life events The assessment of stress was based on the
@@ -48,14 +60,14 @@ class Yuze23Marital(Publication):
     # Because few individuals reported experiencing >3 stressful life events,
     # stressful life events were top-coded at 3 events.
     STRESSFUL_LIFE_EVENTS = {
-        "V12472": "W4.N4.LEAttack.Have you been the victim of a serious physical attack or assault since last interview",
-        "V12468": "W4.N2.LERob.Was R robbed or was Rs home burglarized since last interview",
-        "V12482": "W4.N6.LELTIll.Have you had a life-threatening illness or accidental injury since last interview",
-        "V12484": "W4.N7.LESerIl.Have you had any serious, but not life-threatening, illness or injury that occurred or got worse since last interview",
-        "V12470": "W4.N3.LEJob.Have you involuntarily lost a job (other than for retirement) since last interview",
-        "V12493": "W4.N11.LEFinPrb.Have you had any serious financial problems or difficulties since last interview",
-        "V12474": "W4.N5.LEParDie.Has a parent or step-parent of yours died since last interview",
-        "V12488": "W4.N9.ChildDie.Has a child of yours died since last interview",
+        "V12472": "Was attacked",
+        "V12468": "Was robbed",
+        "V12482": "Had life-threatening illness",
+        "V12484": "Has serious illness",
+        "V12470": "Lost a job",
+        "V12493": "Had financial problems",
+        "V12474": "Parent died",
+        "V12488": "Child died",
     }
 
     # Depressive symptoms were measured with the 11-item “Iowa” form (Kohout et al.,
@@ -66,59 +78,77 @@ class Yuze23Marital(Publication):
     #                                                                 I and 0.82 at
     #                                                                 Wave II).
     DEPRESSIVE_SYMPTOMS = {
-        "V2618": "CESD-11, MEAN",
-        "V6618": "W2:CESD-11, MEAN",
+        "V2618": "CESD-11 1",
+        "V6618": "CESD-11 2",
     }
-
-    # {
-    #     "V2102": "Race",
-    #     "V103": "Gender",
-    #     "V2000": "Age",
-    #     "V2007": "Education",
-    #     "V2020": "Income",
-    #     "V2637": "Smoking",
-    #     "V2623": "BMI",
-    #     "V2681": "HTN",
-    #     "V13214": "Exercise",
-    #     "V2203": "Depressive symptoms",
-    #     "V915": "Health",
-    #     "V1860": "Weight",
-    #     "V15003": "Response pattern",
-    #     "V836": "Stroke wave 1",
-    #     "V4838": "Stroke wave 2",
-    #     "V10225": "Stroke wave 3",
-    #     "V12305": "Stroke wave 4",
-    #     "V15944": "Stroke wave 5",
-    #     "V12302": "Any stroke",
-    #     "V11036": (
-    #         "W3.ACL Wave 3 Interview and Death Status(Dates of Death thru Aug 31, 1994).Revised. "
-    #         "May_22_2014info/1=SlfRep/2=Proxy/3=NonResp/4=Dead",
-    #     ),
-    # }
 
     def __init__(self, dataframe=None):
         super().__init__(dataframe=dataframe)
-        self.COLUMN_MAP = self.GENERAL_INFO | self.MARITAL_SATISFACTION
 
     @classmethod
-    def _recreate_dataframe(cls, filename="yuze23marital_dataframe.pickle"):
+    def _recreate_dataframe(
+        cls, filename="yuze23marital_dataframe.pickle"
+    ) -> pd.DataFrame:
         assert len(cls.INPUT_FILES) == 1
         file_path = cls.INPUT_FILES[0]
-        # df = pd.read_csv(file_path, sep="\t", skipinitialspace=True)
 
-        df = pd.read_csv(
-            file_path, sep="\t", skipinitialspace=True, usecols=cls.COLUMN_MAP.keys()
+        COLUMN_MAP = (
+            cls.GENERAL_INFO
+            | cls.MARITAL_SATISFACTION
+            | cls.STRESSFUL_LIFE_EVENTS
+            | cls.DEPRESSIVE_SYMPTOMS
         )
-        df = df.rename(columns=cls.COLUMN_MAP)
-        df = df[(df["Married"] == 1) & (df["Dummy married"] == 1)]
+        df = pd.read_csv(file_path, sep="\t", usecols=COLUMN_MAP.keys())
+        df = df.rename(columns=COLUMN_MAP)
+
+        # This study focused on the Wave I survey, conducted in 1986 through
+        # face-to-face interviews with 3617 participants in their homes by interviewers
+        # from the University of Michigan’s Survey Research Center, which represents
+        # 70 % of sampled households and 68 % of sampled individuals,
+        assert len(df) == 3617
+
+        # and the Wave II survey, conducted in 1989 through face-to-face interviews with
+        # 2867 people interviewed in Wave I, which represents 83 % of those still alive
+        # at the time.
+        n_alive = len(df[df["Dead by end W2"] == 0])
+        df = df[df["Year of W2"] == 1989]
+        assert len(df) == 2867
+        assert round(len(df) / n_alive, 2) == 0.83
+
+        # The sample
+        # included 777 married women and 615 married men who completed study measures at
+        # both waves.
+        df = df[df["Married"] == 1]
+        # print(df.pivot_table(index='Married', columns='Dummy married', aggfunc='size', fill_value=0))
+        for c in COLUMN_MAP.values():
+            vc = df[c].value_counts()
+            if "CESD" not in c:
+                print(f"{c}: {vc[vc.index<=0].to_dict()}")
+                df = df[df[c] >=0]
+
+        print(
+            df.pivot_table(
+                index="Married", columns="Sex 1", aggfunc="size", fill_value=0
+            )
+        )
+
+        # Participants had a mean age of 51.19 years (SD = 15.40), and the
+        # mean length of marriage was 28.35 years (SD = 15.74).
+        # The sample was 76 % White, 21 % Black, and 3 % other.
+        # print(
+        #     df.pivot_table(
+        #         index="Married", columns="Dummy married", aggfunc="size", fill_value=0
+        #     )
+        # )
+        # df = df[(df["Married"] == 1) & (df["Dummy married"] == 1)]
+        # df.to_pickle(filename)
         return df
-        # df = pd.read_csv(file_path, sep='\t', skipinitialspace=True, usecols=current_columns)
 
 
 if __name__ == "__main__":
     df = Yuze23Marital._recreate_dataframe()
-    print(df)
+    # print(df)
     print(
-        f"Expected: {{2: 777, 1: 615}}, actual: {df['X1:SEX OF RESPONDENT'].value_counts().to_dict()}"
+        f"Expected: {{2: 777, 1: 615}}, actual: {df['Sex 1'].value_counts().to_dict()}"
     )
     print(f"Expected: 51.19, actual: {df['Age'].mean()}")
