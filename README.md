@@ -17,6 +17,15 @@ Step (4) installs a non-PyPi dependency (this excellent package for DP synthesiz
 
 *Note: This package is under heavy development - if functionality doesn't work/is missing, feel free to add an issue or submit a PR to fix!*
 
+### Note on using GEMSynthesizer
+If you would like to use the GEMSynthesizer, you must follow an alternative installation process for SynRD:
+1. Create your preferred package management environment with `python=3.7` (for example, `conda create -n "synrd" python=3.7`)
+2. Git clone the SynRD repo: `git clone https://github.com/DataResponsibly/SynRD`
+3. `cd SynRD/synthesizers`
+4. Git clone the dp-query-release repo: `git clone https://github.com/terranceliu/dp-query-release.git`
+5. Move `src/` folder out of `dp-query-release/` and into `SynRD/synthesizers/`
+6. From the top level of SynRD clone, run `pip install .`
+
 ## Further dependency notes
 If you would like to benchmark with the paper `Fruiht2018Naturally`, please follow some of the following `rpy2` installation instructions to configure your R-Python interface package.
 

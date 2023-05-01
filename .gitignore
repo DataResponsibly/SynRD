@@ -186,4 +186,6 @@ cython_debug/
 .vscode
 
 papers/temp*
-# datasets
+SynRD/synthesizers/src
+SynRD/synthesizers/save
+SynRD/synthesizers/adding_gem.ipynb
