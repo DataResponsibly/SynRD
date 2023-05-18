@@ -1,4 +1,3 @@
-import json
 import pandas as pd
 import numpy as np
 
@@ -114,7 +113,6 @@ class PublicationAggregator():
         Calculate percent matching of soft findings on
         real vs private across epsilons and synthesizers
         """
-        from statsmodels.stats.weightstats import DescrStatsW
 
         # pub_id -> percentages_at_epsilon
         #soft_means = {}

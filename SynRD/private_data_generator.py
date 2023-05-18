@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 from snsynth.mst import MSTSynthesizer
-from snsynth.preprocessors import GeneralTransformer, BaseTransformer
+from snsynth.preprocessors import BaseTransformer
 from snsynth.pytorch import PytorchDPSynthesizer
 from snsynth.pytorch.nn import PATECTGAN
 

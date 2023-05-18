@@ -40,7 +40,7 @@ def plot_box_simple_small(data, vmin=0, vmax=5):
     # color map (colorblind friendly)
     cmap = sb.diverging_palette(240, 34, s=80, l=55, n=9)
     # plot heatmap
-    ax = sb.heatmap(corr, annot=False, fmt=".2f", 
+    sb.heatmap(corr, annot=False, fmt=".2f", 
             linewidths=5, cmap=cmap, vmin=vmin, vmax=vmax, 
             cbar_kws={"shrink": .8}, square=True)
     # ax.set(xlabel='finding #')

@@ -1,6 +1,5 @@
 
-import math
-from SynRD.publication import Publication, Finding, VisualFinding, TAXONOMY
+from SynRD.publication import Publication, Finding, TAXONOMY
 
 import numpy as np
 import pandas as pd
