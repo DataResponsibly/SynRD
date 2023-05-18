@@ -1,9 +1,5 @@
-from SynRD.benchmark import Benchmark
 from SynRD.synthesizers import MSTSynthesizer, PATECTGAN, PrivBayes, PacSynth
-from SynRD.publication import Publication
-from SynRD.papers import Saw2018Cross
 
-import pandas as pd
 import numpy as np
 from sklearn import datasets
 iris = datasets.load_iris(as_frame=True)['data']

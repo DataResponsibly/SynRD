@@ -5,10 +5,10 @@ try:
     from mbi import FactoredInference, Dataset, Domain, GraphicalModel
 except ImportError:
     print("Please install mbi with:\n   pip install git+https://github.com/ryan112358/private-pgm.git")
+    raise
 
 import itertools
 from snsynth.base import Synthesizer
-from mbi import Dataset, FactoredInference, Domain
 from snsynth.utils import cdp_rho, exponential_mechanism, gaussian_noise, powerset
 from scipy import sparse
 
@@ -191,8 +191,7 @@ class SmartnoiseAIMSynthesizer(Synthesizer):
         for cl in oneway:
             x = data.project(cl).datavector()
             y = x + gaussian_noise(sigma, x.size)
-            I = Identity(y.size)
-            measurements.append((I, y, sigma, cl))
+            measurements.append((Identity(y.size), y, sigma, cl))
 
         engine = FactoredInference(data.domain, iters=1000, warm_start=True)
         model = engine.estimate(measurements)

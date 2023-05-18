@@ -5,7 +5,6 @@ import scipy.stats as stats
 from statsmodels.stats.contingency_tables import Table2x2
 from statsmodels.stats.proportion import proportions_chisquare
 
-from SynRD.papers.file_utils import PathSearcher
 from SynRD.publication import Publication, Finding, NonReproducibleFindingException, TAXONOMY
 
 
@@ -625,7 +624,7 @@ class Iverson22Football(Publication):
         labels = ["Total Sample", "High School Football", "No High School Football", "No Sports in High School",
                   "Psychological Treatment During Adolescence", "Suicide Ideation During Adolescence"]
 
-        tickvalues = list(range(6))
+        list(range(6))
         values = [all_depression, all_suicide, football_depression, football_suicide,
                   no_football_depression, no_football_suicide, no_sports_depression, no_sports_suicide,
                   psycho_help_depression, psycho_help_suicide, suicide_adolscence_depression,

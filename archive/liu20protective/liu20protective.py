@@ -1,7 +1,6 @@
-import numpy as np
 import pandas as pd
 from file_utils import PathSearcher
-from meta_classes import FigureFinding, Finding, Publication, VisualFinding
+from meta_classes import Publication
 
 # import sys
 # sys.path.append('.')
@@ -124,7 +123,7 @@ class Liu2020Protective(Publication):
         self, filename="liu2020protective_dataframe.pickle", print_debug=False
     ):
         df = pd.read_csv(self.path_searcher.get_path("wave1.csv"))
-        df = _filter_dataframe(df)
+        df = self._filter_dataframe(df)
 
         # wave1, wave3, wave4 = self._transform_separate_dataframes(
         #     wave1, wave3, wave4, print_debug

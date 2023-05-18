@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, VisualFinding, TAXONOMY
+from SynRD.publication import Publication, Finding, TAXONOMY
 
 import pandas as pd
 import numpy as np
@@ -215,6 +215,15 @@ class Lee2021Ability(Publication):
         temp = student_survey.loc[:, student_survey.columns != 'SES']
         temp[temp < 0] = nan
         student_survey.loc[:, student_survey.columns != 'SES'] = temp
+
+        
+        # Note: properly installing lightgbm allows you to run miceforest. If you have an M1 mac, please see:
+        # https://towardsdatascience.com/install-xgboost-and-lightgbm-on-apple-m1-macs-cb75180a2dda
+        try:
+            import miceforest as mf
+        except ImportError:
+            print('wrong architecture for miceforest, switch envs to boosted')
+            raise
 
         # Create kernel. 
         kds = mf.ImputationKernel(
@@ -456,7 +465,7 @@ class Lee2021Ability(Publication):
         soft_finding = (B < -0.5)
         # NOTE: though we do not know how to interpret, p-value
         # is available
-        p = m.tables[1].loc['teacher']['P>|t|']
+        m.tables[1].loc['teacher']['P>|t|']
         return ([],soft_finding,[B])
 
     def finding_54_2(self):
@@ -470,7 +479,7 @@ class Lee2021Ability(Publication):
         soft_finding = (B > 1.5)
         # NOTE: though we do not know how to interpret, p-value
         # is available
-        p = m.tables[1].loc['ability']['P>|t|']
+        m.tables[1].loc['ability']['P>|t|']
         return ([],soft_finding,[B])
 
     def finding_54_3(self):
@@ -485,7 +494,7 @@ class Lee2021Ability(Publication):
         soft_finding = (B < 0)
         # NOTE: though we do not know how to interpret, p-value
         # is available
-        p = m.tables[1].loc['ability']['P>|t|']
+        m.tables[1].loc['ability']['P>|t|']
         return ([],soft_finding,[B])
 
     def finding_54_4(self):
@@ -499,7 +508,7 @@ class Lee2021Ability(Publication):
         reg_df = self.table_3_check()
         m = reg_df['model_5']
         B = m.tables[1].loc['teacher:parents:ability']['Coef.']
-        p = m.tables[1].loc['ability']['P>|t|']
+        m.tables[1].loc['ability']['P>|t|']
         soft_finding = (B < 0) # & (p < 0.1)
         return ([],soft_finding,[B])
 

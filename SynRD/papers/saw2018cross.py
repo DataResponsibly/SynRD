@@ -1,4 +1,4 @@
-from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding, TAXONOMY
+from SynRD.publication import Publication, Finding, TAXONOMY
 
 import pandas as pd
 import numpy as np
@@ -6,7 +6,6 @@ import numpy as np
 from itertools import chain
 import json
 
-import os.path
 
 class Saw2018Cross(Publication):
     """
@@ -997,7 +996,7 @@ class Saw2018Cross(Publication):
                 group = results['full_intersectional_table'].loc[(r,ses,'girls','Yes')] /\
                     results['full_intersectional_table'].loc[(r,ses,'girls','n')]
                 comparisons.append(list(w_hses_b > group))
-        comparisons = [i for l in comparisons for i in l]
+        comparisons = [i for lst in comparisons for i in lst]
         soft_finding = sum(comparisons) >= (len(comparisons) - 2)
 
         return ([], soft_finding, comparisons)

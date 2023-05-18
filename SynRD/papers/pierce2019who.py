@@ -1,9 +1,8 @@
-from SynRD.publication import Publication, Finding, VisualFinding, FigureFinding, TAXONOMY
+from SynRD.publication import Publication, Finding, TAXONOMY
 
 import pandas as pd
 import numpy as np
 
-from itertools import chain
 
 from statsmodels.regression.mixed_linear_model import MixedLM
 
@@ -408,7 +407,7 @@ class Pierce2019Who(Publication):
         """
         df = self.table_2_check()
         pos = df['positive_model']
-        spouse = pos.tables[1].loc['spouse_support']['Coef.']
+        pos.tables[1].loc['spouse_support']['Coef.']
         child = pos.tables[1].loc['child_support']['Coef.']
         friends = pos.tables[1].loc['friend_support']['Coef.']
         soft_finding = (float(child) > 0.1) and (float(friends) > 0.1)

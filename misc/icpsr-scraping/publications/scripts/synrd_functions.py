@@ -35,7 +35,7 @@ def selenium_data_retrieval(start_val, url, element):
             result["url"] = url
             field_attempting = "year"
             result["year"] = row.find_elements(By.CSS_SELECTOR, "[title^=Publication]")[0].text
-            
+
             field_attempting = "displayCitation"
             result["displayCitation"] = row.find_elements(By.CLASS_NAME, "displayCitation")[0].text
 
@@ -45,13 +45,13 @@ def selenium_data_retrieval(start_val, url, element):
                             row.find_elements(By.CLASS_NAME, "fullText")[0].find_elements(By.CSS_SELECTOR, "a[href]")]
             else:
                 fullTexts = []
-            
+
             for i in range(20):
                 if i < len(fullTexts):
                     result["fullText"+str(i)] = fullTexts[i]
                 else:
                     result["fullText"+str(i)] = EMPTY_STRING
-            
+
             field_attempting = "relevantStudies"
             relStudies = [link_el.get_attribute("href") for link_el in 
                          row.find_elements(By.CLASS_NAME, "relStudies")[0].find_elements(By.CSS_SELECTOR, "a[href]")]
@@ -60,9 +60,9 @@ def selenium_data_retrieval(start_val, url, element):
                     result["relStudies"+str(i)] = relStudies[i]
                 else:
                     result["relStudies"+str(i)] = EMPTY_STRING
-                
+
             outputs.append(result)
-        except:
+        except Exception:
             print(f"Suppressing exception due to {field_attempting} for row {row_idx} of url {url}.")
 
     return outputs
@@ -87,7 +87,7 @@ def run_icpsr(num_results=500, max_publications=101926, start=0):
     
     for start_val in range(start, max_publications, num_results):
         links.append((start_val, start_val + num_results,
-                     f"https://www.icpsr.umich.edu/web/ICPSR/search/publications?" +
+                     "https://www.icpsr.umich.edu/web/ICPSR/search/publications?" +
                      f"start={start_val}&COLLECTION=DATA&ARCHIVE=ICPSR&sort=YEAR_" +
                      f"PUB_DATE%20desc%2CAUTHORS_SORT%20asc&rows={num_results}"))
 

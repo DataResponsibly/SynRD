@@ -1,5 +1,4 @@
 from SynRD.publication import Publication, Finding, NonReproducibleFindingException, TAXONOMY
-from SynRD.papers.file_utils import PathSearcher
 import pandas as pd
 import numpy as np
 
