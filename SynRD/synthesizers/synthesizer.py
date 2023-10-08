@@ -325,6 +325,23 @@ class PacSynth(Synthesizer):
 
 
 class AIMTSynthesizer(Synthesizer):
+    """
+    Synthesizer which uses AIM: An Adaptive and Iterative Mechanism
+
+    ----------
+    Parameters
+        epsilon : float
+            privacy budget for the synthesizer
+    -----------
+    Optional keyword arguments:
+        slide_range : bool = False
+            specifies if the slide range transformation should be applied, this will 
+            make the minimal value of each column 0 before fitting.
+        thresh : float = 0.05
+            specifies what the ratio of unique values to the column length should be for
+            the column to be threated as cathegorical
+
+    """
     def __init__(
         self,
         epsilon: float,
@@ -355,6 +372,27 @@ class AIMTSynthesizer(Synthesizer):
         return df
 
 class AIMSynthesizer(Synthesizer):
+    """
+    Synthesizer which uses AIM: An Adaptive and Iterative Mechanism with adjustable
+    `rounds_factor` parameter to influence the number of rounds to run the mechanism.
+
+    ----------
+    Parameters
+        epsilon : float
+            privacy budget for the synthesizer
+        rounds_factor : float = 0.1
+            the factor to determine the number of rounds to run the AIM mechanism
+            before generating the synthetic dataset.
+    -----------
+    Optional keyword arguments:
+        slide_range : bool = False
+            specifies if the slide range transformation should be applied, this will 
+            make the minimal value of each column 0 before fitting.
+        thresh : float = 0.05
+            specifies what the ratio of unique values to the column length should be for
+            the column to be threated as cathegorical
+
+    """
     def __init__(self, 
                  epsilon: float, 
                  slide_range: bool = False,
