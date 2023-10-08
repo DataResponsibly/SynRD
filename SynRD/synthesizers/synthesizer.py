@@ -156,6 +156,25 @@ class MSTSynthesizer(Synthesizer):
 
 
 class PATECTGAN(Synthesizer):
+    """
+    Conditional tabular GAN using Private Aggregation of Teacher Ensembles
+
+    ----------
+    Parameters
+        epsilon : float
+            privacy budget for the synthesizer
+    -----------
+    Optional keyword arguments:
+        slide_range : bool = False
+            specifies if the slide range transformation should be applied, this will 
+            make the minimal value of each column 0 before fitting.
+        thresh : float = 0.05
+            specifies what the ratio of unique values to the column length should be for
+            the column to be threated as cathegorical
+        preprocess_factor : float = 0.05
+            amount of budget to be used for the data preprocessing
+
+    """
     def __init__(
         self,
         epsilon: float,
@@ -188,6 +207,31 @@ class PATECTGAN(Synthesizer):
 
 
 class PrivBayes(Synthesizer):
+    """
+    Synthesizer which uses bayesian approach.
+
+    ----------
+    Parameters
+        epsilon : float
+            privacy budget for the synthesizer
+        slide_range : bool = False
+            specifies if the slide range transformation should be applied, this will 
+            make the minimal value of each column 0 before fitting.
+    -----------
+    Optional keyword arguments:
+        thresh : float = 0.05
+            specifies what the ratio of unique values to the column length should be for
+            the column to be threated as cathegorical
+        privbayes_limit : int = 20
+            if number of unique values in the column exceeds this limit, it will be binned
+        privbayes_bins : int = 10
+            number of bins (if binning is happening)
+        temp_files_dir : str = 'temp'
+            directory used to save the file produced by the data describer
+        seed : int = 0
+            random seed to be used
+
+    """
     def __init__(
         self,
         epsilon: float,
