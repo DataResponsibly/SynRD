@@ -99,6 +99,28 @@ class Synthesizer(ABC):
 
 
 class MSTSynthesizer(Synthesizer):
+    """
+    MST: Maximum Spanning Tree synthesizer.
+
+    ----------
+    Parameters
+        epsilon : float
+            privacy budget for the synthesizer
+    -----------
+    Optional keyword arguments:
+        slide_range : bool = False
+            specifies if the slide range transformation should be applied, this will 
+            make the minimal value of each column 0 before fitting.
+        thresh : float = 0.05
+            specifies what the ratio of unique values to the column length should be for
+            the column to be threated as cathegorical
+        preprocess_factor : float = 0.05
+            amount of budget to be used for the data preprocessing
+        delta : float = 1e-09
+            privacy parameter, should be small, in the range of 1/(n * sqrt(n))
+        verbose: bool = False
+            print diagnostic information during processing
+    """
     def __init__(
         self,
         epsilon: float,
