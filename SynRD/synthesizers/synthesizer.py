@@ -137,21 +137,21 @@ class MSTSynthesizer(Synthesizer):
     ----------
     Parameters
         epsilon : float
-            privacy budget for the synthesizer
+            Privacy budget for the synthesizer
     -----------
     Optional keyword arguments:
         slide_range : bool = False
-            specifies if the slide range transformation should be applied, this will 
+            Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
         thresh : float = 0.05
-            specifies what the ratio of unique values to the column length should be for
+            Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
         preprocess_factor : float = 0.05
-            amount of budget to be used for the data preprocessing
+            Amount of budget to be used for the data preprocessing
         delta : float = 1e-09
-            privacy parameter, should be small, in the range of 1/(n * sqrt(n))
+            Privacy parameter, should be small, in the range of 1/(n * sqrt(n))
         verbose: bool = False
-            print diagnostic information during processing
+            Print diagnostic information during processing
     """
     def __init__(
         self,
@@ -222,17 +222,58 @@ class PATECTGAN(Synthesizer):
     ----------
     Parameters
         epsilon : float
-            privacy budget for the synthesizer
+            Privacy budget for the synthesizer
     -----------
     Optional keyword arguments:
         slide_range : bool = False
-            specifies if the slide range transformation should be applied, this will 
+            Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
         thresh : float = 0.05
-            specifies what the ratio of unique values to the column length should be for
+            Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
         preprocess_factor : float = 0.05
-            amount of budget to be used for the data preprocessing
+            Amount of budget to be used for the data preprocessing
+        embedding_dim : int = 128
+            Dimension of the embeding
+        generator_dim : tuple = (256, 256)
+            Dimension of the generator
+        discriminator_dim : tuple = (256, 256)
+            Dimension of the discriminstor
+        generator_lr : float = 0.0002
+            Generator's learning rate
+        generator_decay : float = 1e-06
+            Generator's decay
+        discriminator_lr : float = 0.002
+            Discriminator's learning rate
+        discriminator_decay : float = 1e-06
+            Discriminator's decay
+        batch_size : int = 500
+            Number of samples in one batch (for one training step)
+        verbose : bool = True
+            Specifies if training information should be printed or not
+        epochs : int = 300
+            Number of training epochs
+        pac : int = 1
+            Number of pacs to use (useful for dealing with mode collapse)
+        cuda : bool|string = True
+            Specifies if cuda should be used for computation.
+            Providing a string will result in using the specific device.
+        regularization : string = None
+            Which regularization to use. At the moment only dragan is possible.
+        loss : string = 'cross_entropy'
+            Type of loss to be used
+        teacher_iters : int = 5
+            Number of iterations for training the teachers
+        student_iters : int = 5
+            Number of iterations for training the students
+        delta : float = None
+            privacy parameter, should be small, in the range of 1/(n * sqrt(n))
+        sample_per_teacher : int = 1000
+            Number of samples for training one teacher
+        noise_multiplier : float = 0.001
+            Multiplier for Laplace noise
+        moments_order : int = 100
+            Number of moments to be used in moments accountant method
 
     """
     def __init__(
@@ -264,9 +305,7 @@ class PATECTGAN(Synthesizer):
             self.preprocess_factor = 0.05
 
         self.synthesizer = PytorchDPSynthesizer(
-            epsilon=self.epsilon,
-            gan=SmartnoisePATECTGAN(epsilon=self.epsilon),
-            **synth_kwargs,
+            epsilon=epsilon, gan=SmartnoisePATECTGAN(epsilon=epsilon, **synth_kwargs), preprocessor = synth_kwargs.get('preprocessor')
         )
 
     def fit(self, df: pd.DataFrame):
@@ -292,23 +331,23 @@ class PrivBayes(Synthesizer):
     ----------
     Parameters
         epsilon : float
-            privacy budget for the synthesizer
+            Privacy budget for the synthesizer
         slide_range : bool = False
-            specifies if the slide range transformation should be applied, this will 
+            Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
     -----------
     Optional keyword arguments:
         thresh : float = 0.05
-            specifies what the ratio of unique values to the column length should be for
+            Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
         privbayes_limit : int = 20
-            if number of unique values in the column exceeds this limit, it will be binned
+            If number of unique values in the column exceeds this limit, it will be binned
         privbayes_bins : int = 10
-            number of bins (if binning is happening)
+            Number of bins (if binning is happening)
         temp_files_dir : str = 'temp'
-            directory used to save the file produced by the data describer
+            Directory used to save the file produced by the data describer
         seed : int = 0
-            random seed to be used
+            Random seed to be used
 
     """
     def __init__(
@@ -442,14 +481,14 @@ class AIMTSynthesizer(Synthesizer):
     ----------
     Parameters
         epsilon : float
-            privacy budget for the synthesizer
+            Privacy budget for the synthesizer
     -----------
     Optional keyword arguments:
         slide_range : bool = False
-            specifies if the slide range transformation should be applied, this will 
+            Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
         thresh : float = 0.05
-            specifies what the ratio of unique values to the column length should be for
+            Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
 
     """
