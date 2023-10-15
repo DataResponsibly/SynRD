@@ -32,13 +32,45 @@ logger = logging.getLogger(__name__)
 
 class Synthesizer(ABC):
     def __init__(
-        self, epsilon: float, slide_range: bool = True, thresh=0.05, synth_kwargs=dict()
-    ):
-        self.data = None
-        self.epsilon = epsilon
-        self.slide_range = slide_range
+        self,
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        **kwargs: dict(),
+    ) -> None:
+        allowed_params = {"epsilon", "slide_range", "thresh"}
+
+        epsilon_value = locals().get("epsilon")
+        if epsilon_value is None:
+            raise ValueError("Epsilon is a required parameter for Synthesizer.")
+        if not isinstance(epsilon_value, (int, float)):
+            raise TypeError(
+                f"Epsilon must be of type int or float, got {type(epsilon_value).__name__}."
+            )
+        self.epsilon = float(epsilon_value)
         self.range_transform = None
-        self.thresh = thresh
+        self.data = None
+
+        for param in kwargs.keys():
+            if param not in allowed_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        param_defaults = {"slide_range": (False, bool), "thresh": (0.05, float)}
+
+        for param, (default_value, param_type) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
 
     @abstractmethod
     def fit(self, df: pd.DataFrame) -> None:
@@ -123,15 +155,43 @@ class MSTSynthesizer(Synthesizer):
     """
     def __init__(
         self,
-        epsilon: float,
-        slide_range: bool = False,
-        thresh=0.05,
-        preprocess_factor: float = 0.05,
-        synth_kwargs=dict(),
-    ):
-        self.synthesizer = SmartnoiseMSTSynthesizer(epsilon=epsilon, **synth_kwargs)
-        self.preprocess_factor = preprocess_factor
-        super().__init__(epsilon, slide_range, thresh, synth_kwargs)
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        preprocess_factor: float = None,
+        delta: float = None,
+        verbose: bool = None,
+        **synth_kwargs: dict()
+    ) -> None:
+        super().__init__(epsilon, slide_range, thresh)
+
+        allowed_additional_params = {"preprocess_factor", "delta", "verbose"}
+        for param in synth_kwargs.keys():
+            if param not in allowed_additional_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        param_defaults = {
+            "preprocess_factor": (0.05, float),
+            "delta": (1e-09, float),
+            "verbose": (False, bool),
+        }
+
+        for param, (default_value, param_type) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
+
+        self.synthesizer = SmartnoiseMSTSynthesizer(epsilon=self.epsilon, **synth_kwargs)
 
     def fit(self, df: pd.DataFrame):
         categorical_check = len(self._categorical_continuous(df)["categorical"]) == len(
@@ -177,18 +237,37 @@ class PATECTGAN(Synthesizer):
     """
     def __init__(
         self,
-        epsilon: float,
-        slide_range: bool = False,
-        preprocess_factor: float = 0.05,
-        thresh=0.05,
-        synth_kwargs=dict(),
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        preprocess_factor: float = None,
+        **synth_kwargs: dict()
     ):
-        self.preprocess_factor = preprocess_factor
-        self.synthesizer = PytorchDPSynthesizer(
-            epsilon=epsilon, gan=SmartnoisePATECTGAN(epsilon=epsilon), **synth_kwargs
-        )
-
         super().__init__(epsilon, slide_range, thresh)
+        allowed_additional_params = {"preprocess_factor"}
+        for param in synth_kwargs.keys():
+            if param not in allowed_additional_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        preprocess_factor_value = locals().get("preprocess_factor")
+        if preprocess_factor_value is not None:
+            if isinstance(preprocess_factor_value, int):
+                preprocess_factor_value = float(preprocess_factor_value)
+            if not isinstance(preprocess_factor_value, float):
+                raise TypeError(
+                    f"preprocess_factor must be of type float, got {type(preprocess_factor_value).__name__}."
+                )
+            self.preprocess_factor = preprocess_factor_value
+        else:
+            self.preprocess_factor = 0.05
+
+        self.synthesizer = PytorchDPSynthesizer(
+            epsilon=self.epsilon,
+            gan=SmartnoisePATECTGAN(epsilon=self.epsilon),
+            **synth_kwargs,
+        )
 
     def fit(self, df: pd.DataFrame):
         df = self._slide_range(df)
@@ -234,19 +313,48 @@ class PrivBayes(Synthesizer):
     """
     def __init__(
         self,
-        epsilon: float,
-        slide_range: bool,
-        thresh=0.05,
-        privbayes_limit=20,
-        privbayes_bins=10,
-        temp_files_dir="temp",
-        seed=0,
-        synth_kwargs=dict(),
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        privbayes_limit: int = None,
+        privbayes_bins: int = None,
+        temp_files_dir: str = None,
+        seed: int = None,
+        **synth_kwargs: dict()
     ) -> None:
-        self.privbayes_limit = privbayes_limit
-        self.privbayes_bins = privbayes_bins
-        self.temp_files_dir = temp_files_dir
-        self.seed = seed
+        super().__init__(epsilon, slide_range, thresh)
+
+        allowed_additional_params = {
+            "privbayes_limit",
+            "privbayes_bins",
+            "temp_files_dir",
+            "seed",
+        }
+        for param in synth_kwargs.keys():
+            if param not in allowed_additional_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        param_defaults = {
+            "privbayes_limit": (20, int),
+            "privbayes_bins": (10, int),
+            "temp_files_dir": ("temp", str),
+            "seed": (0, int),
+        }
+
+        for param, (default_value, param_type) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
 
         self.describer = DataDescriber(category_threshold=self.privbayes_limit)
         self.generator = DataGenerator()
@@ -254,7 +362,6 @@ class PrivBayes(Synthesizer):
         os.makedirs(self.temp_files_dir, exist_ok=True)
         self.candidate_keys = {"index": True}
         self.dataset_size = None
-        super().__init__(epsilon, slide_range, thresh)
 
     def fit(self, df: pd.DataFrame):
         df = self._slide_range(df)
@@ -304,15 +411,19 @@ class PrivBayes(Synthesizer):
 
 class PacSynth(Synthesizer):
     def __init__(
-        self, epsilon: float, slide_range: bool, thresh=0.05, synth_kwargs=dict()
+        self,
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        **synth_kwargs: dict()
     ):
+        super().__init__(epsilon, slide_range, thresh, **synth_kwargs)
         self.synthesizer = AggregateSeededSynthesizer(
-            epsilon=epsilon,
+            epsilon=self.epsilon,
             percentile_percentage=99,
             reporting_length=3,
             **synth_kwargs,
         )
-        super().__init__(epsilon, slide_range, thresh)
 
     def fit(self, df: pd.DataFrame):
         df = self._slide_range(df)
@@ -344,13 +455,15 @@ class AIMTSynthesizer(Synthesizer):
     """
     def __init__(
         self,
-        epsilon: float,
-        slide_range: bool = False,
-        thresh=0.05,
-        synth_kwargs=dict(),
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        **synth_kwargs: dict()
     ):
-        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=epsilon, **synth_kwargs)
-        super().__init__(epsilon, slide_range, thresh)
+        super().__init__(epsilon, slide_range, thresh, **synth_kwargs)
+        self.synthesizer = SmartnoiseAIMSynthesizer(
+            epsilon=self.epsilon, **synth_kwargs
+        )
 
     def fit(self, df: pd.DataFrame):
         categorical_check = len(self._categorical_continuous(df)["categorical"]) == len(
@@ -393,13 +506,36 @@ class AIMSynthesizer(Synthesizer):
             the column to be threated as cathegorical
 
     """
-    def __init__(self, 
-                 epsilon: float, 
-                 slide_range: bool = False,
-                 thresh = 0.05,
-                 rounds_factor = 0.1):
-        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=epsilon, rounds_factor=rounds_factor)
+    def __init__(
+        self,
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        rounds_factor: float = None,
+        **synth_kwargs: dict()
+    ):
         super().__init__(epsilon, slide_range, thresh)
+
+        allowed_additional_params = {"rounds_factor"}
+        for param in synth_kwargs.keys():
+            if param not in allowed_additional_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        rounds_factor_value = locals().get("rounds_factor")
+        if rounds_factor_value is not None:
+            if isinstance(rounds_factor_value, int):
+                rounds_factor_value = float(rounds_factor_value)
+            if not isinstance(rounds_factor_value, float):
+                raise TypeError(
+                    f"preprocess_factor must be of type float, got {type(rounds_factor_value).__name__}."
+                )
+            self.rounds_factor = rounds_factor_value
+        else:
+            self.rounds_factor = 0.1
+
+        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=self.epsilon, rounds_factor=self.rounds_factor)
 
     def fit(self, df: pd.DataFrame):
         categorical_check = (len(self._categorical_continuous(df)['categorical']) == len(list(df.columns)))
@@ -418,22 +554,48 @@ class AIMSynthesizer(Synthesizer):
 
 
 class GEMSynthesizer(Synthesizer):
-    def __init__(self, epsilon: float, 
-                 slide_range: bool = False, 
-                 thresh=0.05, 
-                 k=3,
-                 T=100,
-                 recycle=True,
-                 synth_kwargs=dict(), 
-                 verbose=False):
-        self.synth_kwargs = synth_kwargs
-        self.verbose = verbose
-        self.k = k
-        self.T = T
-        self.recycle = recycle
-
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    def __init__(
+        self,
+        epsilon: float = None,
+        slide_range: bool = None,
+        thresh: float = None,
+        k: int = None,
+        T: int = None,
+        recycle: bool = None,
+        verbose: bool = None,
+        **synth_kwargs: dict()
+    ):
         super().__init__(epsilon, slide_range, thresh)
+
+        allowed_additional_params = {"k", "T", "recycle", "verbose"}
+        for param in synth_kwargs.keys():
+            if param not in allowed_additional_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        param_defaults = {
+            "k": (3, int),
+            "T": (100, int),
+            "recycle": (True, bool),
+            "verbose": (False, bool),
+        }
+
+        for param, (default_value, param_type) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
+
+        self.synth_kwargs = synth_kwargs
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
     def _get_train_data(self, data, *ignore, style, transformer, categorical_columns, ordinal_columns, continuous_columns, nullable, preprocessor_eps):
         if transformer is None or isinstance(transformer, dict):
