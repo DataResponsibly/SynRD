@@ -282,27 +282,86 @@ class PATECTGAN(Synthesizer):
         slide_range: bool = None,
         thresh: float = None,
         preprocess_factor: float = None,
+        embedding_dim : int = None,
+        generator_dim : tuple = None,
+        discriminator_dim : tuple = None,
+        generator_lr : float = None,
+        generator_decay : float = None,
+        discriminator_lr : float = None,
+        discriminator_decay : float = None,
+        batch_size : int = None,
+        verbose : bool = None,
+        epochs : int = None,
+        pac : int = None,
+        cuda : bool|str = None,
+        regularization : str = None,
+        loss : str = None,
+        teacher_iters : int = None,
+        student_iters : int = None,
+        delta : float = None,
+        sample_per_teacher : int = None,
+        noise_multiplier : float = None,
+        moments_order : int = None,
         **synth_kwargs: dict()
     ):
         super().__init__(epsilon, slide_range, thresh)
-        allowed_additional_params = {"preprocess_factor"}
+        allowed_additional_params = {"preprocess_factor", "embedding_dim", "generator_dim",
+                                     "discriminator_dim",  "generator_lr", "generator_decay",
+                                     "discriminator_lr", "discriminator_decay", "batch_size",
+                                     "verbose", "epochs", "pac", "cuda", "regularization",
+                                     "loss", "teacher_iters", "student_iters", "delta",
+                                     "sample_per_teacher", "noise_multiplier", "moments_order"}
         for param in synth_kwargs.keys():
             if param not in allowed_additional_params:
                 raise ValueError(
                     f"Parameter '{param}' is not available for this type of synthesizer."
                 )
 
-        preprocess_factor_value = locals().get("preprocess_factor")
-        if preprocess_factor_value is not None:
-            if isinstance(preprocess_factor_value, int):
-                preprocess_factor_value = float(preprocess_factor_value)
-            if not isinstance(preprocess_factor_value, float):
-                raise TypeError(
-                    f"preprocess_factor must be of type float, got {type(preprocess_factor_value).__name__}."
-                )
-            self.preprocess_factor = preprocess_factor_value
-        else:
-            self.preprocess_factor = 0.05
+        param_defaults = {
+            "preprocess_factor" : (float, 0.05),
+            "embedding_dim" : (int, 128),
+            "generator_dim" : (tuple, (256, 256)),      
+            "discriminator_dim" : (tuple, (256, 256)),
+            "generator_lr" : (float, 0.0002),
+            "generator_decay" : (float, 1e-06),
+            "discriminator_lr" : (float, 0.002),
+            "discriminator_decay" : (float, 1e-06),
+            "batch_size" : (int, 500),
+            "verbose" : (bool, True),
+            "epochs" : (int, 300),
+            "pac" : (int, 1),
+            "cuda" : ((bool, str) , True),
+            "regularization" : (str , None),
+            "loss" : (str , 'cross_entropy'),
+            "teacher_iters" : (int , 5),
+            "student_iters" : (int , 5),
+            "delta" : (float , None),
+            "sample_per_teacher" : (int , 1000),
+            "noise_multiplier" : (float , 0.001),
+            "moments_order" : (int , 100)
+
+        }
+        for param, (param_type, default_value) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if isinstance(param_type, tuple):
+                    correctly_typed = False
+                    for single_type in param_type:
+                        if isinstance(param_value, single_type):
+                            correctly_typed = True
+                    if not correctly_typed:
+                        raise TypeError(
+                        f"{param} must be of one of the types {', '.join(list(map(lambda x: x.__name__, param_type)))}, got {type(param_value).__name__}."
+                    )
+                elif not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
 
         self.synthesizer = PytorchDPSynthesizer(
             epsilon=epsilon, gan=SmartnoisePATECTGAN(epsilon=epsilon, **synth_kwargs), preprocessor = synth_kwargs.get('preprocessor')
@@ -332,11 +391,11 @@ class PrivBayes(Synthesizer):
     Parameters
         epsilon : float
             Privacy budget for the synthesizer
+    -----------
+    Optional keyword arguments:
         slide_range : bool = False
             Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
-    -----------
-    Optional keyword arguments:
         thresh : float = 0.05
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
@@ -490,6 +549,20 @@ class AIMTSynthesizer(Synthesizer):
         thresh : float = 0.05
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
+        delta : float = 1e-9
+            Privacy parameter. Should be small, in the range of 1/(n * sqrt(n))
+        max_model_size : int = 80
+            Maximum size of the model
+        degree : int = 2
+            Number of data columns used in the workload
+        num_marginals : int = None
+            Number of elements in the workload
+        max_cells : int = 10000
+            Maximum number of cells in a domain that can be used for the synthesizer
+        rounds : int = None
+            Number of rounds to run the algorithm for
+        verbose : bool = False
+            Specifies if additional information should be printed or not
 
     """
     def __init__(
@@ -497,9 +570,55 @@ class AIMTSynthesizer(Synthesizer):
         epsilon: float = None,
         slide_range: bool = None,
         thresh: float = None,
+        delta: float = None, 
+        max_model_size: int = None, 
+        degree: int = None, 
+        num_marginals: int = None, 
+        max_cells: int = None,
+        rounds: int = None, 
+        verbose: bool = None,
         **synth_kwargs: dict()
     ):
-        super().__init__(epsilon, slide_range, thresh, **synth_kwargs)
+        super().__init__(epsilon, slide_range, thresh)
+        allowed_additional_params = {"delta", "max_model_size", "degree", "num_marginals",
+                                     "max_cells", "rounds", "verbose"}
+        for param in synth_kwargs.keys():
+            if param not in allowed_additional_params:
+                raise ValueError(
+                    f"Parameter '{param}' is not available for this type of synthesizer."
+                )
+
+        param_defaults = {
+            "delta": (float, 1e-9), 
+            "max_model_size": (int, 80), 
+            "degree": (int, 2), 
+            "num_marginals": (int, None), 
+            "max_cells": (int, 10000),
+            "rounds": (int, None), 
+            "verbose": (bool, False)
+        }
+
+        for param, (param_type, default_value) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if isinstance(param_type, tuple):
+                    correctly_typed = False
+                    for single_type in param_type:
+                        if isinstance(param_value, single_type):
+                            correctly_typed = True
+                    if not correctly_typed:
+                        raise TypeError(
+                        f"{param} must be of one of the types {', '.join(list(map(lambda x: x.__name__, param_type)))}, got {type(param_value).__name__}."
+                    )
+                elif not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
         self.synthesizer = SmartnoiseAIMSynthesizer(
             epsilon=self.epsilon, **synth_kwargs
         )
@@ -531,18 +650,32 @@ class AIMSynthesizer(Synthesizer):
     ----------
     Parameters
         epsilon : float
-            privacy budget for the synthesizer
-        rounds_factor : float = 0.1
-            the factor to determine the number of rounds to run the AIM mechanism
-            before generating the synthetic dataset.
+            Privacy budget for the synthesizer
     -----------
     Optional keyword arguments:
+        rounds_factor : float = 0.1
+            The factor to determine the number of rounds to run the AIM mechanism
+            before generating the synthetic dataset.
         slide_range : bool = False
-            specifies if the slide range transformation should be applied, this will 
+            Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
         thresh : float = 0.05
-            specifies what the ratio of unique values to the column length should be for
+            Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
+        delta : float = 1e-9
+            Privacy parameter. Should be small, in the range of 1/(n * sqrt(n))
+        max_model_size : int = 80
+            Maximum size of the model
+        degree : int = 2
+            Number of data columns used in the workload
+        num_marginals : int = None
+            Number of elements in the workload
+        max_cells : int = 10000
+            Maximum number of cells in a domain that can be used for the synthesizer
+        rounds : int = None
+            Number of rounds to run the algorithm for
+        verbose : bool = False
+            Specifies if additional information should be printed or not
 
     """
     def __init__(
@@ -551,28 +684,57 @@ class AIMSynthesizer(Synthesizer):
         slide_range: bool = None,
         thresh: float = None,
         rounds_factor: float = None,
+        delta: float = None, 
+        max_model_size: int = None, 
+        degree: int = None, 
+        num_marginals: int = None, 
+        max_cells: int = None,
+        rounds: int = None, 
+        verbose: bool = None,
         **synth_kwargs: dict()
     ):
         super().__init__(epsilon, slide_range, thresh)
 
-        allowed_additional_params = {"rounds_factor"}
+        allowed_additional_params = {"delta", "max_model_size", "degree", "num_marginals",
+                                     "max_cells", "rounds", "verbose", "rounds_factor"}
         for param in synth_kwargs.keys():
             if param not in allowed_additional_params:
                 raise ValueError(
                     f"Parameter '{param}' is not available for this type of synthesizer."
                 )
 
-        rounds_factor_value = locals().get("rounds_factor")
-        if rounds_factor_value is not None:
-            if isinstance(rounds_factor_value, int):
-                rounds_factor_value = float(rounds_factor_value)
-            if not isinstance(rounds_factor_value, float):
-                raise TypeError(
-                    f"preprocess_factor must be of type float, got {type(rounds_factor_value).__name__}."
-                )
-            self.rounds_factor = rounds_factor_value
-        else:
-            self.rounds_factor = 0.1
+        param_defaults = {
+            "delta": (float, 1e-9), 
+            "max_model_size": (int, 80), 
+            "degree": (int, 2), 
+            "num_marginals": (int, None), 
+            "max_cells": (int, 10000),
+            "rounds": (int, None), 
+            "verbose": (bool, False),
+            "rounds_factor": (float, 0.1)
+        }
+
+        for param, (param_type, default_value) in param_defaults.items():
+            param_value = locals().get(param)
+            if param_value is not None:
+                if isinstance(param_value, int) and param_type is float:
+                    param_value = float(param_value)
+                if isinstance(param_type, tuple):
+                    correctly_typed = False
+                    for single_type in param_type:
+                        if isinstance(param_value, single_type):
+                            correctly_typed = True
+                    if not correctly_typed:
+                        raise TypeError(
+                        f"{param} must be of one of the types {', '.join(list(map(lambda x: x.__name__, param_type)))}, got {type(param_value).__name__}."
+                    )
+                elif not isinstance(param_value, param_type):
+                    raise TypeError(
+                        f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
+                    )
+                setattr(self, param, param_value)
+            else:
+                setattr(self, param, default_value)
 
         self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=self.epsilon, rounds_factor=self.rounds_factor)
 
