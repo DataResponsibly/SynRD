@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 from abc import ABC, abstractmethod
@@ -191,7 +193,9 @@ class MSTSynthesizer(Synthesizer):
             else:
                 setattr(self, param, default_value)
 
-        self.synthesizer = SmartnoiseMSTSynthesizer(epsilon=self.epsilon, **synth_kwargs)
+        self.synthesizer = SmartnoiseMSTSynthesizer(
+            epsilon=self.epsilon, delta=self.delta, verbose=self.verbose, **synth_kwargs
+        )
 
     def fit(self, df: pd.DataFrame):
         categorical_check = len(self._categorical_continuous(df)["categorical"]) == len(
@@ -282,26 +286,26 @@ class PATECTGAN(Synthesizer):
         slide_range: bool = None,
         thresh: float = None,
         preprocess_factor: float = None,
-        embedding_dim : int = None,
-        generator_dim : tuple = None,
-        discriminator_dim : tuple = None,
-        generator_lr : float = None,
-        generator_decay : float = None,
-        discriminator_lr : float = None,
-        discriminator_decay : float = None,
-        batch_size : int = None,
-        verbose : bool = None,
-        epochs : int = None,
-        pac : int = None,
-        cuda : bool|str = None,
-        regularization : str = None,
-        loss : str = None,
-        teacher_iters : int = None,
-        student_iters : int = None,
-        delta : float = None,
-        sample_per_teacher : int = None,
-        noise_multiplier : float = None,
-        moments_order : int = None,
+        embedding_dim: int = None,
+        generator_dim: tuple = None,
+        discriminator_dim: tuple = None,
+        generator_lr: float = None,
+        generator_decay: float = None,
+        discriminator_lr: float = None,
+        discriminator_decay: float = None,
+        batch_size: int = None,
+        verbose: bool = None,
+        epochs: int = None,
+        pac: int = None,
+        cuda: bool|str = None,
+        regularization: str = None,
+        loss: str = None,
+        teacher_iters: int = None,
+        student_iters: int = None,
+        delta: float = None,
+        sample_per_teacher: int = None,
+        noise_multiplier: float = None,
+        moments_order: int = None,
         **synth_kwargs: dict()
     ):
         super().__init__(epsilon, slide_range, thresh)
@@ -364,7 +368,34 @@ class PATECTGAN(Synthesizer):
                 setattr(self, param, default_value)
 
         self.synthesizer = PytorchDPSynthesizer(
-            epsilon=epsilon, gan=SmartnoisePATECTGAN(epsilon=epsilon, **synth_kwargs), preprocessor = synth_kwargs.get('preprocessor')
+            epsilon=epsilon,
+            gan=SmartnoisePATECTGAN(
+                epsilon=epsilon,
+                delta=self.delta,
+                verbose=self.verbose,
+                embedding_dim=self.embedding_dim,
+                generator_dim=self.generator_dim,
+                discriminator_dim=self.discriminator_dim,
+                generator_lr=self.generator_lr,
+                generator_decay=self.generator_decay,
+                discriminator_lr=self.discriminator_lr,
+                discriminator_decay=self.discriminator_decay,
+                batch_size=self.batch_size,
+                discriminator_steps=self.discriminator_steps,
+                epochs=self.epochs,
+                pac=self.pac,
+                cuda=self.cuda,
+                binary=self.binary,
+                regularization=self.regularization,
+                loss=self.loss,
+                teacher_iters=self.teacher_iters,
+                student_iters=self.student_iters,
+                sample_per_teacher=self.sample_per_teacher,
+                noise_multiplier=self.noise_multiplier,
+                moments_order=self.moments_order,
+                **synth_kwargs,
+            ),
+            preprocessor=synth_kwargs.get("preprocessor")
         )
 
     def fit(self, df: pd.DataFrame):
@@ -619,8 +650,17 @@ class AIMTSynthesizer(Synthesizer):
                 setattr(self, param, param_value)
             else:
                 setattr(self, param, default_value)
+
         self.synthesizer = SmartnoiseAIMSynthesizer(
-            epsilon=self.epsilon, **synth_kwargs
+            epsilon=self.epsilon,
+            delta=self.delta,
+            max_model_size=self.max_model_size,
+            degree=self.degree,
+            num_marginals=self.num_marginals,
+            max_cells=self.max_cells,
+            rounds=self.rounds,
+            verbose=self.verbose,
+            **synth_kwargs,
         )
 
     def fit(self, df: pd.DataFrame):
@@ -736,7 +776,18 @@ class AIMSynthesizer(Synthesizer):
             else:
                 setattr(self, param, default_value)
 
-        self.synthesizer = SmartnoiseAIMSynthesizer(epsilon=self.epsilon, rounds_factor=self.rounds_factor)
+        self.synthesizer = SmartnoiseAIMSynthesizer(
+            epsilon=self.epsilon,
+            delta=self.delta,
+            max_model_size=self.max_model_size,
+            degree=self.degree,
+            num_marginals=self.num_marginals,
+            max_cells=self.max_cells,
+            rounds=self.rounds,
+            verbose=self.verbose,
+            rounds_factor=self.rounds_factor
+            **synth_kwargs,
+        )
 
     def fit(self, df: pd.DataFrame):
         categorical_check = (len(self._categorical_continuous(df)['categorical']) == len(list(df.columns)))
