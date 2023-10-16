@@ -682,6 +682,7 @@ class AIMTSynthesizer(Synthesizer):
         df = self._unslide_range(df)
         return df
 
+
 class AIMSynthesizer(Synthesizer):
     """
     Synthesizer which uses AIM: An Adaptive and Iterative Mechanism with adjustable
