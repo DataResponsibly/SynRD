@@ -45,7 +45,7 @@ class Synthesizer(ABC):
         epsilon_value = locals().get("epsilon")
         if epsilon_value is None:
             raise ValueError("Epsilon is a required parameter for Synthesizer.")
-        if not isinstance(epsilon_value, (int, float)):
+        if type(epsilon_value) not in (float, int):
             raise TypeError(
                 f"Epsilon must be of type int or float, got {type(epsilon_value).__name__}."
             )
@@ -64,9 +64,9 @@ class Synthesizer(ABC):
         for param, (default_value, param_type) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
-                if not isinstance(param_value, param_type):
+                if type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
@@ -183,9 +183,9 @@ class MSTSynthesizer(Synthesizer):
         for param, (default_value, param_type) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
-                if not isinstance(param_value, param_type):
+                if type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
@@ -348,18 +348,18 @@ class PATECTGAN(Synthesizer):
         for param, (param_type, default_value) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
                 if isinstance(param_type, tuple):
                     correctly_typed = False
                     for single_type in param_type:
-                        if isinstance(param_value, single_type):
+                        if type(param_value) is single_type:
                             correctly_typed = True
                     if not correctly_typed:
                         raise TypeError(
                         f"{param} must be of one of the types {', '.join(list(map(lambda x: x.__name__, param_type)))}, got {type(param_value).__name__}."
                     )
-                elif not isinstance(param_value, param_type):
+                elif type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
@@ -475,9 +475,9 @@ class PrivBayes(Synthesizer):
         for param, (default_value, param_type) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
-                if not isinstance(param_value, param_type):
+                if type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
@@ -632,18 +632,18 @@ class AIMTSynthesizer(Synthesizer):
         for param, (param_type, default_value) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
                 if isinstance(param_type, tuple):
                     correctly_typed = False
                     for single_type in param_type:
-                        if isinstance(param_value, single_type):
+                        if type(param_value) is single_type:
                             correctly_typed = True
                     if not correctly_typed:
                         raise TypeError(
                         f"{param} must be of one of the types {', '.join(list(map(lambda x: x.__name__, param_type)))}, got {type(param_value).__name__}."
                     )
-                elif not isinstance(param_value, param_type):
+                elif type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
@@ -758,18 +758,18 @@ class AIMSynthesizer(Synthesizer):
         for param, (param_type, default_value) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
                 if isinstance(param_type, tuple):
                     correctly_typed = False
                     for single_type in param_type:
-                        if isinstance(param_value, single_type):
+                        if type(param_value) is single_type:
                             correctly_typed = True
                     if not correctly_typed:
                         raise TypeError(
                         f"{param} must be of one of the types {', '.join(list(map(lambda x: x.__name__, param_type)))}, got {type(param_value).__name__}."
                     )
-                elif not isinstance(param_value, param_type):
+                elif type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
@@ -837,9 +837,9 @@ class GEMSynthesizer(Synthesizer):
         for param, (default_value, param_type) in param_defaults.items():
             param_value = locals().get(param)
             if param_value is not None:
-                if isinstance(param_value, int) and param_type is float:
+                if type(param_value) is int and param_type is float:
                     param_value = float(param_value)
-                if not isinstance(param_value, param_type):
+                if type(param_value) is not param_type:
                     raise TypeError(
                         f"{param} must be of type {param_type.__name__}, got {type(param_value).__name__}."
                     )
