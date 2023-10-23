@@ -807,6 +807,29 @@ class AIMSynthesizer(Synthesizer):
 
 
 class GEMSynthesizer(Synthesizer):
+    """
+    Generative networks with the exponential mechanism (GEM) synthesizer.
+
+    ----------
+    Parameters
+        epsilon : float
+            Privacy budget for the synthesizer
+    -----------
+    Optional keyword arguments:
+        slide_range : bool = False
+            Specifies if the slide range transformation should be applied, this will 
+            make the minimal value of each column 0 before fitting.
+        thresh : float = 0.05
+            Specifies what the ratio of unique values to the column length should be for
+            the column to be threated as cathegorical
+        k : int = 3
+            Number of columns included in one workload.
+        T : int = 100
+            Number of rounds to run algorithm
+        verbose : bool = False
+            Print diagnostic information during processing 
+
+    """
     def __init__(
         self,
         epsilon: float = None,
@@ -814,13 +837,12 @@ class GEMSynthesizer(Synthesizer):
         thresh: float = None,
         k: int = None,
         T: int = None,
-        recycle: bool = None,
         verbose: bool = None,
         **synth_kwargs: dict()
     ):
         super().__init__(epsilon, slide_range, thresh)
 
-        allowed_additional_params = {"k", "T", "recycle", "verbose"}
+        allowed_additional_params = {"k", "T", "verbose"}
         for param in synth_kwargs.keys():
             if param not in allowed_additional_params:
                 raise ValueError(
@@ -830,7 +852,6 @@ class GEMSynthesizer(Synthesizer):
         param_defaults = {
             "k": (3, int),
             "T": (100, int),
-            "recycle": (True, bool),
             "verbose": (False, bool),
         }
 
