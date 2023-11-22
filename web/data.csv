@@ -1,0 +1,25 @@
+paper,finding_number,finding_type,parity,std,finding type,synthesizer,epsilon
+iverson22football,0,,0.0,0.0,DESCRIPTIVE_STATISTICS,privbayes,0.37
+iverson22football,1,,1.0,0.0,DESCRIPTIVE_STATISTICS,privbayes,0.37
+iverson22football,2,,1.0,0.0,DESCRIPTIVE_STATISTICS,privbayes,0.37
+iverson22football,3,,1.0,0.0,TEMPORAL_FIXED_CLASS,privbayes,0.37
+iverson22football,4,,1.0,0.0,TEMPORAL_FIXED_CLASS,privbayes,0.37
+iverson22football,5,,0.0,0.0,TEMPORAL_FIXED_CLASS,privbayes,0.37
+iverson22football,6,,0.6799999999999998,0.4664761515876243,TEMPORAL_FIXED_CLASS,privbayes,0.37
+lee2021ability,0,,1.0,0.0,PEARSON_CORRELATION,privbayes,0.37
+lee2021ability,1,,1.0,0.0,PEARSON_CORRELATION,privbayes,0.37
+lee2021ability,2,,1.0,0.0,PEARSON_CORRELATION,privbayes,0.37
+lee2021ability,3,,1.0,0.0,COEFFICIENT_SIGN,privbayes,0.37
+lee2021ability,4,,1.0,0.0,COEFFICIENT_SIGN,privbayes,0.37
+iverson22football,0,,1.0,0.0,DESCRIPTIVE_STATISTICS,privbayes,1.0
+iverson22football,1,,1.0,0.0,DESCRIPTIVE_STATISTICS,privbayes,1.0
+iverson22football,2,,1.0,0.0,DESCRIPTIVE_STATISTICS,privbayes,1.0
+iverson22football,3,,0.6399999999999999,0.4800000000000001,TEMPORAL_FIXED_CLASS,privbayes,1.0
+iverson22football,4,,0.5999999999999999,0.4898979485566359,TEMPORAL_FIXED_CLASS,privbayes,1.0
+iverson22football,5,,0.5999999999999999,0.4898979485566359,TEMPORAL_FIXED_CLASS,privbayes,1.0
+iverson22football,6,,0.6399999999999999,0.4800000000000001,TEMPORAL_FIXED_CLASS,privbayes,1.0
+lee2021ability,0,,1.0,0.0,PEARSON_CORRELATION,privbayes,1.0
+lee2021ability,1,,1.0,0.0,PEARSON_CORRELATION,privbayes,1.0
+lee2021ability,2,,1.0,0.0,PEARSON_CORRELATION,privbayes,1.0
+lee2021ability,3,,1.0,0.0,COEFFICIENT_SIGN,privbayes,1.0
+lee2021ability,4,,1.0,0.0,COEFFICIENT_SIGN,privbayes,1.0

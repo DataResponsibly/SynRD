@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interactive Heatmap</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <div id="heatmap"></div>
+
+    <script>
+        // Fetch the data
+        fetch('formatted_data.json')
+  .then(response => response.json())
+  .then(data => {
+    // Prepare data for Plotly
+    const trace = {
+      z: data.data,
+      x: Array.from({ length: data.columns.length }, (_, i) => i + 1),
+      y: data.index,
+      type: 'heatmap',
+      hoverinfo: 'z+x+y',
+      colorscale: [[0, 'black'], [1, 'white']],
+      showscale: true,
+      xgap: 1,
+      ygap: 1,
+    };
+
+    // Generate the paper_to_finding_count map dynamically
+    const paper_to_finding_count = {};
+    for (const col of data.columns) {
+      const [paper, _] = col.split('-');
+      paper_to_finding_count[paper] = (paper_to_finding_count[paper] || 0) + 1;
+    }
+
+    // Prepare annotations for the paper names
+    let annotations = [];
+    let counter = 0;
+
+    for (const paper of Object.keys(paper_to_finding_count)) {
+      const occurrences = paper_to_finding_count[paper];
+
+      annotations.push({
+        x: counter + occurrences / 2 - 0.5,
+        y: 0,
+        xref: 'x',
+        yref: 'paper',
+        text: paper,
+        showarrow: false,
+        font: {
+          size: 12,
+        },
+        yshift: -40 // Shift the annotation down
+      });
+
+      counter += occurrences;
+    }
+
+    // Layout configuration
+    const layout = {
+      title: 'Epistemic Parity',
+      xaxis: {
+        tickvals: Array.from({ length: data.columns.length }, (_, i) => i),
+        ticktext: Array.from({ length: data.columns.length }, (_, i) => i + 1),
+      },
+      annotations: annotations,
+    };
+
+    const config = {
+      responsive: true,
+    };
+
+    // Generate the plot
+    Plotly.newPlot('heatmap', [trace], layout, config);
+  });
+      </script>
+  </body>
+</html>
