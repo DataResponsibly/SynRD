@@ -136,23 +136,20 @@ class MSTSynthesizer(Synthesizer):
     """
     MST: Maximum Spanning Tree synthesizer.
 
-    ----------
-    Parameters
-        epsilon : float
+    Parameters:
+        epsilon (float):
             Privacy budget for the synthesizer
-    -----------
-    Optional keyword arguments:
-        slide_range : bool = False
+        slide_range (bool = False): 
             Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
-        thresh : float = 0.05
+        thresh (float = 0.05):
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
-        preprocess_factor : float = 0.05
+        preprocess_factor (float = 0.05):
             Amount of budget to be used for the data preprocessing
-        delta : float = 1e-09
+        delta (float = 1e-09):
             Privacy parameter, should be small, in the range of 1/(n * sqrt(n))
-        verbose: bool = False
+        verbose (bool = False):
             Print diagnostic information during processing
     """
     def __init__(
@@ -223,60 +220,57 @@ class PATECTGAN(Synthesizer):
     """
     Conditional tabular GAN using Private Aggregation of Teacher Ensembles
 
-    ----------
-    Parameters
-        epsilon : float
+    Parameters:
+        epsilon (float): float
             Privacy budget for the synthesizer
-    -----------
-    Optional keyword arguments:
-        slide_range : bool = False
+        slide_range (bool = False):
             Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
-        thresh : float = 0.05
+        thresh (float = 0.05): float = 0.05
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
-        preprocess_factor : float = 0.05
+        preprocess_factor (float = 0.05):
             Amount of budget to be used for the data preprocessing
-        embedding_dim : int = 128
+        embedding_dim (int = 128):
             Dimension of the embeding
-        generator_dim : tuple = (256, 256)
+        generator_dim (tuple = (256, 256)):
             Dimension of the generator
-        discriminator_dim : tuple = (256, 256)
+        discriminator_dim (tuple = (256, 256)):
             Dimension of the discriminstor
-        generator_lr : float = 0.0002
+        generator_lr (float = 0.0002):
             Generator's learning rate
-        generator_decay : float = 1e-06
+        generator_decay (float = 1e-06):
             Generator's decay
-        discriminator_lr : float = 0.002
+        discriminator_lr (float = 0.002):
             Discriminator's learning rate
-        discriminator_decay : float = 1e-06
+        discriminator_decay (float = 1e-06):
             Discriminator's decay
-        batch_size : int = 500
+        batch_size (int = 500):
             Number of samples in one batch (for one training step)
-        verbose : bool = True
+        verbose (bool = True):
             Specifies if training information should be printed or not
-        epochs : int = 300
+        epochs (int = 300):
             Number of training epochs
-        pac : int = 1
+        pac (int = 1):
             Number of pacs to use (useful for dealing with mode collapse)
-        cuda : bool|string = True
+        cuda (bool|string = True):
             Specifies if cuda should be used for computation.
             Providing a string will result in using the specific device.
-        regularization : string = None
+        regularization (string = None):
             Which regularization to use. At the moment only dragan is possible.
-        loss : string = 'cross_entropy'
+        loss (string = 'cross_entropy'):
             Type of loss to be used
-        teacher_iters : int = 5
+        teacher_iters (int = 5):
             Number of iterations for training the teachers
-        student_iters : int = 5
+        student_iters (int = 5):
             Number of iterations for training the students
-        delta : float = None
+        delta (float = None):
             privacy parameter, should be small, in the range of 1/(n * sqrt(n))
-        sample_per_teacher : int = 1000
+        sample_per_teacher (int = 1000):
             Number of samples for training one teacher
-        noise_multiplier : float = 0.001
+        noise_multiplier (float = 0.001):
             Multiplier for Laplace noise
-        moments_order : int = 100
+        moments_order (int = 100):
             Number of moments to be used in moments accountant method
 
     """
@@ -419,24 +413,22 @@ class PrivBayes(Synthesizer):
     Synthesizer which uses bayesian approach.
 
     ----------
-    Parameters
-        epsilon : float
+    Parameters:
+        epsilon (float):
             Privacy budget for the synthesizer
-    -----------
-    Optional keyword arguments:
-        slide_range : bool = False
+        slide_range (bool = False):
             Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
-        thresh : float = 0.05
+        thresh (float = 0.05):
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
-        privbayes_limit : int = 20
+        privbayes_limit (int = 20):
             If number of unique values in the column exceeds this limit, it will be binned
-        privbayes_bins : int = 10
+        privbayes_bins (int = 10):
             Number of bins (if binning is happening)
-        temp_files_dir : str = 'temp'
+        temp_files_dir (str = 'temp'):
             Directory used to save the file produced by the data describer
-        seed : int = 0
+        seed (int = 0):
             Random seed to be used
 
     """
@@ -568,31 +560,28 @@ class AIMTSynthesizer(Synthesizer):
     """
     Synthesizer which uses AIM: An Adaptive and Iterative Mechanism
 
-    ----------
-    Parameters
-        epsilon : float
+    Parameters:
+        epsilon (float):
             Privacy budget for the synthesizer
-    -----------
-    Optional keyword arguments:
-        slide_range : bool = False
+        slide_range (bool = False):
             Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
-        thresh : float = 0.05
+        thresh (float = 0.05):
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
-        delta : float = 1e-9
+        delta (float = 1e-9):
             Privacy parameter. Should be small, in the range of 1/(n * sqrt(n))
-        max_model_size : int = 80
+        max_model_size (int = 80):
             Maximum size of the model
-        degree : int = 2
+        degree (int = 2):
             Number of data columns used in the workload
-        num_marginals : int = None
+        num_marginals (int = None):
             Number of elements in the workload
-        max_cells : int = 10000
+        max_cells (int = 10000):
             Maximum number of cells in a domain that can be used for the synthesizer
-        rounds : int = None
+        rounds (int = None):
             Number of rounds to run the algorithm for
-        verbose : bool = False
+        verbose (bool = False):
             Specifies if additional information should be printed or not
 
     """
@@ -688,34 +677,31 @@ class AIMSynthesizer(Synthesizer):
     Synthesizer which uses AIM: An Adaptive and Iterative Mechanism with adjustable
     `rounds_factor` parameter to influence the number of rounds to run the mechanism.
 
-    ----------
-    Parameters
-        epsilon : float
+    Parameters:
+        epsilon (float): float
             Privacy budget for the synthesizer
-    -----------
-    Optional keyword arguments:
-        rounds_factor : float = 0.1
+        rounds_factor (float = 0.1):
             The factor to determine the number of rounds to run the AIM mechanism
             before generating the synthetic dataset.
-        slide_range : bool = False
+        slide_range (bool = False):
             Specifies if the slide range transformation should be applied, this will 
             make the minimal value of each column 0 before fitting.
-        thresh : float = 0.05
+        thresh (float = 0.05):
             Specifies what the ratio of unique values to the column length should be for
             the column to be threated as cathegorical
-        delta : float = 1e-9
+        delta (float = 1e-9):
             Privacy parameter. Should be small, in the range of 1/(n * sqrt(n))
-        max_model_size : int = 80
+        max_model_size (int = 80):
             Maximum size of the model
-        degree : int = 2
+        degree (int = 2):
             Number of data columns used in the workload
-        num_marginals : int = None
+        num_marginals (int = None):
             Number of elements in the workload
-        max_cells : int = 10000
+        max_cells (int = 10000):
             Maximum number of cells in a domain that can be used for the synthesizer
-        rounds : int = None
+        rounds (int = None):
             Number of rounds to run the algorithm for
-        verbose : bool = False
+        verbose (bool = False):
             Specifies if additional information should be printed or not
 
     """
