@@ -412,7 +412,6 @@ class PrivBayes(Synthesizer):
     """
     Synthesizer which uses bayesian approach.
 
-    ----------
     Parameters:
         epsilon (float):
             Privacy budget for the synthesizer
