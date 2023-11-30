@@ -65,7 +65,12 @@ plugins:
       wikilinks: true
   - mkdocs-jupyter:
       execute: false
+      include_source: true
       include_requirejs: true
+  - ezlinks:
+        warn_ambiguities: true
+        wikilinks: true
+        reference_links: true
 
 markdown_extensions:
   - abbr
