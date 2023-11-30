@@ -11,7 +11,6 @@ with open("README.md", "r") as f:
 setup(
     name="SynRD",
     version="0.1",
-    python_requires='== 3.7.*', # Unfortunately, need specific python version for rpy2
     description="Benchmark for differentially private synthetic data.",
     long_description=long_description,
     author="Lucas Rosenblatt",
