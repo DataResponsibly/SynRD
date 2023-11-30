@@ -12,14 +12,17 @@
         fetch('formatted_data.json')
   .then(response => response.json())
   .then(data => {
+    console.log(data.columns.length)
+    console.log( Array.from({ length: data.columns.length }, (_, i) => i + 1))
     // Prepare data for Plotly
     const trace = {
       z: data.data,
-      x: Array.from({ length: data.columns.length }, (_, i) => i + 1),
+      x: [data.columns.map(col => col.split('-')[0]), data.columns.map(col => parseInt(col.split('-')[1]) + 1)],
       y: data.index,
       type: 'heatmap',
-      hoverinfo: 'z+x+y',
-      colorscale: [[0, 'black'], [1, 'white']],
+      hovertext: data.findings,
+      hoverinfo: 'text',
+      colorscale: [[0, 'FD7900'], [1, '80FB35']],
       showscale: true,
       xgap: 1,
       ygap: 1,
@@ -58,11 +61,14 @@
     // Layout configuration
     const layout = {
       title: 'Epistemic Parity',
-      xaxis: {
-        tickvals: Array.from({ length: data.columns.length }, (_, i) => i),
-        ticktext: Array.from({ length: data.columns.length }, (_, i) => i + 1),
-      },
-      annotations: annotations,
+      yaxis:{
+        tickangle:270
+      }
+      // xaxis: {
+      //   tickvals: Array.from({ length: data.columns.length }, (_, i) => i),
+      //   ticktext: Array.from({ length: data.columns.length }, (_, i) => i + 1),
+      // },
+      // annotations: annotations,
     };
 
     const config = {
