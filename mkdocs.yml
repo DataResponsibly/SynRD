@@ -1,0 +1,115 @@
+site_name: SynRD
+#site_url: https://squidfunk.github.io/mkdocs-material/
+repo_name: DataResponsibly/SynRD
+repo_url: https://github.com/DataResponsibly/SynRD
+
+theme:
+  name: "material"
+  logo: 'img/logo.png'
+  features:
+    - toc.integrate
+    - toc.follow
+    - navigation.top
+    - navigation.footer
+    - navigation.path
+    - navigation.sections
+    - navigation.expand
+    - navigation.tabs
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+      primary: teal
+      accent: purple
+    - scheme: slate 
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode    
+      primary: teal
+      accent: lime
+  font:
+    text: Rubik Regular
+    code: Roboto Mono
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Quickstart: quickstart.md
+  - Python API: api.md
+  - Findings: findings.md
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_section_style: list
+            docstring_style: google
+  - search:
+      pipeline:
+        - stemmer
+        - stopWordFilter
+        - trimmer
+  - minify:
+      minify_html: true
+  - ezlinks:
+      wikilinks: true
+  - mkdocs-jupyter:
+      execute: false
+      include_requirejs: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - sane_lists
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: vihtoriaaa
+      repo: DataResponsibly/SynRD
+  - pymdownx.snippets:
+      auto_append:
+        - includes/mkdocs.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+copyright: Copyright &copy; 2023
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/DataResponsibly/SynRD
