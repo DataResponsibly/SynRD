@@ -37,6 +37,7 @@ class Iverson22Football(Publication):
     ]
 
     # FILENAME = "iverson22football"
+    PUBLICATION_FILE = "../../annotated_pdfs/high_school_football_annotated.pdf"
 
     def __init__(self, dataframe=None):
         super(Iverson22Football, self).__init__(dataframe=dataframe)

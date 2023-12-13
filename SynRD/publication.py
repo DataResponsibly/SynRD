@@ -77,6 +77,7 @@ class Publication():
 
     FILENAME = None
 
+    PUBLICATION_FILE = None
     def __init__(self, dataframe=None, description=None):
         if dataframe is not None:
             self.dataframe = dataframe

@@ -76,6 +76,8 @@ class Lee2021Ability(Publication):
         'W1PARENT'
     ]
 
+    PUBLICATION_FILE = "..\\..\\annotated_pdfs\\ability_self_concepts_annotated.pdf"
+
     WEIGHTS = None
 
     corr_df = None
