@@ -47,6 +47,8 @@ class Fairman2019Marijuana(Publication):
         4: CLASSES['ALCTRY'], 5: CLASSES['CIGTRY'], 6: CLASSES['MJAGE'], 91: CLASSES['NO USAGE'],
     }
 
+    PUBLICATION_FILE = "../../annotated_pdfs/when_marijuana_is_used_annotated.pdf"
+
     def __init__(self, dataframe=None):
         super(Fairman2019Marijuana, self).__init__(dataframe=dataframe)
         

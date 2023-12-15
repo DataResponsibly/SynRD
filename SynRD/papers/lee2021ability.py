@@ -76,7 +76,7 @@ class Lee2021Ability(Publication):
         'W1PARENT'
     ]
 
-    PUBLICATION_FILE = "..\\..\\annotated_pdfs\\ability_self_concepts_annotated.pdf"
+    PUBLICATION_FILE = "../../annotated_pdfs/ability_self_concepts_annotated.pdf"
 
     WEIGHTS = None
 
@@ -92,39 +92,39 @@ class Lee2021Ability(Publication):
         self.FINDINGS = self.FINDINGS + [
             # VisualFinding(self.table_2, description="table_2"),
             # VisualFinding(self.table_3, description="table_3"),
-            Finding(self.finding_52_1, description="finding_52_1",
+            Finding(self.finding_52_1, description="finding_5_1",
                     text="""As predicted, a negative correlation was found
                             between perceived low math teacher support and 11th 
                             grade math achievement (r = -0.11).""",
                             finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION), 
-            Finding(self.finding_52_2, description="finding_52_2",
+            Finding(self.finding_52_2, description="finding_5_2",
                     text="""Ability self-concepts and parental support 
                             in 9th grade were positively correlated with students' 
                             11th grade achievement (r = 0.30 and r = 0.12 respectively).""",
                             finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION), 
-            Finding(self.finding_52_3, description="finding_52_3",
+            Finding(self.finding_52_3, description="finding_5_3",
                     text="""A strong positive correlation was found between 
                             9th and 11th grade math achievement (r = 0.74).""",
                             finding_type=TAXONOMY.CORRELATION.value.PEARSON_CORRELATION),
-            Finding(self.finding_54_1, description="finding_54_1",
+            Finding(self.finding_54_1, description="finding_7_1",
                     text="""perceived low math teacher support in 11th grade 
                             negatively predicted students' 11th grade math achievement 
                             (B = -1.51, p &lt; .001) while controlling for students' 
                             demographics, 9th grade math achievement score, and math 
                             course.""",
                             finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_SIGN), 
-            Finding(self.finding_54_2, description="finding_54_2",
+            Finding(self.finding_54_2, description="finding_7_2",
                     text="""Second, as shown under Model 2, math ability self-concepts 
                             positively and directly predicted 11th grade math achievement 
                             (B = 2.51, p &lt; .001).""",
                             finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_SIGN), 
-            Finding(self.finding_54_3, description="finding_54_3",
+            Finding(self.finding_54_3, description="finding_7_3",
                     text="""Contrary to our hypothesis and as shown under Model 3, 
                             the relation between perceived low math teacher support and 
                             math achievement was not moderated by adolescents' math 
                             ability self-concepts (B = -0.46, p = .329)""",
                             finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON), 
-            Finding(self.finding_54_4, description="finding_54_4",
+            Finding(self.finding_54_4, description="finding_7_4",
                     text="""Third, as hypothesized and shown under Model 5, the 3-way 
                             interaction was found to be statistically significant 
                             (B = -4.38, p &lt; .05). That is, the interaction between 
@@ -132,7 +132,7 @@ class Lee2021Ability(Publication):
                             ability self-concepts in predicting adolescents' math 
                             achievement varied by the level of parental support.""",
                             finding_type=TAXONOMY.REGRESSION.value.COEFFICIENT_COMPARISON), 
-            Finding(self.finding_54_5, description="finding_54_5",
+            Finding(self.finding_54_5, description="finding_7_5",
                     text="""As expected, perceived low teacher support was linked 
                             to lower achievement when adolescents were low on both 
                             protective factors, namely low ability selfconcepts and 

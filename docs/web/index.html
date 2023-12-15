@@ -6,9 +6,7 @@
   </head>
   <body>
     <div id="heatmap"></div>
-    <object data="../../annotated_pdfs/who_gets_benefit_of_the_doubt_annotated.pdf#page=5" type="application/pdf" width="100%" height="500px">
-      <p>Unable to display PDF file. <a href="../../annotated_pdfs/who_gets_benefit_of_the_doubt_annotated.pdf#page=5">Download</a> instead.</p>
-    </object>
+    <div id="annotated_pdf"></div>
 
     <script>
         // Fetch the data
@@ -79,19 +77,24 @@
       responsive: true,
     };
     var myPlot = document.getElementById('heatmap');
+    var cur_paper = null;
+    var cur_page = null;
 
     // Generate the plot
     Plotly.newPlot('heatmap', [trace], layout, config);
-    myPlot.on('plotly_click', function(data){
-      console.log(data);
+    myPlot.on('plotly_click', function(click_data){
+      console.log(click_data.points[0].x);
+      if (cur_paper != click_data.points[0].x[0] || cur_page !=data.pages[click_data.points[0].x[0]][click_data.points[0].x[1]]){
+        cur_paper = click_data.points[0].x[0]
+        cur_page = data.pages[click_data.points[0].x[0]][click_data.points[0].x[1]]
+        var pdf_div = document.getElementById('annotated_pdf')
+        pdf_div.innerHTML =
+        '<object data='+data.pdfs[cur_paper]+'#page='+ cur_page+' type="application/pdf" width="100%" height="500px">'+
+        '<p>Unable to display PDF file. <a href='+data.pdfs[cur_paper]+'>Download</a> instead.</p>'+
+        '</object>'
+      }
     })
   });
-//   Plotly.d3.json(JSON, function (rows) {
-//   var myPlot = document.getElementById('heatmap');
-//   myPlot.on('plotly_click', function(data){
-//     console.log(data);
-//   })
-// });
       </script>
   </body>
 </html>

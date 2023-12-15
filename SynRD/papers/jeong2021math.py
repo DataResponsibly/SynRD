@@ -35,6 +35,7 @@ class Jeong2021Math(Publication):
     RACE_CLASSES = {'WHITE_ASIAN': 0, 'BLACK_HISPANIC_NATIVE': 1}
     FILENAME = 'jeong2021math'
     RANDOM_STATE_MAX = 30
+    PUBLICATION_FILE = "../../annotated_pdfs/who_gets_benefit_of_the_doubt_annotated.pdf"
 
     def __init__(self, dataframe=None):
         super(Jeong2021Math, self).__init__(dataframe=dataframe)

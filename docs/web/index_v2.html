@@ -1,0 +1,81 @@
+<!--<html>
+  <head>
+    <title>Interactive Heatmap V2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  </head>
+  <body>
+    <div id="showTable"></div>
+  </body>
+  <script>
+fetch('formatted_data.json')
+  .then(response => response.text())
+  .then(contents => createTableFromJSON(contents))
+  .catch((e) => console.log(e))
+
+// Create an HTML table using the JSON data.
+function createTableFromJSON(jsonData) {
+  var arrBirds = [];
+  arrBirds = JSON.parse(jsonData); // Convert JSON to array.
+
+  var col = [];
+  for (var key in arrBirds) {
+    if (col.indexOf(key) === -1) {
+      col.push(key);
+    }
+  }
+
+  // Create a dynamic table.
+  var table = document.createElement("table") // Create table header.
+  var tr = table.insertRow(-1); // Table row. (last position)
+
+  for (var i = 0; i < col.length; i++) {
+    var th = document.createElement("th"); // Table header.
+    th.innerHTML = col[i];
+    tr.appendChild(th);
+  }
+
+  tr = table.insertRow(-1); // add new row for the names
+  // Add JSON to the table rows.
+  for (var i = 0; i < arrBirds.length; i++) {
+    var tabCell = tr.insertCell(-1);
+    tabCell.innerHTML = arrBirds[i].Name;
+  }
+
+  // Finally, add the dynamic table to a container.
+  var divContainer = document.getElementById("showTable");
+  divContainer.innerHTML = "";
+  divContainer.appendChild(table);
+}; 
+</script>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Interactive Heatmap V2</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    </head>
+    <body>
+        <div class="grid">
+            <div id="table_header" class="row">
+                <div id="paper_name" class="col-1"></div>
+                <div id="finding_number" class="col-1"></div>
+                <div id="finding_text" class="col-1">Finding text</div>
+                <div id="synth_score" class="col-1">
+                    <select name="synth-names" id="synth-names"> 
+                        <!-- <option value="rigatoni">Rigatoni</option> 
+                        <option value="dave">Dave</option>  -->
+                    </select>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+         fetch('formatted_data.json')
+        .then(response => response.json())
+        .then(data => {})
+    </script>
+</html>
